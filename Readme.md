@@ -1,3 +1,19 @@
+# SMBLibrary
+
+This is a fork of [Tal Aloni's SMBLibrary](https://github.com/TalAloni/SMBLibrary) that has been stripped down to just the client library, utilities, and tests and converted to .NET Standard 2.1 
+
+## Changes From the Original Library
+
+- SMBServer project removed
+- SMBLibrary.Win32 removed
+- SMBLibrary converted to .NET Standard 2.1
+- Utilities converted to .NET Standard 2.1
+- SMBLibrary.Tests converted to .NET Core 3.0
+- SMBLibrary.Tests converted to use xunit instead of MSTest
+
+
+The original readme:
+
 About SMBLibrary:
 =================
 SMBLibrary is an open-source C# SMB 1.0/CIFS, SMB 2.0 and SMB 2.1 server and client implementation.  

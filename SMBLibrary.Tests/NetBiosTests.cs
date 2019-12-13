@@ -6,39 +6,32 @@
  */
 using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SMBLibrary.NetBios;
 using Utilities;
+using Xunit;
 
 namespace SMBLibrary.Tests
 {
-    [TestClass]
     public class NetBiosTests
     {
-        [TestMethod]
+        [Fact]
         public void Test1()
         {
             byte[] buffer = new byte[] { 0x20, 0x46, 0x47, 0x45, 0x4e, 0x44, 0x4a, 0x43, 0x41, 0x43, 0x41, 0x43, 0x41, 0x43, 0x41, 0x43, 0x41, 0x43, 0x41, 0x43, 0x41, 0x43, 0x41, 0x43, 0x41, 0x43, 0x41, 0x43, 0x41, 0x43, 0x41, 0x43, 0x41, 0x00 };
             int offset = 0;
             string name = NetBiosUtils.DecodeName(buffer, ref offset);
             byte[] encodedName = NetBiosUtils.EncodeName(name, String.Empty);
-            Assert.IsTrue(ByteUtils.AreByteArraysEqual(buffer, encodedName));
+            Assert.True(ByteUtils.AreByteArraysEqual(buffer, encodedName));
         }
 
-        [TestMethod]
+        [Fact]
         public void Test2()
         {
             byte[] buffer = new byte[] { 0x20, 0x46, 0x47, 0x45, 0x4e, 0x44, 0x4a, 0x43, 0x41, 0x43, 0x41, 0x43, 0x41, 0x43, 0x41, 0x43, 0x41, 0x43, 0x41, 0x43, 0x41, 0x43, 0x41, 0x43, 0x41, 0x43, 0x41, 0x43, 0x41, 0x43, 0x41, 0x41, 0x41, 0x00 };
             int offset = 0;
             string name = NetBiosUtils.DecodeName(buffer, ref offset);
             byte[] encodedName = NetBiosUtils.EncodeName(name, String.Empty);
-            Assert.IsTrue(ByteUtils.AreByteArraysEqual(buffer, encodedName));
-        }
-
-        public void TestAll()
-        {
-            Test1();
-            Test2();
+            Assert.True(ByteUtils.AreByteArraysEqual(buffer, encodedName));
         }
     }
 }
