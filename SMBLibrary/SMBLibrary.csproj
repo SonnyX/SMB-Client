@@ -3,9 +3,23 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <RootNamespace>SMBLibrary</RootNamespace>
     <AssemblyName>SMBLibrary</AssemblyName>
+    <PackOnBuild>true</PackOnBuild>
+    <PackageId>SMBLibraryLite</PackageId>
+    <PackageVersion>1.3.9</PackageVersion>
+    <Authors>jordanlytle</Authors>
+    <PackageLicenseUrl>https://github.com/jordanlytle/SMBLibrary/blob/master/License.txt</PackageLicenseUrl>
+    <Owners>jordanlytle</Owners>
+    <PackageProjectUrl>https://github.com/jordanlytle/SMBLibrary</PackageProjectUrl>
+    <Description>Free, Open Source, User-Mode SMB 1.0/CIFS, SMB 2.0 and SMB 2.1 Client Library</Description>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.5-dev.8">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>
