@@ -24,9 +24,9 @@ namespace SMBLibrary.Client
         public const int NetBiosOverTCPPort = 139;
         public const int DirectTCPPort = 445;
 
-        public const uint ClientMaxTransactSize = 65536;
-        public const uint ClientMaxReadSize = 65536;
-        public const uint ClientMaxWriteSize = 65536;
+        public uint ClientMaxTransactSize = 65536;
+        public uint ClientMaxReadSize = 65536;
+        public uint ClientMaxWriteSize = 65536;
 
         private SMBTransportType m_transport;
         private bool m_isConnected;
