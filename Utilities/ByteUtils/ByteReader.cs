@@ -62,12 +62,15 @@ namespace Utilities
         public static string ReadNullTerminatedAnsiString(byte[] buffer, int offset)
         {
             StringBuilder builder = new StringBuilder();
-            char c = (char)ByteReader.ReadByte(buffer, offset);
-            while (c != '\0')
+            if (buffer.Length > offset)
             {
-                builder.Append(c);
-                offset++;
-                c = (char)ByteReader.ReadByte(buffer, offset);
+                char c = (char)ByteReader.ReadByte(buffer, offset);
+                while (c != '\0')
+                {
+                    builder.Append(c);
+                    offset++;
+                    c = (char)ByteReader.ReadByte(buffer, offset);
+                }
             }
             return builder.ToString();
         }
@@ -75,27 +78,38 @@ namespace Utilities
         public static string ReadNullTerminatedUTF16String(byte[] buffer, int offset)
         {
             StringBuilder builder = new StringBuilder();
-            char c = (char)LittleEndianConverter.ToUInt16(buffer, offset);
-            while (c != 0)
+            if (buffer.Length > offset)
             {
-                builder.Append(c);
-                offset += 2;
-                c = (char)LittleEndianConverter.ToUInt16(buffer, offset);
+                char c = (char)LittleEndianConverter.ToUInt16(buffer, offset);
+                while (c != 0)
+                {
+                    builder.Append(c);
+                    offset += 2;
+                    c = (char)LittleEndianConverter.ToUInt16(buffer, offset);
+                }
             }
             return builder.ToString();
         }
 
         public static string ReadNullTerminatedAnsiString(byte[] buffer, ref int offset)
         {
-            string result = ReadNullTerminatedAnsiString(buffer, offset);
-            offset += result.Length + 1;
+            string result = string.Empty;
+            if (buffer.Length > offset)
+            {
+                result = ReadNullTerminatedAnsiString(buffer, offset);
+                offset += result.Length + 1;
+            }
             return result;
         }
 
         public static string ReadNullTerminatedUTF16String(byte[] buffer, ref int offset)
         {
-            string result = ReadNullTerminatedUTF16String(buffer, offset);
-            offset += result.Length * 2 + 2;
+            string result = string.Empty;
+            if (buffer.Length > offset)
+            {
+                result = ReadNullTerminatedUTF16String(buffer, offset);
+                offset += result.Length * 2 + 2;
+            }
             return result;
         }
 
