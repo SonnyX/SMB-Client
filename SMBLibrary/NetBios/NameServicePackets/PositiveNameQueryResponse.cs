@@ -29,7 +29,7 @@ namespace SMBLibrary.NetBios
             Header.Flags = OperationFlags.AuthoritativeAnswer | OperationFlags.RecursionDesired;
             Header.OpCode = NameServiceOperation.QueryResponse;
             Header.ANCount = 1;
-            Resource = new ResourceRecord();
+            Resource = new ResourceRecord(NameRecordType.NB);
         }
 
         public byte[] GetBytes()
