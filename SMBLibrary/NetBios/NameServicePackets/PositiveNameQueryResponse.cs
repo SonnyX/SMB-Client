@@ -32,6 +32,19 @@ namespace SMBLibrary.NetBios
             Resource = new ResourceRecord(NameRecordType.NB);
         }
 
+        public PositiveNameQueryResponse(byte[] buffer, int offset)
+        {
+            Header = new NameServicePacketHeader(buffer, ref offset);
+            Resource = new ResourceRecord(buffer, ref offset);
+            int position = 0;
+            while (position < Resource.Data.Length)
+            {
+                NameFlags nameFlags = (NameFlags)BigEndianReader.ReadUInt16(Resource.Data, ref position);
+                byte[] address = ByteReader.ReadBytes(Resource.Data, ref position, 4);
+                Addresses.Add(address, nameFlags);
+            }
+        }
+
         public byte[] GetBytes()
         {
             Resource.Data = GetData();
