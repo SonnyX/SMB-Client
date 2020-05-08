@@ -34,5 +34,13 @@ namespace SMBLibrary.NetBios
             }
             return value;
         }
+
+        public static explicit operator NameFlags(ushort value)
+        {
+            NameFlags result = new NameFlags();
+            result.NodeType = (OwnerNodeType)((value >> 13) & 0x3);
+            result.WorkGroup = (value & 0x8000) > 0;
+            return result;
+        }
     }
 }
