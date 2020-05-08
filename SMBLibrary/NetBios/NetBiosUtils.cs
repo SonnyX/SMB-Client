@@ -44,6 +44,16 @@ namespace SMBLibrary.NetBios
             return netBiosName.TrimEnd(' ');
         }
 
+        public static NetBiosSuffix GetSuffixFromMSNetBiosName(string netBiosName)
+        {
+            if (netBiosName.Length != 16)
+            {
+                throw new ArgumentException("Invalid MS NetBIOS name");
+            }
+
+            return (NetBiosSuffix)netBiosName[15];
+        }
+
         public static byte[] EncodeName(string name, NetBiosSuffix suffix, string scopeID)
         {
             string netBiosName = GetMSNetBiosName(name, suffix);

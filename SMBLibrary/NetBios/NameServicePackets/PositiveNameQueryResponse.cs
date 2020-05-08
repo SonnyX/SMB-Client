@@ -29,7 +29,20 @@ namespace SMBLibrary.NetBios
             Header.Flags = OperationFlags.AuthoritativeAnswer | OperationFlags.RecursionDesired;
             Header.OpCode = NameServiceOperation.QueryResponse;
             Header.ANCount = 1;
-            Resource = new ResourceRecord();
+            Resource = new ResourceRecord(NameRecordType.NB);
+        }
+
+        public PositiveNameQueryResponse(byte[] buffer, int offset)
+        {
+            Header = new NameServicePacketHeader(buffer, ref offset);
+            Resource = new ResourceRecord(buffer, ref offset);
+            int position = 0;
+            while (position < Resource.Data.Length)
+            {
+                NameFlags nameFlags = (NameFlags)BigEndianReader.ReadUInt16(Resource.Data, ref position);
+                byte[] address = ByteReader.ReadBytes(Resource.Data, ref position, 4);
+                Addresses.Add(address, nameFlags);
+            }
         }
 
         public byte[] GetBytes()
@@ -42,7 +55,7 @@ namespace SMBLibrary.NetBios
             return stream.ToArray();
         }
 
-        public byte[] GetData()
+        private byte[] GetData()
         {
             byte[] data = new byte[EntryLength * Addresses.Count];
             int offset = 0;

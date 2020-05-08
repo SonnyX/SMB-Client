@@ -32,6 +32,17 @@ namespace SMBLibrary.NetBios
             m_buffer = new byte[bufferLength];
         }
 
+        public void IncreaseBufferSize(int bufferLength)
+        {
+            byte[] buffer = new byte[bufferLength];
+            if (m_bytesInBuffer > 0)
+            {
+                Array.Copy(m_buffer, m_readOffset, buffer, 0, m_bytesInBuffer);
+                m_readOffset = 0;
+            }
+            m_buffer = buffer;
+        }
+
         public void SetNumberOfBytesReceived(int numberOfBytesReceived)
         {
             m_bytesInBuffer += numberOfBytesReceived;
@@ -43,9 +54,7 @@ namespace SMBLibrary.NetBios
             {
                 if (!m_packetLength.HasValue)
                 {
-                    byte flags = ByteReader.ReadByte(m_buffer, m_readOffset + 1);
-                    int trailerLength = (flags & 0x01) << 16 | BigEndianConverter.ToUInt16(m_buffer, m_readOffset + 2);
-                    m_packetLength = 4 + trailerLength;
+                    m_packetLength = SessionPacket.GetSessionPacketLength(m_buffer, m_readOffset);
                 }
                 return m_bytesInBuffer >= m_packetLength.Value;
             }

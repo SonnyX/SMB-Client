@@ -34,7 +34,7 @@ namespace SMBLibrary.NetBios
             Header.ARCount = 1;
             Header.Flags = OperationFlags.Broadcast | OperationFlags.RecursionDesired;
             Question = new QuestionSection();
-            Resource = new ResourceRecord();
+            Resource = new ResourceRecord(NameRecordType.NB);
             Address = new byte[4];
         }
 
@@ -55,7 +55,7 @@ namespace SMBLibrary.NetBios
             return stream.ToArray();
         }
 
-        public byte[] GetData()
+        private byte[] GetData()
         {
             byte[] data = new byte[DataLength];
             BigEndianWriter.WriteUInt16(data, 0, (ushort)NameFlags);
