@@ -24,7 +24,6 @@ namespace SMBLibrary.NetBios
         {
             Header = new NameServicePacketHeader();
             Header.OpCode = NameServiceOperation.QueryRequest;
-            Header.ARCount = 1;
             Question = new QuestionSection();
         }
 
