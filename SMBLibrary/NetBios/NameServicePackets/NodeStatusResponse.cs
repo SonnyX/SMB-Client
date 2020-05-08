@@ -33,6 +33,22 @@ namespace SMBLibrary.NetBios
             Statistics = new NodeStatistics();
         }
 
+        public NodeStatusResponse(byte[] buffer, int offset)
+        {
+            Header = new NameServicePacketHeader(buffer, ref offset);
+            Resource = new ResourceRecord(buffer, ref offset);
+
+            int position = 0;
+            byte numberOfNames = ByteReader.ReadByte(Resource.Data, ref position);
+            for (int index = 0; index < numberOfNames; index++)
+            {
+                string name = ByteReader.ReadAnsiString(Resource.Data, ref position, 16);
+                NameFlags nameFlags = (NameFlags)BigEndianReader.ReadUInt16(Resource.Data, ref position);
+                Names.Add(name, nameFlags);
+            }
+            Statistics = new NodeStatistics(Resource.Data, ref position);
+        }
+
         public byte[] GetBytes()
         {
             Resource.Data = GetData();
