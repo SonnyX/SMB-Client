@@ -5,7 +5,7 @@
     <AssemblyName>SMBLibrary</AssemblyName>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>SMBLibraryLite</PackageId>
-    <PackageVersion>1.4.2</PackageVersion>
+    <PackageVersion>1.4.3-alpha</PackageVersion>
     <Authors>jordanlytle,Jo0</Authors>
     <PackageLicenseUrl>https://github.com/jordanlytle/SMBLibrary/blob/master/License.txt</PackageLicenseUrl>
     <Owners>jordanlytle,Jo0</Owners>
