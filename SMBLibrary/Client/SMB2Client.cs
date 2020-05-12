@@ -501,6 +501,11 @@ namespace SMBLibrary.Client
                     request.Header.CreditCharge = 1;
                 }
 
+                if ((m_availableCredits == 0 && request.Header.CreditCharge == 1) || (m_availableCredits == 15 && request.Header.CreditCharge == 16))
+                {
+                    m_availableCredits += 1;
+                }
+
                 if (m_availableCredits < request.Header.CreditCharge)
                 {
                     throw new Exception("Not enough credits");
