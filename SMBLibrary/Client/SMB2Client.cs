@@ -438,7 +438,7 @@ namespace SMBLibrary.Client
 
         internal SMB2Command WaitForCommand(SMB2CommandName commandName)
         {
-            const int TimeOut = 5000;
+            const int TimeOut = 10000;
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             while (stopwatch.ElapsedMilliseconds < TimeOut)
@@ -449,7 +449,7 @@ namespace SMBLibrary.Client
                     {
                         SMB2Command command = m_incomingQueue[index];
 
-                        if (command.CommandName == commandName)
+                        if (command.CommandName == commandName && command.Header.Status != NTStatus.STATUS_PENDING)
                         {
                             m_incomingQueue.RemoveAt(index);
                             return command;
