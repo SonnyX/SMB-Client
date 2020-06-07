@@ -325,7 +325,8 @@ namespace SMBLibrary.Client
 
             if (numberOfBytesReceived == 0)
             {
-                m_isConnected = false;
+                if(!m_clientSocket.Connected)
+                    m_isConnected = false;
             }
             else
             {
@@ -438,6 +439,11 @@ namespace SMBLibrary.Client
 
         internal SMB2Command WaitForCommand(SMB2CommandName commandName)
         {
+            return WaitForCommand(commandName, 0);
+        }
+
+        internal SMB2Command WaitForCommand(SMB2CommandName commandName, uint treeId)
+        {
             const int TimeOut = 10000;
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -449,7 +455,8 @@ namespace SMBLibrary.Client
                     {
                         SMB2Command command = m_incomingQueue[index];
 
-                        if (command.CommandName == commandName && command.Header.Status != NTStatus.STATUS_PENDING)
+                        if (command.CommandName == commandName && command.Header.Status != NTStatus.STATUS_PENDING
+                            && (treeId == 0 || treeId == command.Header.TreeID))
                         {
                             m_incomingQueue.RemoveAt(index);
                             return command;
