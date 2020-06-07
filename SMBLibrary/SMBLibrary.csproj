@@ -4,19 +4,34 @@
     <RootNamespace>SMBLibrary</RootNamespace>
     <AssemblyName>SMBLibrary</AssemblyName>
     <PackOnBuild>true</PackOnBuild>
-    <PackageId>SMBLibraryLite</PackageId>
-    <PackageVersion>1.4.3-beta</PackageVersion>
     <Authors>jordanlytle,Jo0</Authors>
-    <PackageLicenseUrl>https://github.com/jordanlytle/SMBLibrary/blob/master/License.txt</PackageLicenseUrl>
     <Owners>jordanlytle,Jo0</Owners>
-    <PackageProjectUrl>https://github.com/jordanlytle/SMBLibrary</PackageProjectUrl>
     <Description>Free, Open Source, User-Mode SMB 1.0/CIFS, SMB 2.0 and SMB 2.1 Client Library</Description>
   </PropertyGroup>
+  
+  <PropertyGroup>
+    <PackageId>SMBLibraryLite</PackageId>
+    <PackageLicenseUrl>https://github.com/jordanlytle/SMBLibrary/blob/master/License.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/jordanlytle/SMBLibrary</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/jordanlytle/SMBLibrary</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageVersion>1.4.3.0</PackageVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <Version>1.4.3.0</Version>
+  </PropertyGroup>
+    
   <ItemGroup>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="NuGet.Build.Packaging" Version="0.2.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>

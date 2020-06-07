@@ -439,7 +439,11 @@ namespace SMBLibrary.Client
 
         internal SMB2Command WaitForCommand(SMB2CommandName commandName)
         {
-            return WaitForCommand(commandName, 0);
+            // [MS-CIFS] 2.2.1.6.7 The value 0xFFFF MUST NOT be used as a valid TID. All other possible values for TID, including zero (0x0000), are valid. 
+            // The value 0xFFFF is used to specify all TIDs or no TID, depending upon the context in which it is used.
+            // 0xFFFF is hexadecimal equivalent of 65535 in decimal
+            // https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-cifs/e626b07d-d034-4b45-8676-43228a18e30a
+            return WaitForCommand(commandName, 65535);
         }
 
         internal SMB2Command WaitForCommand(SMB2CommandName commandName, uint treeId)
@@ -456,7 +460,7 @@ namespace SMBLibrary.Client
                         SMB2Command command = m_incomingQueue[index];
 
                         if (command.CommandName == commandName && command.Header.Status != NTStatus.STATUS_PENDING
-                            && (treeId == 0 || treeId == command.Header.TreeID))
+                            && (treeId == 65535 || treeId == command.Header.TreeID))
                         {
                             m_incomingQueue.RemoveAt(index);
                             return command;
@@ -508,6 +512,7 @@ namespace SMBLibrary.Client
                     request.Header.CreditCharge = 1;
                 }
 
+                //NOTE: This is not a legitimate fix. This is a band-aid for an off by one that occurs due to the check for request.Header.CreditCharge == 0 above.
                 if ((m_availableCredits == 0 && request.Header.CreditCharge == 1) || (m_availableCredits == 15 && request.Header.CreditCharge == 16))
                 {
                     m_availableCredits += 1;
