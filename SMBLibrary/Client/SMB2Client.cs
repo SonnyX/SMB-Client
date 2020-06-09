@@ -58,6 +58,14 @@ namespace SMBLibrary.Client
 
         public bool Connect(IPAddress serverAddress, SMBTransportType transport)
         {
+            // Sometimes underline socket is disconnected, but m_isConnected flag is still true.
+            // This cause the caller try to reuse the client and fail on all calls.
+            if (m_clientSocket != null && !m_clientSocket.Connected)
+            {
+                // Since reconnect doesn't work for now, return false directly make response faster
+                return false;
+            }
+
             m_transport = transport;
             if (!m_isConnected)
             {
@@ -300,6 +308,7 @@ namespace SMBLibrary.Client
 
             if (!clientSocket.Connected)
             {
+                m_isConnected = false;
                 return;
             }
 
@@ -364,6 +373,7 @@ namespace SMBLibrary.Client
                 catch (Exception)
                 {
                     state.ClientSocket.Close();
+                    m_isConnected = false;
                     break;
                 }
 
@@ -434,6 +444,7 @@ namespace SMBLibrary.Client
             {
                 Log("Inappropriate NetBIOS session packet");
                 state.ClientSocket.Close();
+                m_isConnected = false;
             }
         }
 
