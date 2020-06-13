@@ -15,7 +15,7 @@
     <PackageProjectUrl>https://github.com/jordanlytle/SMBLibrary</PackageProjectUrl>
     <RepositoryUrl>https://github.com/jordanlytle/SMBLibrary</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageVersion>1.4.3.1</PackageVersion>
+    <PackageVersion>1.4.3.2</PackageVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -23,7 +23,7 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <Version>1.4.3.1</Version>
+    <Version>1.4.3.2</Version>
   </PropertyGroup>
     
   <ItemGroup>

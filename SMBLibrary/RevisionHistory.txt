@@ -445,3 +445,5 @@ Revision History:
           SMB2FileStore: Call SMB2Client.WaitForCommand with TID of FileStore
 
 1.4.3.1 - SMB2Client: Merge [Check and set SMB2Client m_isConnected status for m_clientSocket status by wgv-jxiao](https://github.com/jordanlytle/SMBLibrary/pull/6) which checks if m_clientSocket is still valid when reusing a valid connection.
+
+1.4.3.2 - SMB2Client: Merge [Remove treeId dependency from WaitFoCommand by wgv-jxiao](https://github.com/jordanlytle/SMBLibrary/pull/7) which reverts the TreeId parameter in SMB2Client WaitForCommand
