@@ -450,15 +450,6 @@ namespace SMBLibrary.Client
 
         internal SMB2Command WaitForCommand(SMB2CommandName commandName)
         {
-            // [MS-CIFS] 2.2.1.6.7 The value 0xFFFF MUST NOT be used as a valid TID. All other possible values for TID, including zero (0x0000), are valid. 
-            // The value 0xFFFF is used to specify all TIDs or no TID, depending upon the context in which it is used.
-            // 0xFFFF is hexadecimal equivalent of 65535 in decimal
-            // https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-cifs/e626b07d-d034-4b45-8676-43228a18e30a
-            return WaitForCommand(commandName, 65535);
-        }
-
-        internal SMB2Command WaitForCommand(SMB2CommandName commandName, uint treeId)
-        {
             const int TimeOut = 10000;
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -470,8 +461,7 @@ namespace SMBLibrary.Client
                     {
                         SMB2Command command = m_incomingQueue[index];
 
-                        if (command.CommandName == commandName && command.Header.Status != NTStatus.STATUS_PENDING
-                            && (treeId == 65535 || treeId == command.Header.TreeID))
+                        if (command.CommandName == commandName && command.Header.Status != NTStatus.STATUS_PENDING)
                         {
                             m_incomingQueue.RemoveAt(index);
                             return command;

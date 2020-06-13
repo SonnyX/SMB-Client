@@ -319,7 +319,7 @@ namespace SMBLibrary.Client
 
         private SMB2Command WaitForCommand(SMB2CommandName commandName)
         {
-            return m_client.WaitForCommand(commandName, m_treeID);
+            return m_client.WaitForCommand(commandName);
         }
 
         private void TrySendCommand(SMB2Command request)
