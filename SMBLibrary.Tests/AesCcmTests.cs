@@ -1,18 +1,18 @@
 /* Copyright (C) 2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 using Utilities;
+using Xunit;
 
 namespace SMBLibrary.Tests
 {
     public class AesCcmTests
     {
-        [TestMethod]
+        [Fact]
         public void TestEncryption_Rfc3610_Packet_Vector1()
         {
             byte[] key = new byte[] { 0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB, 0xCC, 0xCD, 0xCE, 0xCF };
@@ -30,11 +30,11 @@ namespace SMBLibrary.Tests
             byte[] calculatedSignature;
             byte[] encrypted = AesCcm.Encrypt(key, nonce, data, associatedData, 8, out calculatedSignature);
 
-            Assert.IsTrue(ByteUtils.AreByteArraysEqual(expectedEncrypted, encrypted));
-            Assert.IsTrue(ByteUtils.AreByteArraysEqual(expectedSignature, calculatedSignature));
+            Assert.True(ByteUtils.AreByteArraysEqual(expectedEncrypted, encrypted));
+            Assert.True(ByteUtils.AreByteArraysEqual(expectedSignature, calculatedSignature));
         }
 
-        [TestMethod]
+        [Fact]
         public void TestDecryption_Rfc3610_Packet_Vector1()
         {
             byte[] key = new byte[] { 0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB, 0xCC, 0xCD, 0xCE, 0xCF };
@@ -52,10 +52,10 @@ namespace SMBLibrary.Tests
 
             byte[] data = AesCcm.DecryptAndAuthenticate(key, nonce, encryptedData, associatedData, signature);
 
-            Assert.IsTrue(ByteUtils.AreByteArraysEqual(expectedData, data));
+            Assert.True(ByteUtils.AreByteArraysEqual(expectedData, data));
         }
 
-        [TestMethod]
+        [Fact]
         // Based on #1 test vector from https://docs.microsoft.com/en-us/archive/blogs/openspecification/encryption-in-smb-3-0-a-protocol-perspective
         public void TestEncryption()
         {
@@ -89,11 +89,11 @@ namespace SMBLibrary.Tests
 
             byte[] calculatedSignature;
             byte[] encrypted = AesCcm.Encrypt(key, nonce, data, associatedData, 16, out calculatedSignature);
-            Assert.IsTrue(ByteUtils.AreByteArraysEqual(expectedEncrypted, encrypted));
-            Assert.IsTrue(ByteUtils.AreByteArraysEqual(expectedSignature, calculatedSignature));
+            Assert.True(ByteUtils.AreByteArraysEqual(expectedEncrypted, encrypted));
+            Assert.True(ByteUtils.AreByteArraysEqual(expectedSignature, calculatedSignature));
         }
 
-        [TestMethod]
+        [Fact]
         // Based on #2 test vector from https://docs.microsoft.com/en-us/archive/blogs/openspecification/encryption-in-smb-3-0-a-protocol-perspective
         public void TestDecryption()
         {
@@ -103,7 +103,7 @@ namespace SMBLibrary.Tests
 
             byte[] signature = new byte[] { 0xA6, 0x01, 0x55, 0x30, 0xA1, 0x8F, 0x6D, 0x9A, 0xFF, 0xE2, 0x2A, 0xFA, 0xE8, 0xE6, 0x64, 0x84 };
 
-            byte[] associatedData = new byte[] { 0x86, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x11, 0x00, 0x00, 0x14,  0x00, 0xE4, 0x08, 0x00, 
+            byte[] associatedData = new byte[] { 0x86, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x11, 0x00, 0x00, 0x14,  0x00, 0xE4, 0x08, 0x00,
                                                  0x50, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x11, 0x00, 0x00, 0x14, 0x00, 0xE4, 0x08, 0x00 };
 
             byte[] encyrptedData = new byte[] { 0xDB, 0xF4, 0x64, 0x35, 0xC5, 0xF1, 0x41, 0x69, 0x29, 0x3C, 0xE0, 0x79, 0xE3, 0x44, 0x47, 0x9B,
@@ -119,7 +119,7 @@ namespace SMBLibrary.Tests
                                                0x11, 0x00, 0x00, 0x00, 0x17, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
             byte[] data = AesCcm.DecryptAndAuthenticate(key, nonce, encyrptedData, associatedData, signature);
-            Assert.IsTrue(ByteUtils.AreByteArraysEqual(expectedData, data));
+            Assert.True(ByteUtils.AreByteArraysEqual(expectedData, data));
         }
 
         public void TestAll()

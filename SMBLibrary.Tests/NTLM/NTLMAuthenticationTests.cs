@@ -1,12 +1,11 @@
 /* Copyright (C) 2014-2019 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
-using System.Collections.Generic;
-using System.Text;
 using SMBLibrary.Authentication.NTLM;
 using Utilities;
 using Xunit;
@@ -56,7 +55,7 @@ namespace SMBLibrary.Tests
         {
             byte[] challenge = new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef };
             byte[] response = NTLMCryptography.ComputeNTLMv1Response(challenge, "Password");
-            byte[] expected = { 0x67, 0xc4, 0x30, 0x11, 0xf3, 0x02, 0x98, 0xa2, 0xad, 0x35, 0xec, 0xe6, 0x4f, 0x16, 0x33, 0x1c, 0x44, 0xbd, 0xbe, 0xd9, 0x27, 0x84, 0x1f, 0x94};
+            byte[] expected = { 0x67, 0xc4, 0x30, 0x11, 0xf3, 0x02, 0x98, 0xa2, 0xad, 0x35, 0xec, 0xe6, 0x4f, 0x16, 0x33, 0x1c, 0x44, 0xbd, 0xbe, 0xd9, 0x27, 0x84, 0x1f, 0x94 };
             Assert.True(ByteUtils.AreByteArraysEqual(response, expected));
         }
 
@@ -66,7 +65,7 @@ namespace SMBLibrary.Tests
             byte[] serverChallenge = new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef };
             byte[] clientChallenge = new byte[] { 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa };
             byte[] response = NTLMCryptography.ComputeLMv2Response(serverChallenge, clientChallenge, "Password", "User", "Domain");
-            byte[] expected = new byte[] { 0x86, 0xc3, 0x50, 0x97, 0xac, 0x9c, 0xec, 0x10, 0x25, 0x54, 0x76, 0x4a, 0x57, 0xcc, 0xcc, 0x19, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa};
+            byte[] expected = new byte[] { 0x86, 0xc3, 0x50, 0x97, 0xac, 0x9c, 0xec, 0x10, 0x25, 0x54, 0x76, 0x4a, 0x57, 0xcc, 0xcc, 0x19, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa };
             Assert.True(ByteUtils.AreByteArraysEqual(response, expected));
         }
 
@@ -128,14 +127,14 @@ namespace SMBLibrary.Tests
 
             AuthenticateMessage cmp = new AuthenticateMessage(expected);
 
-            byte[] sessionKey = {0xc5, 0xda, 0xd2, 0x54, 0x4f, 0xc9, 0x79, 0x90, 0x94, 0xce, 0x1c, 0xe9, 0x0b, 0xc9, 0xd0, 0x3e};
+            byte[] sessionKey = { 0xc5, 0xda, 0xd2, 0x54, 0x4f, 0xc9, 0x79, 0x90, 0x94, 0xce, 0x1c, 0xe9, 0x0b, 0xc9, 0xd0, 0x3e };
             byte[] serverChallenge = new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef };
             byte[] clientChallenge = new byte[] { 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa };
             DateTime time = DateTime.FromFileTimeUtc(0); // same as new byte[8]
             NTLMv2ClientChallenge clientChallengeStructure = new NTLMv2ClientChallenge(time, clientChallenge, "Domain", "Server");
             byte[] clientChallengeStructurePadded = clientChallengeStructure.GetBytesPadded();
             byte[] clientNTProof = NTLMCryptography.ComputeNTLMv2Proof(serverChallenge, clientChallengeStructurePadded, "Password", "User", "Domain");
-            
+
             AuthenticateMessage message = new AuthenticateMessage();
             message.EncryptedRandomSessionKey = sessionKey;
             message.Version = new NTLMVersion(5, 1, 2600, NTLMVersion.NTLMSSP_REVISION_W2K3);
@@ -145,7 +144,7 @@ namespace SMBLibrary.Tests
             message.UserName = "User";
             message.LmChallengeResponse = NTLMCryptography.ComputeLMv2Response(serverChallenge, clientChallenge, "Password", "User", "Domain");
             message.NtChallengeResponse = ByteUtils.Concatenate(clientNTProof, clientChallengeStructurePadded);
-            
+
             byte[] messageBytes = message.GetBytes();
             // The payload entries may be distributed differently so we use cmp.GetBytes()
             Assert.True(ByteUtils.AreByteArraysEqual(messageBytes, cmp.GetBytes()));

@@ -12,7 +12,7 @@ using AesCcm = Utilities.AesCcm;
 
 namespace SMBLibrary.SMB2
 {
-    internal class SMB2Cryptography
+    public class SMB2Cryptography
     {
         private const int AesCcmNonceLength = 11;
 
