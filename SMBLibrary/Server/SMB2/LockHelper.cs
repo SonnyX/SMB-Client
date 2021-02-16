@@ -1,10 +1,12 @@
 /* Copyright (C) 2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- *
+ * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-
+using System;
+using System.Collections.Generic;
+using System.IO;
 using SMBLibrary.SMB2;
 using Utilities;
 
@@ -33,7 +35,7 @@ namespace SMBLibrary.Server.SMB2
             // SMB2_LOCKFLAG_UNLOCK set, the server MUST process the lock array as a series of unlocks.
             // Otherwise, it MUST process the lock array as a series of lock requests.
             bool unlock = request.Locks[0].Unlock;
-            foreach (LockElement lockElement in request.Locks)
+            foreach(LockElement lockElement in request.Locks)
             {
                 if (unlock)
                 {
@@ -64,8 +66,8 @@ namespace SMBLibrary.Server.SMB2
                     }
                 }
             }
-
-            for (int lockIndex = 0; lockIndex < request.Locks.Count; lockIndex++)
+            
+            for(int lockIndex = 0; lockIndex < request.Locks.Count; lockIndex++)
             {
                 LockElement lockElement = request.Locks[lockIndex];
                 if (unlock)

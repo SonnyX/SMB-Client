@@ -1,11 +1,11 @@
 /* Copyright (C) 2014-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- *
+ * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Utilities;
@@ -74,7 +74,7 @@ namespace SMBLibrary.NetBios
         // To work around this conflict, NetBIOS names are encoded by splitting each byte of the name
         // into two nibbles and then adding the value of 'A' (0x41).
         // Thus, the '&' character (0x26) would be encoded as "CG".
-        // NetBIOS names are usually padded with spaces before being encoded.
+        // NetBIOS names are usually padded with spaces before being encoded. 
         /// <param name="name">NetBIOS name</param>
         /// <param name="scopeID">dot-separated labels, formatted per DNS naming rules</param>
         public static string FirstLevelEncoding(string netBiosName, string scopeID)
@@ -125,10 +125,10 @@ namespace SMBLibrary.NetBios
                     throw new ArgumentException("Invalid NetBIOS label length");
                 }
             }
-
+            
             byte[] result = new byte[length];
             int offset = 0;
-            foreach (string label in labels)
+            foreach(string label in labels)
             {
                 result[offset] = (byte)label.Length;
                 offset++;
@@ -179,7 +179,7 @@ namespace SMBLibrary.NetBios
         {
             StringBuilder builder = new StringBuilder();
 
-            for (int index = 0; index < name.Length; index += 2)
+            for(int index = 0; index < name.Length; index += 2)
             {
                 byte c0 = (byte)name[index];
                 byte c1 = (byte)name[index + 1];

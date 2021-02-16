@@ -1,12 +1,13 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- *
+ * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-
 using System;
 using System.Collections.Generic;
+using SMBLibrary.SMB1;
+using Utilities;
 
 namespace SMBLibrary.SMB1
 {
@@ -19,22 +20,16 @@ namespace SMBLibrary.SMB1
             {
                 case FindInformationLevel.SMB_FIND_FILE_DIRECTORY_INFO:
                     return FileInformationClass.FileDirectoryInformation;
-
                 case FindInformationLevel.SMB_FIND_FILE_FULL_DIRECTORY_INFO:
                     return FileInformationClass.FileFullDirectoryInformation;
-
                 case FindInformationLevel.SMB_FIND_FILE_NAMES_INFO:
                     return FileInformationClass.FileNamesInformation;
-
                 case FindInformationLevel.SMB_FIND_FILE_BOTH_DIRECTORY_INFO:
                     return FileInformationClass.FileBothDirectoryInformation;
-
                 case FindInformationLevel.SMB_FIND_FILE_ID_FULL_DIRECTORY_INFO:
                     return FileInformationClass.FileIdFullDirectoryInformation;
-
                 case FindInformationLevel.SMB_FIND_FILE_ID_BOTH_DIRECTORY_INFO:
                     return FileInformationClass.FileIdBothDirectoryInformation;
-
                 default:
                     throw new UnsupportedInformationLevelException();
             }

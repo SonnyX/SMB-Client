@@ -1,13 +1,14 @@
 /* Copyright (C) 2014-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- *
+ * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-
 using System;
 using System.Collections.Generic;
+using System.IO;
 using SMBLibrary.SMB2;
+using Utilities;
 
 namespace SMBLibrary.Server
 {
@@ -15,12 +16,9 @@ namespace SMBLibrary.Server
     {
         // Key is SessionID
         private Dictionary<ulong, SMB2Session> m_sessions = new Dictionary<ulong, SMB2Session>();
-
         private ulong m_nextSessionID = 1;
-
         // Key is AsyncID
         private Dictionary<ulong, SMB2AsyncContext> m_pendingRequests = new Dictionary<ulong, SMB2AsyncContext>();
-
         private ulong m_nextAsyncID = 1;
 
         public SMB2ConnectionState(ConnectionState state) : base(state)

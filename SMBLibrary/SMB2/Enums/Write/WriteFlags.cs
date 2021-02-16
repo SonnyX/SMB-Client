@@ -1,3 +1,5 @@
+using System;
+
 namespace SMBLibrary.SMB2
 {
     public enum WriteFlags : uint

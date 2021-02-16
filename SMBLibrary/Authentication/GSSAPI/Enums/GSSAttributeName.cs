@@ -1,3 +1,5 @@
+using System;
+
 namespace SMBLibrary.Authentication.GSSAPI
 {
     public enum GSSAttributeName
@@ -5,12 +7,11 @@ namespace SMBLibrary.Authentication.GSSAPI
         AccessToken,
         DomainName,
         IsAnonymous,
-
+        
         /// <summary>
         /// Permit access to this user via the guest user account if the normal authentication process fails.
         /// </summary>
         IsGuest,
-
         MachineName,
         OSVersion,
         SessionKey,

@@ -1,11 +1,12 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- *
+ * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-
 using System;
+using System.Collections.Generic;
+using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -16,10 +17,8 @@ namespace SMBLibrary.SMB1
     public class TransactionRequest : SMB1Command
     {
         public const int FixedSMBParametersLength = 28;
-
         // Parameters:
         public ushort TotalParameterCount;
-
         public ushort TotalDataCount;
         public ushort MaxParameterCount;
         public ushort MaxDataCount;
@@ -28,22 +27,17 @@ namespace SMBLibrary.SMB1
         public TransactionFlags Flags;
         public uint Timeout;
         public ushort Reserved2;
-
         // ushort ParameterCount;
         // ushort ParameterOffset;
         // ushort DataCount;
         // ushort DataOffset;
         // byte SetupCount; // In 2-byte words
         public byte Reserved3;
-
         public byte[] Setup;
-
         // Data:
         public string Name; // SMB_STRING (If Unicode, this field MUST be aligned to start on a 2-byte boundary from the start of the SMB header)
-
         // Padding (alignment to 4 byte boundary)
         public byte[] TransParameters; // Trans_Parameters
-
         // Padding (alignment to 4 byte boundary)
         public byte[] TransData; // Trans_Data
 
@@ -156,7 +150,7 @@ namespace SMBLibrary.SMB1
             offset = namePadding;
             if (this is Transaction2Request)
             {
-                offset += nameLength;
+                 offset += nameLength;
             }
             else
             {

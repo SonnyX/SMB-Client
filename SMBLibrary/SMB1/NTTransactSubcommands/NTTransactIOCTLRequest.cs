@@ -1,11 +1,12 @@
 /* Copyright (C) 2014 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- *
+ * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-
 using System;
+using System.Collections.Generic;
+using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -16,14 +17,11 @@ namespace SMBLibrary.SMB1
     public class NTTransactIOCTLRequest : NTTransactSubcommand
     {
         public const int SetupLength = 8;
-
         // Setup:
         public uint FunctionCode;
-
         public ushort FID;
         public bool IsFsctl;
         public bool IsFlags;
-
         // Data:
         public byte[] Data;
 
@@ -52,9 +50,9 @@ namespace SMBLibrary.SMB1
             return setup;
         }
 
-        public override byte[] GetData()
+        public override byte[]  GetData()
         {
-            return Data;
+ 	        return Data;
         }
 
         public override NTTransactSubcommandName SubcommandName

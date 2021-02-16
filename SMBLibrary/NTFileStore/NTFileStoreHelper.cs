@@ -1,11 +1,13 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- *
+ * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-
+using System;
+using System.Collections.Generic;
 using System.IO;
+using Utilities;
 
 namespace SMBLibrary
 {
@@ -47,7 +49,7 @@ namespace SMBLibrary
             // Technically, FILE_OPEN_IF should only require Write access if the file does not exist,
             // However, It's uncommon for a client to open a file with FILE_OPEN_IF
             // without requesting any kind of write access in the access mask.
-            // (because [if the file does not exist] an empty file will be created without the ability to write data to the file).
+            // (because [if the file does not exist] an empty file will be created without the ability to write data to the file). 
             if (createDisposition == CreateDisposition.FILE_CREATE ||
                 createDisposition == CreateDisposition.FILE_SUPERSEDE ||
                 createDisposition == CreateDisposition.FILE_OPEN_IF ||

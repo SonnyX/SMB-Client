@@ -1,10 +1,12 @@
 /* Copyright (C) 2014 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- *
+ * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-
+using System;
+using System.Collections.Generic;
+using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -16,20 +18,16 @@ namespace SMBLibrary.SMB1
     public class ReadAndXResponse : SMBAndXCommand
     {
         public const int ParametersLength = 24;
-
         // Parameters:
         //CommandName AndXCommand;
         //byte AndXReserved;
         //ushort AndXOffset;
         public ushort Available;
-
         public ushort DataCompactionMode; // Not used and MUST be 0x0000
         public ushort Reserved1;
-
         //uint DataLength; // 2 bytes + 2 'DataLengthHigh' bytes
         //ushort DataOffset;
         public byte[] Reserved2; // 8 bytes
-
         // Data:
         // 1 byte padding - if unicode strings are being used, this field MUST be present, otherwise it's optional.
         public byte[] Data;

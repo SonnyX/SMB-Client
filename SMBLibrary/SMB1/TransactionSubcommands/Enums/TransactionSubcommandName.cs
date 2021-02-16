@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using Utilities;
+
 namespace SMBLibrary.SMB1
 {
     public enum TransactionSubcommandName : ushort
@@ -7,7 +12,6 @@ namespace SMBLibrary.SMB1
         /// The same code is interpreted as a TRANS_SET_NMPIPE_STATE (section 2.2.5.1) if the operation is performed on a named pipe.
         /// </summary>
         TRANS_MAILSLOT_WRITE = 0x0001,
-
         TRANS_SET_NMPIPE_STATE = 0x0001,
         TRANS_RAW_READ_NMPIPE = 0x0011,
         TRANS_QUERY_NMPIPE_STATE = 0x0021,

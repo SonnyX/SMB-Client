@@ -1,12 +1,13 @@
 /* Copyright (C) 2014-2019 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- *
+ * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-
 using System;
 using System.Collections.Generic;
+using System.IO;
+using Utilities;
 
 namespace SMBLibrary.Server
 {
@@ -18,14 +19,13 @@ namespace SMBLibrary.Server
 
         // Key is UID
         private Dictionary<ushort, SMB1Session> m_sessions = new Dictionary<ushort, SMB1Session>();
-
         private ushort m_nextUID = 1; // UID MUST be unique within an SMB connection
         private ushort m_nextTID = 1; // TID MUST be unique within an SMB connection
         private ushort m_nextFID = 1; // FID MUST be unique within an SMB connection
 
         // Key is PID (PID MUST be unique within an SMB connection)
         private Dictionary<uint, ProcessStateObject> m_processStateList = new Dictionary<uint, ProcessStateObject>();
-
+        
         private List<SMB1AsyncContext> m_pendingRequests = new List<SMB1AsyncContext>();
 
         public SMB1ConnectionState(ConnectionState state) : base(state)

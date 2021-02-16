@@ -1,17 +1,19 @@
 /* Copyright (C) 2017-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- *
+ * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Threading;
+using SMBLibrary.Authentication.NTLM;
 using SMBLibrary.NetBios;
+using SMBLibrary.Services;
 using SMBLibrary.SMB2;
 using Utilities;
 
@@ -349,7 +351,7 @@ namespace SMBLibrary.Client
 
             if (numberOfBytesReceived == 0)
             {
-                if (!m_clientSocket.Connected)
+                if(!m_clientSocket.Connected)
                     m_isConnected = false;
             }
             else

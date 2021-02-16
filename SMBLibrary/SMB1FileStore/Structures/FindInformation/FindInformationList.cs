@@ -1,11 +1,13 @@
 /* Copyright (C) 2014-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- *
+ * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-
+using System;
 using System.Collections.Generic;
+using System.Text;
+using Utilities;
 
 namespace SMBLibrary.SMB1
 {
@@ -32,11 +34,12 @@ namespace SMBLibrary.SMB1
 
         public byte[] GetBytes(bool isUnicode)
         {
-            for (int index = 0; index < this.Count - 1; index++)
+            for(int index = 0; index < this.Count - 1; index++)
             {
                 FindInformation entry = this[index];
                 int entryLength = entry.GetLength(isUnicode);
                 entry.NextEntryOffset = (uint)entryLength;
+
             }
             int length = GetLength(isUnicode);
             byte[] buffer = new byte[length];

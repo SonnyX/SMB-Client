@@ -1,10 +1,10 @@
 /* Copyright (C) 2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- *
+ * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-
+using System;
 using System.Collections.Generic;
 using Utilities;
 
@@ -114,7 +114,7 @@ namespace SMBLibrary.SMB2
         public static List<LockElement> ReadLockList(byte[] buffer, int offset, int lockCount)
         {
             List<LockElement> result = new List<LockElement>();
-            for (int lockIndex = 0; lockIndex < lockCount; lockIndex++)
+            for(int lockIndex = 0; lockIndex < lockCount; lockIndex++)
             {
                 LockElement element = new LockElement(buffer, offset + lockIndex * StructureLength);
                 result.Add(element);

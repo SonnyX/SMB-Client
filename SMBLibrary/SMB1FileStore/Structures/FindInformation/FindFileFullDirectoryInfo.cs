@@ -1,11 +1,12 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- *
+ * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-
 using System;
+using System.Collections.Generic;
+using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -19,7 +20,6 @@ namespace SMBLibrary.SMB1
 
         // uint NextEntryOffset;
         public uint FileIndex; // SHOULD be set to zero when sent in a response and SHOULD be ignored when received by the client
-
         public DateTime? CreationTime;
         public DateTime? LastAccessTime;
         public DateTime? LastWriteTime;
@@ -27,10 +27,8 @@ namespace SMBLibrary.SMB1
         public long EndOfFile;
         public long AllocationSize;
         public ExtendedFileAttributes ExtFileAttributes;
-
         //uint FileNameLength; // In bytes, MUST exclude the null termination.
         public uint EASize;
-
         public string FileName; // OEM / Unicode character array. MUST be written as SMB_STRING, and read as fixed length string.
 
         public FindFileFullDirectoryInfo() : base()

@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -8,7 +11,6 @@ namespace SMBLibrary.SMB1
     public class FindClose2Request : SMB1Command
     {
         public const int ParameterCount = 2;
-
         // Parameters:
         public ushort SearchHandle;
 

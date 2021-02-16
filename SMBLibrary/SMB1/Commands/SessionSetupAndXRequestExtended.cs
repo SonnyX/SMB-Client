@@ -1,11 +1,12 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- *
+ * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-
 using System;
+using System.Collections.Generic;
+using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -16,24 +17,20 @@ namespace SMBLibrary.SMB1
     public class SessionSetupAndXRequestExtended : SMBAndXCommand
     {
         public const int ParametersLength = 24;
-
         // Parameters:
         public ushort MaxBufferSize;
-
         public ushort MaxMpxCount;
         public ushort VcNumber;
         public uint SessionKey;
         private ushort SecurityBlobLength;
         public uint Reserved;
         public Capabilities Capabilities;
-
         // Data:
         public byte[] SecurityBlob;
-
         public string NativeOS;     // SMB_STRING (If Unicode, this field MUST be aligned to start on a 2-byte boundary from the start of the SMB header)
         public string NativeLanMan; // SMB_STRING (this field WILL be aligned to start on a 2-byte boundary from the start of the SMB header)
 
-        public SessionSetupAndXRequestExtended() : base()
+        public SessionSetupAndXRequestExtended(): base()
         {
             NativeOS = String.Empty;
             NativeLanMan = String.Empty;
@@ -83,11 +80,11 @@ namespace SMBLibrary.SMB1
                 // A Unicode string MUST be aligned to a 16-bit boundary with respect to the beginning of the SMB Header.
                 // Note: SMBData starts at an odd offset.
                 padding = (1 + SecurityBlobLength) % 2;
-                this.SMBData = new byte[SecurityBlob.Length + padding + (NativeOS.Length + 1) * 2 + (NativeLanMan.Length + 1) * 2];
+                this.SMBData = new byte[SecurityBlob.Length + padding + (NativeOS.Length + 1) * 2 + (NativeLanMan.Length  + 1) * 2];
             }
             else
             {
-                this.SMBData = new byte[SecurityBlob.Length + NativeOS.Length + 1 + NativeLanMan.Length + 1];
+                this.SMBData = new byte[SecurityBlob.Length + NativeOS.Length + 1 + NativeLanMan.Length  + 1];
             }
             int offset = 0;
             ByteWriter.WriteBytes(this.SMBData, ref offset, SecurityBlob);

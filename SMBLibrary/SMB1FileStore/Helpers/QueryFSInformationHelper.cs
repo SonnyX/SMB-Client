@@ -1,11 +1,13 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- *
+ * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-
 using System;
+using System.Collections.Generic;
+using SMBLibrary.SMB1;
+using Utilities;
 
 namespace SMBLibrary.SMB1
 {
@@ -18,16 +20,12 @@ namespace SMBLibrary.SMB1
             {
                 case QueryFSInformationLevel.SMB_QUERY_FS_VOLUME_INFO:
                     return FileSystemInformationClass.FileFsVolumeInformation;
-
                 case QueryFSInformationLevel.SMB_QUERY_FS_SIZE_INFO:
                     return FileSystemInformationClass.FileFsSizeInformation;
-
                 case QueryFSInformationLevel.SMB_QUERY_FS_DEVICE_INFO:
                     return FileSystemInformationClass.FileFsDeviceInformation;
-
                 case QueryFSInformationLevel.SMB_QUERY_FS_ATTRIBUTE_INFO:
                     return FileSystemInformationClass.FileFsAttributeInformation;
-
                 default:
                     throw new UnsupportedInformationLevelException();
             }

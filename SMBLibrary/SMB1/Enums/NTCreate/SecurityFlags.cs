@@ -1,3 +1,5 @@
+using System;
+
 namespace SMBLibrary.SMB1
 {
     public enum SecurityFlags : byte

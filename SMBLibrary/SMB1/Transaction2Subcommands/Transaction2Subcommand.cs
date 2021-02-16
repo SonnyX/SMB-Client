@@ -1,10 +1,11 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- *
+ * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-
+using System;
+using System.Collections.Generic;
 using System.IO;
 using Utilities;
 
@@ -45,34 +46,24 @@ namespace SMBLibrary.SMB1
                 {
                     case Transaction2SubcommandName.TRANS2_OPEN2:
                         return new Transaction2Open2Request(parameters, data, isUnicode);
-
                     case Transaction2SubcommandName.TRANS2_FIND_FIRST2:
                         return new Transaction2FindFirst2Request(parameters, data, isUnicode);
-
                     case Transaction2SubcommandName.TRANS2_FIND_NEXT2:
                         return new Transaction2FindNext2Request(parameters, data, isUnicode);
-
                     case Transaction2SubcommandName.TRANS2_QUERY_FS_INFORMATION:
                         return new Transaction2QueryFSInformationRequest(parameters, data, isUnicode);
-
                     case Transaction2SubcommandName.TRANS2_SET_FS_INFORMATION:
                         return new Transaction2SetFSInformationRequest(parameters, data, isUnicode);
-
                     case Transaction2SubcommandName.TRANS2_QUERY_PATH_INFORMATION:
                         return new Transaction2QueryPathInformationRequest(parameters, data, isUnicode);
-
                     case Transaction2SubcommandName.TRANS2_SET_PATH_INFORMATION:
                         return new Transaction2SetPathInformationRequest(parameters, data, isUnicode);
-
                     case Transaction2SubcommandName.TRANS2_QUERY_FILE_INFORMATION:
                         return new Transaction2QueryFileInformationRequest(parameters, data, isUnicode);
-
                     case Transaction2SubcommandName.TRANS2_SET_FILE_INFORMATION:
                         return new Transaction2SetFileInformationRequest(parameters, data, isUnicode);
-
                     case Transaction2SubcommandName.TRANS2_CREATE_DIRECTORY:
                         return new Transaction2CreateDirectoryRequest(parameters, data, isUnicode);
-
                     case Transaction2SubcommandName.TRANS2_GET_DFS_REFERRAL:
                         return new Transaction2GetDfsReferralRequest(parameters, data);
                 }

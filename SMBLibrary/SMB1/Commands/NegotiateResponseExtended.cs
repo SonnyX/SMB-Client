@@ -1,11 +1,12 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- *
+ * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-
 using System;
+using System.Collections.Generic;
+using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -16,10 +17,8 @@ namespace SMBLibrary.SMB1
     public class NegotiateResponseExtended : SMB1Command
     {
         public const int ParametersLength = 34;
-
         // Parameters:
         public ushort DialectIndex;
-
         public SecurityMode SecurityMode;
         public ushort MaxMpxCount;
         public ushort MaxNumberVcs;
@@ -30,10 +29,8 @@ namespace SMBLibrary.SMB1
         public DateTime SystemTime;
         public short ServerTimeZone;
         private byte ChallengeLength; // MUST be set to 0
-
         // Data:
         public Guid ServerGuid;
-
         public byte[] SecurityBlob;   // [MS-SMB] 3.3.5.2: The server can leave SecurityBlob empty if not configured to send GSS token.
 
         public NegotiateResponseExtended() : base()

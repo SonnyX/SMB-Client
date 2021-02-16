@@ -1,11 +1,11 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- *
+ * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-
 using System;
+using System.Collections.Generic;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -30,7 +30,6 @@ namespace SMBLibrary.SMB1
         public bool Directory;
         public ushort Reserved2;
         public uint EaSize;
-
         // uint FileNameLength; // In bytes
         public string FileName; // Unicode
 
@@ -67,7 +66,7 @@ namespace SMBLibrary.SMB1
             FileTimeHelper.WriteFileTime(buffer, ref offset, LastWriteTime);
             FileTimeHelper.WriteFileTime(buffer, ref offset, LastChangeTime);
             LittleEndianWriter.WriteUInt32(buffer, ref offset, (uint)ExtFileAttributes);
-            LittleEndianWriter.WriteUInt32(buffer, ref offset, Reserved1);
+            LittleEndianWriter.WriteUInt32(buffer, ref offset, Reserved1); 
             LittleEndianWriter.WriteInt64(buffer, ref offset, AllocationSize);
             LittleEndianWriter.WriteInt64(buffer, ref offset, EndOfFile);
             LittleEndianWriter.WriteUInt32(buffer, ref offset, NumberOfLinks);
