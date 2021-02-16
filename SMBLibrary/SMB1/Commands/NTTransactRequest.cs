@@ -1,12 +1,10 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -17,23 +15,29 @@ namespace SMBLibrary.SMB1
     public class NTTransactRequest : SMB1Command
     {
         public const int FixedSMBParametersLength = 38;
+
         // Parameters:
         public byte MaxSetupCount;
+
         public ushort Reserved1;
         public uint TotalParameterCount;
         public uint TotalDataCount;
         public uint MaxParameterCount;
         public uint MaxDataCount;
+
         //uint ParameterCount;
         //uint ParameterOffset;
         //uint DataCount;
         //uint DataOffset;
         //byte SetupCount; // In 2-byte words
         public NTTransactSubcommandName Function;
+
         public byte[] Setup;
+
         // Data:
         // Padding (alignment to 4 byte boundary)
         public byte[] TransParameters; // Trans_Parameters
+
         // Padding (alignment to 4 byte boundary)
         public byte[] TransData; // Trans_Data
 

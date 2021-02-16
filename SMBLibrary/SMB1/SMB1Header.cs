@@ -1,12 +1,10 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -21,12 +19,16 @@ namespace SMBLibrary.SMB1
         public NTStatus Status;
         public HeaderFlags Flags;
         public HeaderFlags2 Flags2;
+
         //ushort PIDHigh
         public ulong SecurityFeatures;
+
         // public ushort Reserved;
         public ushort TID; // Tree ID
+
         //ushort PIDLow;
         public ushort UID; // User ID
+
         public ushort MID; // Multiplex ID
 
         public uint PID; // Process ID

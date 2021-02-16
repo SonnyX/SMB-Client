@@ -1,12 +1,11 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -17,8 +16,10 @@ namespace SMBLibrary.SMB1
     public class NegotiateResponse : SMB1Command
     {
         public const int ParametersLength = 34;
+
         // Parameters:
         public ushort DialectIndex;
+
         public SecurityMode SecurityMode;
         public ushort MaxMpxCount;
         public ushort MaxNumberVcs;
@@ -29,8 +30,10 @@ namespace SMBLibrary.SMB1
         public DateTime SystemTime;
         public short ServerTimeZone;
         private byte ChallengeLength;
+
         // Data:
         public byte[] Challenge;
+
         public string DomainName; // SMB_STRING (If Unicode, this field MUST be aligned to start on a 2-byte boundary from the start of the SMB header)
         public string ServerName; // SMB_STRING (this field WILL be aligned to start on a 2-byte boundary from the start of the SMB header)
 

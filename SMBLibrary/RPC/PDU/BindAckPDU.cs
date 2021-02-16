@@ -1,12 +1,11 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.RPC
@@ -22,8 +21,10 @@ namespace SMBLibrary.RPC
         public ushort MaxReceiveFragmentSize; // max_recv_frag
         public uint AssociationGroupID; // assoc_group_id
         public string SecondaryAddress; // sec_addr (port_any_t)
+
         // Padding (alignment to 4 byte boundary)
         public ResultList ResultList; // p_result_list
+
         public byte[] AuthVerifier;
 
         public BindAckPDU() : base()
@@ -63,7 +64,7 @@ namespace SMBLibrary.RPC
             offset += padding;
             ResultList.WriteBytes(buffer, ref offset);
             ByteWriter.WriteBytes(buffer, offset, AuthVerifier);
-            
+
             return buffer;
         }
 

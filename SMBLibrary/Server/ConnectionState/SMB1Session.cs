@@ -1,13 +1,13 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Utilities;
 
 namespace SMBLibrary.Server
 {
@@ -29,6 +29,7 @@ namespace SMBLibrary.Server
 
         // Key is search handle a.k.a. Search ID
         private Dictionary<ushort, OpenSearch> m_openSearches = new Dictionary<ushort, OpenSearch>();
+
         private ushort m_nextSearchHandle = 1;
 
         public SMB1Session(SMB1ConnectionState connection, ushort userID, string userName, string machineName, byte[] sessionKey, object accessToken)

@@ -1,12 +1,11 @@
 /* Copyright (C) 2014-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.Authentication.NTLM
@@ -126,7 +125,7 @@ namespace SMBLibrary.Authentication.NTLM
                 ByteWriter.WriteBytes(buffer, offset, MIC);
                 offset += MIC.Length;
             }
-            
+
             AuthenticationMessageUtils.WriteBufferPointer(buffer, 28, (ushort)(DomainName.Length * 2), (uint)offset);
             ByteWriter.WriteUTF16String(buffer, ref offset, DomainName);
             AuthenticationMessageUtils.WriteBufferPointer(buffer, 36, (ushort)(UserName.Length * 2), (uint)offset);

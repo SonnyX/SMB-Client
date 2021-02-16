@@ -1,12 +1,12 @@
 /* Copyright (C) 2014-2018 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Collections.Generic;
-using System.Text;
 using SMBLibrary.RPC;
 using Utilities;
 
@@ -17,6 +17,7 @@ namespace SMBLibrary.Services
         // v1 - DCE 1.1: Remote Procedure Call
         // v2 - [MS-RPCE] 2.2.4.12 NDR Transfer Syntax Identifier
         public static readonly Guid NDRTransferSyntaxIdentifier = new Guid("8A885D04-1CEB-11C9-9FE8-08002B104860");
+
         public const int NDRTransferSyntaxVersion = 2;
 
         // v1 - [MS-RPCE] 3.3.1.5.3 - Bind Time Feature Negotiation
@@ -24,6 +25,7 @@ namespace SMBLibrary.Services
         //private static readonly Guid BindTimeFeatureIdentifier1 = new Guid("6CB71C2C-9812-4540-0100-000000000000");
         // Windows will return NegotiationResult.NegotiateAck:
         public static readonly Guid BindTimeFeatureIdentifier3 = new Guid("6CB71C2C-9812-4540-0300-000000000000");
+
         public const int BindTimeFeatureIdentifierVersion = 1;
 
         private static uint m_associationGroupID = 1;
@@ -97,7 +99,7 @@ namespace SMBLibrary.Services
             // [MS-RPCE] Version 2.0 data representation protocol:
             supportedTransferSyntaxes.Add(new SyntaxID(NDRTransferSyntaxIdentifier, 2));
 
-            for(int index = 0; index < syntaxList.Count; index++)
+            for (int index = 0; index < syntaxList.Count; index++)
             {
                 if (supportedTransferSyntaxes.Contains(syntaxList[index]))
                 {
@@ -150,7 +152,7 @@ namespace SMBLibrary.Services
                 offset += pduDataLength;
             }
             while (offset < responseBytes.Length);
-            
+
             return result;
         }
     }

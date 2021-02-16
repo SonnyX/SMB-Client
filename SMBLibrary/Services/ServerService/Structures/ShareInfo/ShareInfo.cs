@@ -1,13 +1,12 @@
 /* Copyright (C) 2014 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
-using System.Collections.Generic;
 using SMBLibrary.RPC;
-using Utilities;
 
 namespace SMBLibrary.Services
 {
@@ -50,11 +49,13 @@ namespace SMBLibrary.Services
                     parser.ReadEmbeddedStructureFullPointer<ShareInfo0Entry>(ref info0);
                     Info = info0;
                     break;
+
                 case 101:
                     ShareInfo1Entry info1 = null;
                     parser.ReadEmbeddedStructureFullPointer<ShareInfo1Entry>(ref info1);
                     Info = info1;
                     break;
+
                 default:
                     throw new NotImplementedException();
             }

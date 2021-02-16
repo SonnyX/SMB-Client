@@ -1,13 +1,13 @@
 /* Copyright (C) 2017-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
 using Utilities;
 
 namespace SMBLibrary.SMB2
@@ -69,40 +69,58 @@ namespace SMBLibrary.SMB2
             {
                 case SMB2CommandName.Negotiate:
                     return new NegotiateRequest(buffer, offset);
+
                 case SMB2CommandName.SessionSetup:
                     return new SessionSetupRequest(buffer, offset);
+
                 case SMB2CommandName.Logoff:
                     return new LogoffRequest(buffer, offset);
+
                 case SMB2CommandName.TreeConnect:
                     return new TreeConnectRequest(buffer, offset);
+
                 case SMB2CommandName.TreeDisconnect:
                     return new TreeDisconnectRequest(buffer, offset);
+
                 case SMB2CommandName.Create:
                     return new CreateRequest(buffer, offset);
+
                 case SMB2CommandName.Close:
                     return new CloseRequest(buffer, offset);
+
                 case SMB2CommandName.Flush:
                     return new FlushRequest(buffer, offset);
+
                 case SMB2CommandName.Read:
                     return new ReadRequest(buffer, offset);
+
                 case SMB2CommandName.Write:
                     return new WriteRequest(buffer, offset);
+
                 case SMB2CommandName.Lock:
                     return new LockRequest(buffer, offset);
+
                 case SMB2CommandName.IOCtl:
                     return new IOCtlRequest(buffer, offset);
+
                 case SMB2CommandName.Cancel:
                     return new CancelRequest(buffer, offset);
+
                 case SMB2CommandName.Echo:
                     return new EchoRequest(buffer, offset);
+
                 case SMB2CommandName.QueryDirectory:
                     return new QueryDirectoryRequest(buffer, offset);
+
                 case SMB2CommandName.ChangeNotify:
                     return new ChangeNotifyRequest(buffer, offset);
+
                 case SMB2CommandName.QueryInfo:
                     return new QueryInfoRequest(buffer, offset);
+
                 case SMB2CommandName.SetInfo:
                     return new SetInfoRequest(buffer, offset);
+
                 default:
                     throw new InvalidDataException("Invalid SMB2 command 0x" + ((ushort)commandName).ToString("X4"));
             }
@@ -423,7 +441,7 @@ namespace SMBLibrary.SMB2
                         {
                             NTStatus status = (NTStatus)LittleEndianConverter.ToUInt32(buffer, offset + 8);
                             if (status == NTStatus.STATUS_SUCCESS ||
-                                status == NTStatus.STATUS_NOTIFY_CLEANUP || 
+                                status == NTStatus.STATUS_NOTIFY_CLEANUP ||
                                 status == NTStatus.STATUS_NOTIFY_ENUM_DIR)
                             {
                                 return new ChangeNotifyResponse(buffer, offset);

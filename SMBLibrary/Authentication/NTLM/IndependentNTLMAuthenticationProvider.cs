@@ -1,11 +1,11 @@
 /* Copyright (C) 2014-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
-using System.Collections.Generic;
 using System.Security.Cryptography;
 using SMBLibrary.Authentication.GSSAPI;
 using Utilities;
@@ -44,6 +44,7 @@ namespace SMBLibrary.Authentication.NTLM
         // \\servername\sharename\dir1\dir2\dir3\dir4      - 81 login attempts
         // \\servername\sharename\dir1\dir2\dir3\dir4\dir5 - 57 login attempts
         private static readonly int DefaultMaxLoginAttemptsInWindow = 100;
+
         private static readonly TimeSpan DefaultLoginWindowDuration = new TimeSpan(0, 20, 0);
         private GetUserPassword m_GetUserPassword;
         private LoginCounter m_loginCounter;
@@ -162,7 +163,7 @@ namespace SMBLibrary.Authentication.NTLM
             {
                 return NTStatus.SEC_E_INVALID_TOKEN;
             }
-            
+
             AuthContext authContext = context as AuthContext;
             if (authContext == null)
             {
@@ -307,14 +308,19 @@ namespace SMBLibrary.Authentication.NTLM
                 {
                     case GSSAttributeName.DomainName:
                         return authContext.DomainName;
+
                     case GSSAttributeName.IsGuest:
                         return authContext.IsGuest;
+
                     case GSSAttributeName.MachineName:
                         return authContext.WorkStation;
+
                     case GSSAttributeName.OSVersion:
                         return authContext.OSVersion;
+
                     case GSSAttributeName.SessionKey:
                         return authContext.SessionKey;
+
                     case GSSAttributeName.UserName:
                         return authContext.UserName;
                 }

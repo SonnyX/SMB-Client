@@ -1,12 +1,11 @@
 /* Copyright (C) 2014 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -18,20 +17,24 @@ namespace SMBLibrary.SMB1
     public class ReadAndXRequest : SMBAndXCommand
     {
         public const int ParametersFixedLength = 20;
+
         // Parameters:
         //CommandName AndXCommand;
         //byte AndXReserved;
         //ushort AndXOffset;
         public ushort FID;
+
         public ulong Offset; // 4 bytes + 4 optional 'OffsetHigh' bytes
         private ushort MaxCountOfBytesToReturn; // See 'Timeout_or_MaxCountHigh' comment
         public ushort MinCountOfBytesToReturn;
+
         /// <summary>
         /// SMB 1.0: When reading from a regular file, the field MUST be interpreted as
         /// MaxCountHigh and the two unused bytes MUST be zero.
         /// When reading from a name pipe or I/O device, the field MUST be interpreted as Timeout.
         /// </summary>
         public uint Timeout_or_MaxCountHigh; // CIFS: Timeout only
+
         public ushort Remaining;
 
         public ReadAndXRequest() : base()

@@ -1,11 +1,11 @@
 /* Copyright (C) 2014-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Utilities;
 
@@ -75,16 +75,22 @@ namespace SMBLibrary.NetBios
             {
                 case SessionPacketTypeName.SessionMessage:
                     return new SessionMessagePacket(buffer, offset);
+
                 case SessionPacketTypeName.SessionRequest:
                     return new SessionRequestPacket(buffer, offset);
+
                 case SessionPacketTypeName.PositiveSessionResponse:
                     return new PositiveSessionResponsePacket(buffer, offset);
+
                 case SessionPacketTypeName.NegativeSessionResponse:
                     return new NegativeSessionResponsePacket(buffer, offset);
+
                 case SessionPacketTypeName.RetargetSessionResponse:
                     return new SessionRetargetResponsePacket(buffer, offset);
+
                 case SessionPacketTypeName.SessionKeepAlive:
                     return new SessionKeepAlivePacket(buffer, offset);
+
                 default:
                     throw new InvalidDataException("Invalid NetBIOS session packet type: 0x" + ((byte)type).ToString("X2"));
             }

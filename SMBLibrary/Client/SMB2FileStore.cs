@@ -1,13 +1,13 @@
 /* Copyright (C) 2017-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Collections.Generic;
 using SMBLibrary.SMB2;
-using Utilities;
 
 namespace SMBLibrary.Client
 {
@@ -352,12 +352,16 @@ namespace SMBLibrary.Client
             {
                 case CreateAction.FILE_SUPERSEDED:
                     return FileStatus.FILE_SUPERSEDED;
+
                 case CreateAction.FILE_OPENED:
                     return FileStatus.FILE_OPENED;
+
                 case CreateAction.FILE_CREATED:
                     return FileStatus.FILE_CREATED;
+
                 case CreateAction.FILE_OVERWRITTEN:
                     return FileStatus.FILE_OVERWRITTEN;
+
                 default:
                     return FileStatus.FILE_OPENED;
             }

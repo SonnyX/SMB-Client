@@ -1,12 +1,11 @@
 /* Copyright (C) 2014 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -18,15 +17,18 @@ namespace SMBLibrary.SMB1
     public class WriteAndXRequest : SMBAndXCommand
     {
         public const int ParametersFixedLength = 24;
+
         // Parameters:
         //CommandName AndXCommand;
         //byte AndXReserved;
         //ushort AndXOffset;
         public ushort FID;
+
         public ulong Offset; // 4 bytes + 4 optional 'OffsetHigh' bytes
         public uint Timeout;
         public WriteMode WriteMode;
         public ushort Remaining;
+
         //uint DataLength; // 2 bytes + 2 'DataLengthHigh' bytes
         //ushort DataOffset;
         // ulong OffsetHigh; // Optional
@@ -35,7 +37,7 @@ namespace SMBLibrary.SMB1
         public byte[] Data;
 
         public WriteAndXRequest() : base()
-        {}
+        { }
 
         public WriteAndXRequest(byte[] buffer, int offset, bool isUnicode) : base(buffer, offset, isUnicode)
         {
@@ -68,7 +70,7 @@ namespace SMBLibrary.SMB1
                 DataOffset++;
             }
             ushort dataLengthHigh = (ushort)(DataLength >> 16);
-            
+
             int parametersLength = ParametersFixedLength;
             if (Offset > UInt32.MaxValue)
             {

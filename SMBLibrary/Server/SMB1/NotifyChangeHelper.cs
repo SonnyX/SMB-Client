@@ -1,10 +1,10 @@
 /* Copyright (C) 2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
+
 using System.Collections.Generic;
 using SMBLibrary.SMB1;
 using Utilities;
@@ -95,7 +95,7 @@ namespace SMBLibrary.Server.SMB1
                     {
                         // Windows Server 2008 SP1 Will use ErrorResponse to return any status other than STATUS_SUCCESS (including STATUS_CANCELLED and STATUS_DELETE_PENDING).
                         //
-                        // [MS-CIFS] In the event that the number of changes exceeds the size of the change notify buffer [..] 
+                        // [MS-CIFS] In the event that the number of changes exceeds the size of the change notify buffer [..]
                         // the NT Trans subsystem MUST return an error response with a Status value of STATUS_NOTIFY_ENUM_DIR.
                         ErrorResponse response = new ErrorResponse(CommandName.SMB_COM_NT_TRANSACT);
                         SMB1Message reply = new SMB1Message();

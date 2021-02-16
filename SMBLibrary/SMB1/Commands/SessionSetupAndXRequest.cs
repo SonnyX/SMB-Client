@@ -1,12 +1,11 @@
 /* Copyright (C) 2014 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -17,8 +16,10 @@ namespace SMBLibrary.SMB1
     public class SessionSetupAndXRequest : SMBAndXCommand
     {
         public const int ParametersLength = 26;
+
         // Parameters:
         public ushort MaxBufferSize;
+
         public ushort MaxMpxCount;
         public ushort VcNumber;
         public uint SessionKey;
@@ -26,16 +27,20 @@ namespace SMBLibrary.SMB1
         private ushort UnicodePasswordLength;
         public uint Reserved;
         public Capabilities Capabilities;
+
         // Data:
         public byte[] OEMPassword;
+
         public byte[] UnicodePassword;
+
         // Padding
         public string AccountName;   // SMB_STRING (If Unicode, this field MUST be aligned to start on a 2-byte boundary from the start of the SMB header)
+
         public string PrimaryDomain; // SMB_STRING (this field WILL be aligned to start on a 2-byte boundary from the start of the SMB header)
         public string NativeOS;      // SMB_STRING (this field WILL be aligned to start on a 2-byte boundary from the start of the SMB header)
         public string NativeLanMan;  // SMB_STRING (this field WILL be aligned to start on a 2-byte boundary from the start of the SMB header)
 
-        public SessionSetupAndXRequest(): base()
+        public SessionSetupAndXRequest() : base()
         {
             AccountName = String.Empty;
             PrimaryDomain = String.Empty;
@@ -77,7 +82,7 @@ namespace SMBLibrary.SMB1
 
             OEMPasswordLength = (ushort)OEMPassword.Length;
             UnicodePasswordLength = (ushort)UnicodePassword.Length;
-            
+
             this.SMBParameters = new byte[ParametersLength];
             LittleEndianWriter.WriteUInt16(this.SMBParameters, 4, MaxBufferSize);
             LittleEndianWriter.WriteUInt16(this.SMBParameters, 6, MaxMpxCount);

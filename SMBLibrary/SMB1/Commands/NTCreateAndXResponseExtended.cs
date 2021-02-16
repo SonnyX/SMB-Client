@@ -1,12 +1,11 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -17,14 +16,17 @@ namespace SMBLibrary.SMB1
     public class NTCreateAndXResponseExtended : SMBAndXCommand
     {
         public const int ParametersLength = 100;
+
         // [MS-SMB] Section 2.2.4.9.2 and Note <49>:
         // Windows-based SMB servers send 50 (0x32) words in the extended response although they set the WordCount field to 0x2A.
         public const int DeclaredParametersLength = 84;
+
         // Parameters:
         // CommandName AndXCommand;
         // byte AndXReserved;
         // ushort AndXOffset;
         public OpLockLevel OpLockLevel;
+
         public ushort FID;
         public CreateDisposition CreateDisposition;
         public DateTime? CreateTime;
@@ -41,7 +43,7 @@ namespace SMBLibrary.SMB1
         public ulong FileID;
         public AccessMask MaximalAccessRights;
         public AccessMask GuestMaximalAccessRights;
-        
+
         public NTCreateAndXResponseExtended() : base()
         {
         }

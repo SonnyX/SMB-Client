@@ -1,4 +1,4 @@
-# SMBLibrary
+# SMBLibraryLite
 
 This is a fork of [Tal Aloni's SMBLibrary](https://github.com/TalAloni/SMBLibrary) that has been stripped down to just the client library, utilities, and tests and converted to .NET Standard 2.1 
 
@@ -76,9 +76,7 @@ Client code examples can be found [here](ClientExamples.md).
 
 NuGet Packages:
 ===============
-[SMBLibrary](https://www.nuget.org/packages/SMBLibrary/) - Cross-platform server and client implementation.  
-[SMBLibrary.Win32](https://www.nuget.org/packages/SMBLibrary.Win32/) - Allows utilizing Integrated Windows Authentication and/or the Windows storage subsystem on a Windows host.  
-[SMBLibrary.Adapters](https://www.nuget.org/packages/SMBLibrary.Adapters/) - IFileSystem to INTFileStore adapter for SMBLibrary.  
+[SMBLibraryLite](https://www.nuget.org/packages/SMBLibraryLite/) - Cross-platform client implementation.  
 
 Contact:
 ========

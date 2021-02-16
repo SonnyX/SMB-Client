@@ -1,11 +1,10 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -17,10 +16,13 @@ namespace SMBLibrary.SMB1
     {
         private const ushort SMB_INFO_PASSTHROUGH = 0x03E8;
         public const int ParametersFixedLength = 6;
+
         // Parameters:
         public ushort InformationLevel;
+
         public uint Reserved;
         public string FileName; // SMB_STRING
+
         // Data:
         public byte[] InformationBytes;
 

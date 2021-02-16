@@ -1,13 +1,13 @@
 /* Copyright (C) 2014-2019 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Collections.Generic;
 using SMBLibrary.SMB1;
-using Utilities;
 
 namespace SMBLibrary.Client
 {
@@ -599,16 +599,22 @@ namespace SMBLibrary.Client
             {
                 case CreateDisposition.FILE_SUPERSEDE:
                     return FileStatus.FILE_SUPERSEDED;
+
                 case CreateDisposition.FILE_OPEN:
                     return FileStatus.FILE_OPENED;
+
                 case CreateDisposition.FILE_CREATE:
                     return FileStatus.FILE_CREATED;
+
                 case CreateDisposition.FILE_OPEN_IF:
                     return FileStatus.FILE_OVERWRITTEN;
+
                 case CreateDisposition.FILE_OVERWRITE:
                     return FileStatus.FILE_EXISTS;
+
                 case CreateDisposition.FILE_OVERWRITE_IF:
                     return FileStatus.FILE_DOES_NOT_EXIST;
+
                 default:
                     return FileStatus.FILE_OPENED;
             }

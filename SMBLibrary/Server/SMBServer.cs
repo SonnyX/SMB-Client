@@ -1,9 +1,10 @@
 /* Copyright (C) 2014-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -11,7 +12,6 @@ using System.Net.Sockets;
 using System.Threading;
 using SMBLibrary.Authentication.GSSAPI;
 using SMBLibrary.NetBios;
-using SMBLibrary.Services;
 using SMBLibrary.SMB1;
 using SMBLibrary.SMB2;
 using Utilities;
@@ -44,6 +44,7 @@ namespace SMBLibrary.Server
         private DateTime m_serverStartTime;
 
         public event EventHandler<ConnectionRequestEventArgs> ConnectionRequested;
+
         public event EventHandler<LogEntry> LogEntryAdded;
 
         public SMBServer(SMBShareCollection shares, GSSProvider securityProvider)
@@ -102,7 +103,7 @@ namespace SMBLibrary.Server
 
                 if (connectionInactivityTimeout.HasValue)
                 {
-                    m_sendSMBKeepAliveThread = new Thread(delegate()
+                    m_sendSMBKeepAliveThread = new Thread(delegate ()
                     {
                         while (m_listening)
                         {
@@ -174,7 +175,7 @@ namespace SMBLibrary.Server
             {
                 ConnectionState state = new ConnectionState(clientSocket, clientEndPoint, Log);
                 state.LogToServer(Severity.Verbose, "New connection request accepted");
-                Thread senderThread = new Thread(delegate()
+                Thread senderThread = new Thread(delegate ()
                 {
                     ProcessSendQueue(state);
                 });

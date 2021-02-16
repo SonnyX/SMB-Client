@@ -1,12 +1,11 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -17,6 +16,7 @@ namespace SMBLibrary.SMB1
     public class SetFileDispositionInfo : SetInformation
     {
         public const int Length = 1;
+
         /// <summary>
         /// Indicate that a file SHOULD be deleted when it is closed.
         /// </summary>

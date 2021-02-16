@@ -1,12 +1,14 @@
 /* Copyright (C) 2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Security.Cryptography;
 using Utilities;
+using AesCcm = Utilities.AesCcm;
 
 namespace SMBLibrary.SMB2
 {
@@ -92,7 +94,7 @@ namespace SMBLibrary.SMB2
             ByteWriter.WriteBytes(buffer, SMB2TransformHeader.Length, encryptedMessage);
             return buffer;
         }
-        
+
         public static byte[] EncryptMessage(byte[] key, byte[] nonce, byte[] message, ulong sessionID, out byte[] signature)
         {
             SMB2TransformHeader transformHeader = CreateTransformHeader(nonce, message.Length, sessionID);

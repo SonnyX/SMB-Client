@@ -1,12 +1,10 @@
 /* Copyright (C) 2014 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -18,18 +16,20 @@ namespace SMBLibrary.SMB1
     public class WriteAndXResponse : SMBAndXCommand
     {
         public const int ParametersLength = 12;
+
         // Parameters:
         //CommandName AndXCommand;
         //byte AndXReserved;
         //ushort AndXOffset;
         public uint Count; // The number of bytes written to the file, 2 bytes + 2 'CountHigh' bytes
+
         public ushort Available;
         public ushort Reserved;
 
         public WriteAndXResponse() : base()
-        {}
+        { }
 
-        public WriteAndXResponse(byte[] buffer, int offset): base(buffer, offset, false)
+        public WriteAndXResponse(byte[] buffer, int offset) : base(buffer, offset, false)
         {
             Count = LittleEndianConverter.ToUInt16(this.SMBParameters, 4);
             Available = LittleEndianConverter.ToUInt16(this.SMBParameters, 6);

@@ -1,12 +1,10 @@
 /* Copyright (C) 2014 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -17,13 +15,17 @@ namespace SMBLibrary.SMB1
     public class TreeConnectAndXRequest : SMBAndXCommand
     {
         public const int ParametersLength = 8;
+
         // Parameters:
         public TreeConnectFlags Flags;
+
         // ushort PasswordLength;
         // Data:
         public byte[] Password;
+
         // Padding
         public string Path;         // SMB_STRING (If Unicode, this field MUST be aligned to start on a 2-byte boundary from the start of the SMB header)
+
         public ServiceName Service; // OEM string
 
         public TreeConnectAndXRequest()

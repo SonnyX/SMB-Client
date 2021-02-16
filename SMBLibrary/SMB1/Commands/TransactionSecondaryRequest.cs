@@ -1,12 +1,10 @@
 /* Copyright (C) 2014 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -17,8 +15,10 @@ namespace SMBLibrary.SMB1
     public class TransactionSecondaryRequest : SMB1Command
     {
         public const int SMBParametersLength = 16;
+
         // Parameters:
         public ushort TotalParameterCount;
+
         public ushort TotalDataCount;
         protected ushort ParameterCount;
         protected ushort ParameterOffset;
@@ -26,9 +26,11 @@ namespace SMBLibrary.SMB1
         protected ushort DataCount;
         protected ushort DataOffset;
         public ushort DataDisplacement;
+
         // Data:
         // Padding (alignment to 4 byte boundary)
         public byte[] TransParameters; // Trans_Parameters
+
         // Padding (alignment to 4 byte boundary)
         public byte[] TransData; // Trans_Data
 
