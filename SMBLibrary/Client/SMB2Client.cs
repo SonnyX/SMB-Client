@@ -44,6 +44,10 @@ namespace SMBLibrary.Client
         private uint m_messageID = 0;
         private SMB2Dialect m_dialect;
         private bool m_signingRequired;
+        private byte[] m_signingKey;
+        private bool m_encryptSessionData;
+        private byte[] m_encryptionKey;
+        private byte[] m_decryptionKey;
         private uint m_maxTransactSize;
         private uint m_maxReadSize;
         private uint m_maxWriteSize;
@@ -163,10 +167,12 @@ namespace SMBLibrary.Client
         {
             NegotiateRequest request = new NegotiateRequest();
             request.SecurityMode = SecurityMode.SigningEnabled;
+            request.Capabilities = Capabilities.Encryption;
             request.ClientGuid = Guid.NewGuid();
             request.ClientStartTime = DateTime.Now;
             request.Dialects.Add(SMB2Dialect.SMB202);
             request.Dialects.Add(SMB2Dialect.SMB210);
+            request.Dialects.Add(SMB2Dialect.SMB300);
 
             TrySendCommand(request);
             NegotiateResponse response = WaitForCommand(SMB2CommandName.Negotiate) as NegotiateResponse;
@@ -225,6 +231,16 @@ namespace SMBLibrary.Client
                     if (response != null)
                     {
                         m_isLoggedIn = (response.Header.Status == NTStatus.STATUS_SUCCESS);
+                        if (m_isLoggedIn)
+                        {
+                            m_signingKey = SMB2Cryptography.GenerateSigningKey(m_sessionKey, m_dialect, null);
+                            if (m_dialect == SMB2Dialect.SMB300)
+                            {
+                                m_encryptSessionData = (((SessionSetupResponse)response).SessionFlags & SessionFlags.EncryptData) > 0;
+                                m_encryptionKey = SMB2Cryptography.GenerateClientEncryptionKey(m_sessionKey, SMB2Dialect.SMB300, null);
+                                m_decryptionKey = SMB2Cryptography.GenerateClientDecryptionKey(m_sessionKey, SMB2Dialect.SMB300, null);
+                            }
+                        }
                         return response.Header.Status;
                     }
                 }
@@ -291,7 +307,8 @@ namespace SMBLibrary.Client
                 status = response.Header.Status;
                 if (response.Header.Status == NTStatus.STATUS_SUCCESS && response is TreeConnectResponse)
                 {
-                    return new SMB2FileStore(this, response.Header.TreeID);
+                    bool encryptShareData = (((TreeConnectResponse)response).ShareFlags & ShareFlags.EncryptData) > 0;
+                    return new SMB2FileStore(this, response.Header.TreeID, m_encryptSessionData || encryptShareData);
                 }
             }
             else
@@ -388,16 +405,27 @@ namespace SMBLibrary.Client
         {
             if (packet is SessionMessagePacket)
             {
+                byte[] messageBytes;
+                if (m_dialect == SMB2Dialect.SMB300 && SMB2TransformHeader.IsTransformHeader(packet.Trailer, 0))
+                {
+                    SMB2TransformHeader transformHeader = new SMB2TransformHeader(packet.Trailer, 0);
+                    byte[] encryptedMessage = ByteReader.ReadBytes(packet.Trailer, SMB2TransformHeader.Length, (int)transformHeader.OriginalMessageSize);
+                    messageBytes = SMB2Cryptography.DecryptMessage(m_decryptionKey, transformHeader, encryptedMessage);
+                }
+                else
+                {
+                    messageBytes = packet.Trailer;
+                }
+
                 SMB2Command command;
                 try
                 {
-                    command = SMB2Command.ReadResponse(packet.Trailer, 0);
+                    command = SMB2Command.ReadResponse(messageBytes, 0);
                 }
                 catch (Exception ex)
                 {
                     Log("Invalid SMB2 response: " + ex.Message);
                     state.ClientSocket.Close();
-                    m_isConnected = false;
                     return;
                 }
 
@@ -444,7 +472,6 @@ namespace SMBLibrary.Client
             {
                 Log("Inappropriate NetBIOS session packet");
                 state.ClientSocket.Close();
-                m_isConnected = false;
             }
         }
 
@@ -500,6 +527,11 @@ namespace SMBLibrary.Client
 
         internal void TrySendCommand(SMB2Command request)
         {
+            TrySendCommand(request, m_encryptSessionData);
+        }
+
+        internal void TrySendCommand(SMB2Command request, bool encryptData)
+        {
             if (m_dialect == SMB2Dialect.SMB202 || m_transport == SMBTransportType.NetBiosOverTCP)
             {
                 request.Header.CreditCharge = 0;
@@ -511,12 +543,6 @@ namespace SMBLibrary.Client
                 if (request.Header.CreditCharge == 0)
                 {
                     request.Header.CreditCharge = 1;
-                }
-
-                //NOTE: This is not a legitimate fix. This is a band-aid for an off by one that occurs due to the check for request.Header.CreditCharge == 0 above.
-                if ((m_availableCredits == 0 && request.Header.CreditCharge == 1) || (m_availableCredits == 15 && request.Header.CreditCharge == 16))
-                {
-                    m_availableCredits += 1;
                 }
 
                 if (m_availableCredits < request.Header.CreditCharge)
@@ -534,19 +560,21 @@ namespace SMBLibrary.Client
 
             request.Header.MessageID = m_messageID;
             request.Header.SessionID = m_sessionID;
-            if (m_signingRequired)
+            // [MS-SMB2] If the client encrypts the message [..] then the client MUST set the Signature field of the SMB2 header to zero
+            if (m_signingRequired && !encryptData)
             {
-                request.Header.IsSigned = (m_sessionID != 0 && (request.CommandName == SMB2CommandName.TreeConnect || request.Header.TreeID != 0));
+                request.Header.IsSigned = (m_sessionID != 0 && ((request.CommandName == SMB2CommandName.TreeConnect || request.Header.TreeID != 0) ||
+                                                                (m_dialect == SMB2Dialect.SMB300 && request.CommandName == SMB2CommandName.Logoff)));
                 if (request.Header.IsSigned)
                 {
                     request.Header.Signature = new byte[16]; // Request could be reused
                     byte[] buffer = request.GetBytes();
-                    byte[] signature = new HMACSHA256(m_sessionKey).ComputeHash(buffer, 0, buffer.Length);
+                    byte[] signature = SMB2Cryptography.CalculateSignature(m_signingKey, m_dialect, buffer, 0, buffer.Length);
                     // [MS-SMB2] The first 16 bytes of the hash MUST be copied into the 16-byte signature field of the SMB2 Header.
                     request.Header.Signature = ByteReader.ReadBytes(signature, 0, 16);
                 }
             }
-            TrySendCommand(m_clientSocket, request);
+            TrySendCommand(m_clientSocket, request, encryptData ? m_encryptionKey : null);
             if (m_dialect == SMB2Dialect.SMB202 || m_transport == SMBTransportType.NetBiosOverTCP)
             {
                 m_messageID++;
@@ -581,10 +609,18 @@ namespace SMBLibrary.Client
             }
         }
 
-        public static void TrySendCommand(Socket socket, SMB2Command request)
+        public static void TrySendCommand(Socket socket, SMB2Command request, byte[] encryptionKey)
         {
             SessionMessagePacket packet = new SessionMessagePacket();
-            packet.Trailer = request.GetBytes();
+            if (encryptionKey != null)
+            {
+                byte[] requestBytes = request.GetBytes();
+                packet.Trailer = SMB2Cryptography.TransformMessage(encryptionKey, requestBytes, request.Header.SessionID);
+            }
+            else
+            {
+                packet.Trailer = request.GetBytes();
+            }
             TrySendPacket(socket, packet);
         }
 

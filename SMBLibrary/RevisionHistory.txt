@@ -439,6 +439,15 @@ Revision History:
         Client: Client: SMB1FileStore: Implemented SetFileInformation with FileInformation parameter.
 
 ---- Deviation
+
+1.4.3 - Client: Bugfix: Reading FindInformationList may have caused infinite loop.
+        Added SMB2TransformHeader implementation.
+        Added logic to calculate SMB 3.x encryption / decryption keys.
+        Added SMB 3.0 message signing logic.
+        SMB2Cryptography: Added logic for SMB 3.0 encryption.
+        Client: Added SMB 3.0 support.
+        Server: Added option to enable SMB 3.0 dialect.
+
 1.4.3.0 - SMB2Client: Ignore STATUS_PENDING in WaitForCommand
           SMB2Client: Band-aid for off by one in TrySendCommand when CreditsCharged == 0
           SMB2Client: Add WaitForCommand that accepts tree identifier (TID) as a parameter
@@ -447,3 +456,18 @@ Revision History:
 1.4.3.1 - SMB2Client: Merge [Check and set SMB2Client m_isConnected status for m_clientSocket status by wgv-jxiao](https://github.com/jordanlytle/SMBLibrary/pull/6) which checks if m_clientSocket is still valid when reusing a valid connection.
 
 1.4.3.2 - SMB2Client: Merge [Remove treeId dependency from WaitFoCommand by wgv-jxiao](https://github.com/jordanlytle/SMBLibrary/pull/7) which reverts the TreeId parameter in SMB2Client WaitForCommand
+        
+1.4.4 - SocketUtils.SetKeepAlive: Added support for Linux.
+        Moved NTFileSystemAdapter to SMBLibrary.Adapters.
+        ServerServiceHelper: Extracted BindPipe method.
+        Made BindPipe method more generic and movied it to NamedPipeHelper.
+        Client: ServerServiceHelper.ListShares: Close pipe after all data has been read.
+        NDRUnicodeString: Added constructor argument allowing skipping writing null terminator character.
+        NDRParser / NDRWriter: Added ability to read/write arbitrary number of bytes.
+
+1.4.5 - SimpleProtectedNegotiationTokenResponse: Bugfix: GetBytes threw exception when MechanismListMIC was not null.
+        NTLM: AuthenticateMessage: Read/Write MIC field if present.
+        NTLM: AuthenticateMessage: Immitate Windows write order for easier comparison.
+        NTLM: Bugfix: IndependentNTLMAuthenticationProvider login failed to to modification of message byte arrays.
+
+1.4.6 - SMB2Client: Fixed InvalidCastException on failed login to SMB 3.0 server.

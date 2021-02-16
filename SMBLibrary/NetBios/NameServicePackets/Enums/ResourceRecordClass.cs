@@ -1,4 +1,5 @@
-﻿namespace SMBLibrary.NetBios
+
+namespace SMBLibrary.NetBios
 {
     public enum ResourceRecordClass : ushort
     {

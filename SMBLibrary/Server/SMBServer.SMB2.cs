@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
+/* Copyright (C) 2017-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
  * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
@@ -83,7 +83,7 @@ namespace SMBLibrary.Server
                 if (command is NegotiateRequest)
                 {
                     NegotiateRequest request = (NegotiateRequest)command;
-                    SMB2Command response = NegotiateHelper.GetNegotiateResponse(request, m_securityProvider, state, m_serverGuid, m_serverStartTime);
+                    SMB2Command response = NegotiateHelper.GetNegotiateResponse(request, m_securityProvider, state, m_transport, m_serverGuid, m_serverStartTime, m_enableSMB3);
                     if (state.Dialect != SMBDialect.NotSet)
                     {
                         state = new SMB2ConnectionState(state);
@@ -228,7 +228,7 @@ namespace SMBLibrary.Server
 
         private static void EnqueueResponseChain(ConnectionState state, List<SMB2Command> responseChain)
         {
-            byte[] sessionKey = null;
+            byte[] signingKey = null;
             if (state is SMB2ConnectionState)
             {
                 // Note: multiple sessions MAY be multiplexed on the same connection, so theoretically
@@ -240,15 +240,31 @@ namespace SMBLibrary.Server
                     SMB2Session session = ((SMB2ConnectionState)state).GetSession(sessionID);
                     if (session != null)
                     {
-                        sessionKey = session.SessionKey;
+                        signingKey = session.SigningKey;
                     }
                 }
             }
 
             SessionMessagePacket packet = new SessionMessagePacket();
-            packet.Trailer = SMB2Command.GetCommandChainBytes(responseChain, sessionKey);
+            SMB2Dialect smb2Dialect = (signingKey != null) ? ToSMB2Dialect(state.Dialect) : SMB2Dialect.SMB2xx;
+            packet.Trailer = SMB2Command.GetCommandChainBytes(responseChain, signingKey, smb2Dialect);
             state.SendQueue.Enqueue(packet);
             state.LogToServer(Severity.Verbose, "SMB2 response chain queued: Response count: {0}, First response: {1}, Packet length: {2}", responseChain.Count, responseChain[0].CommandName.ToString(), packet.Length);
+        }
+
+        internal static SMB2Dialect ToSMB2Dialect(SMBDialect smbDialect)
+        {
+            switch (smbDialect)
+            {
+                case SMBDialect.SMB202:
+                    return SMB2Dialect.SMB202;
+                case SMBDialect.SMB210:
+                    return SMB2Dialect.SMB210;
+                case SMBDialect.SMB300:
+                    return SMB2Dialect.SMB300;
+                default:
+                    throw new ArgumentException("Unsupported SMB2 Dialect: " + smbDialect.ToString());
+            }
         }
 
         private static void UpdateSMB2Header(SMB2Command response, SMB2Command request, ConnectionState state)

@@ -1,4 +1,4 @@
-/* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
+/* Copyright (C) 2014-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
  * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
@@ -17,37 +17,10 @@ namespace SMBLibrary.Client
         public static List<string> ListShares(INTFileStore namedPipeShare, ShareType? shareType, out NTStatus status)
         {
             object pipeHandle;
-            FileStatus fileStatus;
-            status = namedPipeShare.CreateFile(out pipeHandle, out fileStatus, ServerService.ServicePipeName, (AccessMask)(FileAccessMask.FILE_READ_DATA | FileAccessMask.FILE_WRITE_DATA), 0, ShareAccess.Read | ShareAccess.Write, CreateDisposition.FILE_OPEN, 0, null);
+            int maxTransmitFragmentSize;
+            status = NamedPipeHelper.BindPipe(namedPipeShare, ServerService.ServicePipeName, ServerService.ServiceInterfaceGuid, ServerService.ServiceVersion, out pipeHandle, out maxTransmitFragmentSize);
             if (status != NTStatus.STATUS_SUCCESS)
             {
-                return null;
-            }
-            BindPDU bindPDU = new BindPDU();
-            bindPDU.Flags = PacketFlags.FirstFragment | PacketFlags.LastFragment;
-            bindPDU.DataRepresentation.CharacterFormat = CharacterFormat.ASCII;
-            bindPDU.DataRepresentation.ByteOrder = ByteOrder.LittleEndian;
-            bindPDU.DataRepresentation.FloatingPointRepresentation = FloatingPointRepresentation.IEEE;
-            bindPDU.MaxTransmitFragmentSize = 5680;
-            bindPDU.MaxReceiveFragmentSize = 5680;
-
-            ContextElement serverServiceContext = new ContextElement();
-            serverServiceContext.AbstractSyntax = new SyntaxID(ServerService.ServiceInterfaceGuid, ServerService.ServiceVersion);
-            serverServiceContext.TransferSyntaxList.Add(new SyntaxID(RemoteServiceHelper.NDRTransferSyntaxIdentifier, RemoteServiceHelper.NDRTransferSyntaxVersion));
-            
-            bindPDU.ContextList.Add(serverServiceContext);
-
-            byte[] input = bindPDU.GetBytes();
-            byte[] output;
-            status = namedPipeShare.DeviceIOControl(pipeHandle, (uint)IoControlCode.FSCTL_PIPE_TRANSCEIVE, input, out output, 4096);
-            if (status != NTStatus.STATUS_SUCCESS)
-            {
-                return null;
-            }
-            BindAckPDU bindAckPDU = RPCPDU.GetPDU(output, 0) as BindAckPDU;
-            if (bindAckPDU == null)
-            {
-                status = NTStatus.STATUS_NOT_SUPPORTED;
                 return null;
             }
 
@@ -65,8 +38,9 @@ namespace SMBLibrary.Client
             requestPDU.OpNum = (ushort)ServerServiceOpName.NetrShareEnum;
             requestPDU.Data = shareEnumRequest.GetBytes();
             requestPDU.AllocationHint = (uint)requestPDU.Data.Length;
-            input = requestPDU.GetBytes();
-            int maxOutputLength = bindAckPDU.MaxTransmitFragmentSize;
+            byte[] input = requestPDU.GetBytes();
+            byte[] output;
+            int maxOutputLength = maxTransmitFragmentSize;
             status = namedPipeShare.DeviceIOControl(pipeHandle, (uint)IoControlCode.FSCTL_PIPE_TRANSCEIVE, input, out output, maxOutputLength);
             if (status != NTStatus.STATUS_SUCCESS)
             {
@@ -95,6 +69,7 @@ namespace SMBLibrary.Client
                 }
                 responseData = ByteUtils.Concatenate(responseData, responsePDU.Data);
             }
+            namedPipeShare.CloseFile(pipeHandle);
             NetrShareEnumResponse shareEnumResponse = new NetrShareEnumResponse(responseData);
             ShareInfo1Container shareInfo1 = shareEnumResponse.InfoStruct.Info as ShareInfo1Container;
             if (shareInfo1 == null || shareInfo1.Entries == null)

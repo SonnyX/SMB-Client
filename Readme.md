@@ -17,7 +17,7 @@ The original readme:
 
 About SMBLibrary:
 =================
-SMBLibrary is an open-source C# SMB 1.0/CIFS, SMB 2.0 and SMB 2.1 server and client implementation.  
+SMBLibrary is an open-source C# SMB 1.0/CIFS, SMB 2.0, SMB 2.1 and SMB 3.0 server and client implementation.  
 SMBLibrary gives .NET developers an easy way to share a directory / file system / virtual file system, with any operating system that supports the SMB protocol.  
 SMBLibrary is modular, you can take advantage of Integrated Windows Authentication and the Windows storage subsystem on a Windows host or use independent implementations that allow for cross-platform compatibility.  
 SMBLibrary shares can be accessed from any Windows version since Windows NT 4.0.  
@@ -71,6 +71,14 @@ Using SMBLibrary:
 =================
 Any directory / filesystem / object you wish to share must implement the IFileSystem interface (or the lower-level INTFileStore interface).  
 You can share anything from actual directories to custom objects, as long as they expose a directory structure.  
+
+Client code examples can be found [here](ClientExamples.md).
+
+NuGet Packages:
+===============
+[SMBLibrary](https://www.nuget.org/packages/SMBLibrary/) - Cross-platform server and client implementation.  
+[SMBLibrary.Win32](https://www.nuget.org/packages/SMBLibrary.Win32/) - Allows utilizing Integrated Windows Authentication and/or the Windows storage subsystem on a Windows host.  
+[SMBLibrary.Adapters](https://www.nuget.org/packages/SMBLibrary.Adapters/) - IFileSystem to INTFileStore adapter for SMBLibrary.  
 
 Contact:
 ========

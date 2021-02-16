@@ -2,18 +2,38 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <RootNamespace>SMBLibrary.Tests</RootNamespace>
+
+  <PropertyGroup>
+    <TargetFrameworks>net40</TargetFrameworks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AssemblyName>SMBLibrary.Tests</AssemblyName>
+    <RootNamespace>SMBLibrary.Tests</RootNamespace>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SMBLibrary\SMBLibrary.csproj" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\SMBLibrary.Win32\SMBLibrary.Win32.csproj" />
+    <ProjectReference Include="..\SMBLibrary\SMBLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' != 'Release'">
     <ProjectReference Include="..\Utilities\Utilities.csproj" />
   </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
     <PackageReference Include="coverlet.collector" Version="1.0.1" />
   </ItemGroup>
+</Project>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
+      <HintPath>Components\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

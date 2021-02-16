@@ -1,4 +1,4 @@
-/* Copyright (C) 2014-2019 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
+/* Copyright (C) 2014-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
  * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
@@ -38,6 +38,7 @@ namespace SMBLibrary.Server
         private SMBTransportType m_transport;
         private bool m_enableSMB1;
         private bool m_enableSMB2;
+        private bool m_enableSMB3;
         private Socket m_listenerSocket;
         private bool m_listening;
         private DateTime m_serverStartTime;
@@ -61,7 +62,12 @@ namespace SMBLibrary.Server
 
         public void Start(IPAddress serverAddress, SMBTransportType transport, bool enableSMB1, bool enableSMB2)
         {
-            Start(serverAddress, transport, enableSMB1, enableSMB2, null);
+            Start(serverAddress, transport, enableSMB1, enableSMB2, false);
+        }
+
+        public void Start(IPAddress serverAddress, SMBTransportType transport, bool enableSMB1, bool enableSMB2, bool enableSMB3)
+        {
+            Start(serverAddress, transport, enableSMB1, enableSMB2, enableSMB3, null);
         }
 
         /// <param name="connectionInactivityTimeout">
@@ -70,15 +76,21 @@ namespace SMBLibrary.Server
         /// to prevent such connections from hanging around indefinitely, this parameter can be used.
         /// </param>
         /// <exception cref="System.Net.Sockets.SocketException"></exception>
-        public void Start(IPAddress serverAddress, SMBTransportType transport, bool enableSMB1, bool enableSMB2, TimeSpan? connectionInactivityTimeout)
+        public void Start(IPAddress serverAddress, SMBTransportType transport, bool enableSMB1, bool enableSMB2, bool enableSMB3, TimeSpan? connectionInactivityTimeout)
         {
             if (!m_listening)
             {
+                if (enableSMB3 && !enableSMB2)
+                {
+                    throw new ArgumentException("SMB2 must be enabled for SMB3 to be enabled");
+                }
+
                 Log(Severity.Information, "Starting server");
                 m_serverAddress = serverAddress;
                 m_transport = transport;
                 m_enableSMB1 = enableSMB1;
                 m_enableSMB2 = enableSMB2;
+                m_enableSMB3 = enableSMB3;
                 m_listening = true;
                 m_serverStartTime = DateTime.Now;
 
@@ -285,21 +297,12 @@ namespace SMBLibrary.Server
 
         private void ProcessPacket(SessionPacket packet, ref ConnectionState state)
         {
-            if (packet is SessionRequestPacket && m_transport == SMBTransportType.NetBiosOverTCP)
-            {
-                PositiveSessionResponsePacket response = new PositiveSessionResponsePacket();
-                state.SendQueue.Enqueue(response);
-            }
-            else if (packet is SessionKeepAlivePacket && m_transport == SMBTransportType.NetBiosOverTCP)
-            {
-                // [RFC 1001] NetBIOS session keep alives do not require a response from the NetBIOS peer
-            }
-            else if (packet is SessionMessagePacket)
+            if (packet is SessionMessagePacket)
             {
                 // Note: To be compatible with SMB2 specifications, we must accept SMB_COM_NEGOTIATE.
                 // We will disconnect the connection if m_enableSMB1 == false and the client does not support SMB2.
                 bool acceptSMB1 = (state.Dialect == SMBDialect.NotSet || state.Dialect == SMBDialect.NTLM012);
-                bool acceptSMB2 = (m_enableSMB2 && (state.Dialect == SMBDialect.NotSet || state.Dialect == SMBDialect.SMB202 || state.Dialect == SMBDialect.SMB210));
+                bool acceptSMB2 = (m_enableSMB2 && (state.Dialect == SMBDialect.NotSet || state.Dialect == SMBDialect.SMB202 || state.Dialect == SMBDialect.SMB210 || state.Dialect == SMBDialect.SMB300));
 
                 if (SMB1Header.IsValidSMB1Header(packet.Trailer))
                 {
@@ -328,7 +331,7 @@ namespace SMBLibrary.Server
                         List<string> smb2Dialects = SMB2.NegotiateHelper.FindSMB2Dialects(message);
                         if (smb2Dialects.Count > 0)
                         {
-                            SMB2Command response = SMB2.NegotiateHelper.GetNegotiateResponse(smb2Dialects, m_securityProvider, state, m_serverGuid, m_serverStartTime);
+                            SMB2Command response = SMB2.NegotiateHelper.GetNegotiateResponse(smb2Dialects, m_securityProvider, state, m_transport, m_serverGuid, m_serverStartTime);
                             if (state.Dialect != SMBDialect.NotSet)
                             {
                                 state = new SMB2ConnectionState(state);
@@ -380,9 +383,18 @@ namespace SMBLibrary.Server
                     state.ClientSocket.Close();
                 }
             }
+            else if (packet is SessionRequestPacket && m_transport == SMBTransportType.NetBiosOverTCP)
+            {
+                PositiveSessionResponsePacket response = new PositiveSessionResponsePacket();
+                state.SendQueue.Enqueue(response);
+            }
+            else if (packet is SessionKeepAlivePacket && m_transport == SMBTransportType.NetBiosOverTCP)
+            {
+                // [RFC 1001] NetBIOS session keep alives do not require a response from the NetBIOS peer
+            }
             else
             {
-                state.LogToServer(Severity.Warning, "Invalid NetBIOS packet");
+                state.LogToServer(Severity.Warning, "Inappropriate NetBIOS session packet");
                 state.ClientSocket.Close();
                 return;
             }
@@ -402,7 +414,8 @@ namespace SMBLibrary.Server
                 Socket clientSocket = state.ClientSocket;
                 try
                 {
-                    clientSocket.Send(response.GetBytes());
+                    byte[] responseBytes = response.GetBytes();
+                    clientSocket.Send(responseBytes);
                 }
                 catch (SocketException ex)
                 {

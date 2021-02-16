@@ -21,7 +21,6 @@ namespace SMBLibrary.Client
     public class SMB1Client : ISMBClient
     {
         private const string NTLanManagerDialect = "NT LM 0.12";
-
         public static readonly int NetBiosOverTCPPort = 139;
         public static readonly int DirectTCPPort = 445;
 
@@ -82,7 +81,6 @@ namespace SMBLibrary.Client
                 {
                     return false;
                 }
-
                 if (transport == SMBTransportType.NetBiosOverTCP)
                 {
                     SessionRequestPacket sessionRequest = new SessionRequestPacket();
@@ -133,7 +131,6 @@ namespace SMBLibrary.Client
         private bool ConnectSocket(IPAddress serverAddress, int port)
         {
             m_clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
             try
             {
                 m_clientSocket.Connect(serverAddress, port);

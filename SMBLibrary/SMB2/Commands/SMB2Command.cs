@@ -1,4 +1,4 @@
-/* Copyright (C) 2017-2019 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
+/* Copyright (C) 2017-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
  * 
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
@@ -124,13 +124,16 @@ namespace SMBLibrary.SMB2
 
         public static byte[] GetCommandChainBytes(List<SMB2Command> commands)
         {
-            return GetCommandChainBytes(commands, null);
+            return GetCommandChainBytes(commands, null, SMB2Dialect.SMB2xx);
         }
 
         /// <param name="sessionKey">
-        /// command will be signed using this key if (not null and) SMB2_FLAGS_SIGNED is set.
+        /// Message will be signed using this key if (not null and) SMB2_FLAGS_SIGNED is set.
         /// </param>
-        public static byte[] GetCommandChainBytes(List<SMB2Command> commands, byte[] sessionKey)
+        /// <param name="dialect">
+        /// Used for signature calculation when applicable.
+        /// </param>
+        public static byte[] GetCommandChainBytes(List<SMB2Command> commands, byte[] signingKey, SMB2Dialect dialect)
         {
             int totalLength = 0;
             for (int index = 0; index < commands.Count; index++)
@@ -164,10 +167,10 @@ namespace SMBLibrary.SMB2
                     paddedLength = commandLength;
                 }
                 command.WriteBytes(buffer, offset);
-                if (command.Header.IsSigned && sessionKey != null)
+                if (command.Header.IsSigned && signingKey != null)
                 {
                     // [MS-SMB2] Any padding at the end of the message MUST be used in the hash computation.
-                    byte[] signature = new HMACSHA256(sessionKey).ComputeHash(buffer, offset, paddedLength);
+                    byte[] signature = SMB2Cryptography.CalculateSignature(signingKey, dialect, buffer, offset, paddedLength);
                     // [MS-SMB2] The first 16 bytes of the hash MUST be copied into the 16-byte signature field of the SMB2 Header.
                     ByteWriter.WriteBytes(buffer, offset + SMB2Header.SignatureOffset, signature, 16);
                 }
