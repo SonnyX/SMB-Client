@@ -1,13 +1,12 @@
 /* Copyright (C) 2014-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
+
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.NetBios
@@ -19,17 +18,21 @@ namespace SMBLibrary.NetBios
     {
         public NameServicePacketHeader Header;
         public ResourceRecord Resource;
+
         // Resource Data:
         // byte NumberOfNames;
         public KeyValuePairList<string, NameFlags> Names = new KeyValuePairList<string, NameFlags>();
+
         public NodeStatistics Statistics;
 
         public NodeStatusResponse()
         {
-            Header = new NameServicePacketHeader();
-            Header.OpCode = NameServiceOperation.QueryResponse;
-            Header.Flags = OperationFlags.AuthoritativeAnswer | OperationFlags.RecursionAvailable;
-            Header.ANCount = 1;
+            Header = new NameServicePacketHeader
+            {
+                OpCode = NameServiceOperation.QueryResponse,
+                Flags = OperationFlags.AuthoritativeAnswer | OperationFlags.RecursionAvailable,
+                ANCount = 1
+            };
             Resource = new ResourceRecord(NameRecordType.NBStat);
             Statistics = new NodeStatistics();
         }
@@ -54,7 +57,7 @@ namespace SMBLibrary.NetBios
         {
             Resource.Data = GetData();
 
-            MemoryStream stream = new MemoryStream();
+            using MemoryStream stream = new MemoryStream();
             Header.WriteBytes(stream);
             Resource.WriteBytes(stream);
             return stream.ToArray();
@@ -62,7 +65,7 @@ namespace SMBLibrary.NetBios
 
         private byte[] GetData()
         {
-            MemoryStream stream = new MemoryStream();
+            using MemoryStream stream = new MemoryStream();
             stream.WriteByte((byte)Names.Count);
             foreach (KeyValuePair<string, NameFlags> entry in Names)
             {

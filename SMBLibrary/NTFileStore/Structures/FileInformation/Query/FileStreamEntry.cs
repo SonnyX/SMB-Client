@@ -4,8 +4,6 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
 using Utilities;
 
 namespace SMBLibrary
@@ -21,7 +19,7 @@ namespace SMBLibrary
         private uint StreamNameLength;
         public long StreamSize;
         public long StreamAllocationSize;
-        public string StreamName = String.Empty;
+        public string StreamName = string.Empty;
 
         public FileStreamEntry()
         {
@@ -46,13 +44,7 @@ namespace SMBLibrary
             ByteWriter.WriteUTF16String(buffer, offset + 24, StreamName);
         }
 
-        public int Length
-        {
-            get
-            {
-                return FixedLength + StreamName.Length * 2;
-            }
-        }
+        public int Length => FixedLength + StreamName.Length * 2;
 
         /// <summary>
         /// [MS-FSCC] When multiple FILE_STREAM_INFORMATION data elements are present in the buffer, each MUST be aligned on an 8-byte boundary
@@ -61,7 +53,7 @@ namespace SMBLibrary
         {
             get
             {
-                int length = this.Length;
+                int length = Length;
                 int padding = (8 - (length % 8)) % 8;
                 return length + padding;
             }

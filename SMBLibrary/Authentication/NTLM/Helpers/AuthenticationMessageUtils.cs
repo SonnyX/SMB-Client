@@ -1,11 +1,10 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
+
 using System.Text;
 using Utilities;
 
@@ -16,29 +15,27 @@ namespace SMBLibrary.Authentication.NTLM
         public static string ReadAnsiStringBufferPointer(byte[] buffer, int offset)
         {
             byte[] bytes = ReadBufferPointer(buffer, offset);
-            return ASCIIEncoding.Default.GetString(bytes);
+            return Encoding.Default.GetString(bytes);
         }
 
         public static string ReadUnicodeStringBufferPointer(byte[] buffer, int offset)
         {
             byte[] bytes = ReadBufferPointer(buffer, offset);
-            return UnicodeEncoding.Unicode.GetString(bytes);
+            return Encoding.Unicode.GetString(bytes);
         }
 
         public static byte[] ReadBufferPointer(byte[] buffer, int offset)
         {
             ushort length = LittleEndianConverter.ToUInt16(buffer, offset);
-            ushort maxLength = LittleEndianConverter.ToUInt16(buffer, offset + 2);
+            _ = LittleEndianConverter.ToUInt16(buffer, offset + 2);
             uint bufferOffset = LittleEndianConverter.ToUInt32(buffer, offset + 4);
 
             if (length == 0)
             {
                 return new byte[0];
             }
-            else
-            {
-                return ByteReader.ReadBytes(buffer, (int)bufferOffset, length);
-            }
+
+            return ByteReader.ReadBytes(buffer, (int)bufferOffset, length);
         }
 
         public static void WriteBufferPointer(byte[] buffer, int offset, ushort bufferLength, uint bufferOffset)
@@ -81,7 +78,7 @@ namespace SMBLibrary.Authentication.NTLM
         /// <remarks>
         /// NTLM v1 / NTLM v1 Extended Session Security NTResponse is 24 bytes.
         /// </remarks>
-        public static bool IsNTLMv2NTResponse(byte[] ntResponse)
+        public static bool IsNTLMv2NTResponse(byte[]? ntResponse)
         {
             return (ntResponse.Length >= 16 + NTLMv2ClientChallenge.MinimumLength &&
                     ntResponse[16] == NTLMv2ClientChallenge.StructureVersion &&

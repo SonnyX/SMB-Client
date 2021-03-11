@@ -4,8 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
+
 using Utilities;
 
 namespace SMBLibrary.SMB2
@@ -18,10 +17,10 @@ namespace SMBLibrary.SMB2
         public const int FixedLength = 56;
         public const int DeclaredSize = 57;
 
-        private ushort StructureSize;
+        private readonly ushort StructureSize;
         public ushort Reserved;
         public uint CtlCode;
-        public FileID FileId;
+        public FileID? FileId;
         private uint InputOffset;
         private uint InputCount;
         public uint MaxInputResponse;
@@ -94,10 +93,7 @@ namespace SMBLibrary.SMB2
 
         public bool IsFSCtl
         {
-            get
-            {
-                return (Flags & IOCtlRequestFlags.IsFSCtl) > 0;
-            }
+            get => (Flags & IOCtlRequestFlags.IsFSCtl) > 0;
             set
             {
                 if (value)
@@ -111,12 +107,6 @@ namespace SMBLibrary.SMB2
             }
         }
 
-        public override int CommandLength
-        {
-            get
-            {
-                return FixedLength + Input.Length + Output.Length;
-            }
-        }
+        public override int CommandLength => FixedLength + Input.Length + Output.Length;
     }
 }

@@ -4,10 +4,6 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Utilities;
 
 namespace SMBLibrary.SMB1
 {
@@ -18,28 +14,22 @@ namespace SMBLibrary.SMB1
     {
         public const int ParametersLength = 0;
         // Data:
-        public byte[] BytesRead;
+        public byte[]? BytesRead;
 
-        public TransactionRawReadNamedPipeResponse() : base()
+        public TransactionRawReadNamedPipeResponse()
         {
         }
 
-        public TransactionRawReadNamedPipeResponse(byte[] data) : base()
+        public TransactionRawReadNamedPipeResponse(byte[] data)
         {
             BytesRead = data;
         }
 
         public override byte[] GetData(bool isUnicode)
         {
-            return BytesRead;
+            return BytesRead ?? new byte[0];
         }
 
-        public override TransactionSubcommandName SubcommandName
-        {
-            get
-            {
-                return TransactionSubcommandName.TRANS_RAW_READ_NMPIPE;
-            }
-        }
+        public override TransactionSubcommandName SubcommandName => TransactionSubcommandName.TRANS_RAW_READ_NMPIPE;
     }
 }

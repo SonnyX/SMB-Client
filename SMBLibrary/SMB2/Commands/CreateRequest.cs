@@ -18,7 +18,7 @@ namespace SMBLibrary.SMB2
         public const int FixedLength = 56;
         public const int DeclaredSize = 57;
 
-        private ushort StructureSize;
+        private readonly ushort StructureSize;
         public byte SecurityFlags; // Reserved
         public OplockLevel RequestedOplockLevel;
         public ImpersonationLevel ImpersonationLevel;
@@ -33,7 +33,7 @@ namespace SMBLibrary.SMB2
         private ushort NameLength;
         private uint CreateContextsOffset; // 8-byte aligned
         private uint CreateContextsLength;
-        public string Name;
+        public string? Name;
         public List<CreateContext> CreateContexts = new List<CreateContext>();
 
         public CreateRequest() : base(SMB2CommandName.Create)

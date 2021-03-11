@@ -4,9 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -22,12 +20,12 @@ namespace SMBLibrary.SMB1
         public ushort MessageBytesLength;
         public NamedPipeState NamedPipeState;
         // Data:
-        public byte[] ReadData;
+        public byte[]? ReadData;
 
-        public TransactionPeekNamedPipeResponse() : base()
+        public TransactionPeekNamedPipeResponse()
         { }
 
-        public TransactionPeekNamedPipeResponse(byte[] parameters, byte[] data) : base()
+        public TransactionPeekNamedPipeResponse(byte[] parameters, byte[] data)
         {
             ReadDataAvailable = LittleEndianConverter.ToUInt16(parameters, 0);
             MessageBytesLength = LittleEndianConverter.ToUInt16(parameters, 2);
@@ -47,15 +45,9 @@ namespace SMBLibrary.SMB1
 
         public override byte[] GetData(bool isUnicode)
         {
-            return ReadData;
+            return ReadData ?? new byte[0];
         }
 
-        public override TransactionSubcommandName SubcommandName
-        {
-            get
-            {
-                return TransactionSubcommandName.TRANS_PEEK_NMPIPE;
-            }
-        }
+        public override TransactionSubcommandName SubcommandName => TransactionSubcommandName.TRANS_PEEK_NMPIPE;
     }
 }

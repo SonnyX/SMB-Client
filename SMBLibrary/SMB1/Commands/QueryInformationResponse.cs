@@ -5,8 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -25,36 +23,30 @@ namespace SMBLibrary.SMB1
         public uint FileSize;
         public byte[] Reserved; // 10 bytes
 
-        public QueryInformationResponse() : base()
+        public QueryInformationResponse()
         {
             Reserved = new byte[10];
         }
 
-        public QueryInformationResponse(byte[] buffer, int offset) : base(buffer, offset, false)
+        public QueryInformationResponse(byte[] buffer, int offset) : base(buffer, offset)
         {
-            FileAttributes = (SMBFileAttributes)LittleEndianConverter.ToUInt16(this.SMBParameters, 0);
-            LastWriteTime = UTimeHelper.ReadNullableUTime(this.SMBParameters, 2);
-            FileSize = LittleEndianConverter.ToUInt32(this.SMBParameters, 6);
-            Reserved = ByteReader.ReadBytes(this.SMBParameters, 10, 10);
+            FileAttributes = (SMBFileAttributes)LittleEndianConverter.ToUInt16(SMBParameters, 0);
+            LastWriteTime = UTimeHelper.ReadNullableUTime(SMBParameters, 2);
+            FileSize = LittleEndianConverter.ToUInt32(SMBParameters, 6);
+            Reserved = ByteReader.ReadBytes(SMBParameters, 10, 10);
         }
 
         public override byte[] GetBytes(bool isUnicode)
         {
-            this.SMBParameters = new byte[ParameterLength];
-            LittleEndianWriter.WriteUInt16(this.SMBParameters, 0, (ushort)FileAttributes);
-            UTimeHelper.WriteUTime(this.SMBParameters, 2, LastWriteTime);
-            LittleEndianWriter.WriteUInt32(this.SMBParameters, 6, FileSize);
-            ByteWriter.WriteBytes(this.SMBParameters, 10, Reserved, 10);
+            SMBParameters = new byte[ParameterLength];
+            LittleEndianWriter.WriteUInt16(SMBParameters, 0, (ushort)FileAttributes);
+            UTimeHelper.WriteUTime(SMBParameters, 2, LastWriteTime);
+            LittleEndianWriter.WriteUInt32(SMBParameters, 6, FileSize);
+            ByteWriter.WriteBytes(SMBParameters, 10, Reserved, 10);
             
             return base.GetBytes(isUnicode);
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_QUERY_INFORMATION;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_QUERY_INFORMATION;
     }
 }

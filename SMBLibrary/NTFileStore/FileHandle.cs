@@ -4,14 +4,12 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
+
 using System.IO;
-using System.Text;
 
 namespace SMBLibrary
 {
-    public class FileHandle
+    public class FileHandle : NtHandle
     {
         public string Path;
         public bool IsDirectory;

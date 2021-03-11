@@ -4,9 +4,8 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary
@@ -17,7 +16,7 @@ namespace SMBLibrary
     public class RequestGetDfsReferral
     {
         public ushort MaxReferralLevel;
-        public string RequestFileName; // Unicode
+        public string? RequestFileName; // Unicode
 
         public RequestGetDfsReferral()
         {
@@ -31,7 +30,7 @@ namespace SMBLibrary
 
         public byte[] GetBytes()
         {
-            int length = 2 + RequestFileName.Length * 2 + 2;
+            int length = 2 + RequestFileName?.Length * 2 + 2 ?? throw new NullReferenceException(nameof(RequestFileName));
             byte[] buffer = new byte[length];
             LittleEndianWriter.WriteUInt16(buffer, 0, MaxReferralLevel);
             ByteWriter.WriteUTF16String(buffer, 2, RequestFileName);

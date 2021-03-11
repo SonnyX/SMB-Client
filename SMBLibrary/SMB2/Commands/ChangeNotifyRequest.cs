@@ -4,8 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
+
 using Utilities;
 
 namespace SMBLibrary.SMB2
@@ -17,10 +16,10 @@ namespace SMBLibrary.SMB2
     {
         public const int DeclaredSize = 32;
 
-        private ushort StructureSize;
+        private readonly ushort StructureSize;
         public ChangeNotifyFlags Flags;
         public uint OutputBufferLength;
-        public FileID FileId;
+        public FileID? FileId;
         public NotifyChangeFilter CompletionFilter;
         public uint Reserved;
 
@@ -44,17 +43,14 @@ namespace SMBLibrary.SMB2
             LittleEndianWriter.WriteUInt16(buffer, offset + 0, StructureSize);
             LittleEndianWriter.WriteUInt16(buffer, offset + 2, (ushort)Flags);
             LittleEndianWriter.WriteUInt32(buffer, offset + 4, OutputBufferLength);
-            FileId.WriteBytes(buffer, offset + 8);
+            FileId?.WriteBytes(buffer, offset + 8);
             LittleEndianWriter.WriteUInt32(buffer, offset + 24, (uint)CompletionFilter);
             LittleEndianWriter.WriteUInt32(buffer, offset + 28, Reserved);
         }
 
         public bool WatchTree
         {
-            get
-            {
-                return ((Flags & ChangeNotifyFlags.WatchTree) > 0);
-            }
+            get => ((Flags & ChangeNotifyFlags.WatchTree) > 0);
             set
             {
                 if (value)
@@ -68,12 +64,6 @@ namespace SMBLibrary.SMB2
             }
         }
 
-        public override int CommandLength
-        {
-            get
-            {
-                return DeclaredSize;
-            }
-        }
+        public override int CommandLength => DeclaredSize;
     }
 }

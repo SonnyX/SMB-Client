@@ -4,9 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -18,14 +16,14 @@ namespace SMBLibrary.SMB1
     {
         // Parameters
         public uint Reserved;
-        public string DirectoryName; // SMB_STRING
+        public string? DirectoryName; // SMB_STRING
         // Data
-        public FullExtendedAttributeList ExtendedAttributeList;
+        public FullExtendedAttributeList? ExtendedAttributeList;
 
-        public Transaction2CreateDirectoryRequest() : base()
+        public Transaction2CreateDirectoryRequest()
         {}
 
-        public Transaction2CreateDirectoryRequest(byte[] parameters, byte[] data, bool isUnicode) : base()
+        public Transaction2CreateDirectoryRequest(byte[] parameters, byte[] data, bool isUnicode)
         {
             Reserved = LittleEndianConverter.ToUInt32(parameters, 0);
             DirectoryName = SMB1Helper.ReadSMBString(parameters, 4, isUnicode);
@@ -40,7 +38,7 @@ namespace SMBLibrary.SMB1
         public override byte[] GetParameters(bool isUnicode)
         {
             int length = 4;
-            length += isUnicode ? DirectoryName.Length * 2 + 2 : DirectoryName.Length + 1 + 1;
+            length += isUnicode ? DirectoryName?.Length * 2 + 2 ?? 0 : DirectoryName?.Length + 1 + 1 ?? 0;
             byte[] parameters = new byte[length];
             LittleEndianWriter.WriteUInt32(parameters, 0, Reserved);
             SMB1Helper.WriteSMBString(parameters, 4, isUnicode, DirectoryName);
@@ -49,15 +47,9 @@ namespace SMBLibrary.SMB1
 
         public override byte[] GetData(bool isUnicode)
         {
-            return ExtendedAttributeList.GetBytes();
+            return ExtendedAttributeList?.GetBytes() ?? new byte[0];
         }
 
-        public override Transaction2SubcommandName SubcommandName
-        {
-            get
-            {
-                return Transaction2SubcommandName.TRANS2_CREATE_DIRECTORY;
-            }
-        }
+        public override Transaction2SubcommandName SubcommandName => Transaction2SubcommandName.TRANS2_CREATE_DIRECTORY;
     }
 }

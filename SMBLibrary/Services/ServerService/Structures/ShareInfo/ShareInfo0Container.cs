@@ -4,11 +4,8 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using SMBLibrary.RPC;
-using Utilities;
 
 namespace SMBLibrary.Services
 {
@@ -17,7 +14,7 @@ namespace SMBLibrary.Services
     /// </summary>
     public class ShareInfo0Container : IShareInfoContainer
     {
-        public NDRConformantArray<ShareInfo0Entry> Entries;
+        public NDRConformantArray<ShareInfo0Entry>? Entries;
 
         public ShareInfo0Container()
         {
@@ -31,48 +28,26 @@ namespace SMBLibrary.Services
         public void Read(NDRParser parser)
         {
             parser.BeginStructure();
-            uint count = parser.ReadUInt32();
-            parser.ReadEmbeddedStructureFullPointer<NDRConformantArray<ShareInfo0Entry>>(ref Entries);
+            _ = parser.ReadUInt32();
+            parser.ReadEmbeddedStructureFullPointer(ref Entries);
             parser.EndStructure();
         }
 
         public void Write(NDRWriter writer)
         {
             writer.BeginStructure();
-            writer.WriteUInt32((uint)this.Count);
+            writer.WriteUInt32((uint)Count);
             writer.WriteEmbeddedStructureFullPointer(Entries);
             writer.EndStructure();
         }
 
-        public uint Level
-        {
-            get
-            {
-                return 0;
-            }
-        }
+        public uint Level => 0;
 
-        public int Count
-        {
-            get
-            {
-                if (Entries != null)
-                {
-                    return Entries.Count;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-        }
+        public int Count => Entries?.Count ?? 0;
 
         public void Add(ShareInfo0Entry entry)
         {
-            if (Entries == null)
-            {
-                Entries = new NDRConformantArray<ShareInfo0Entry>();
-            }
+            Entries ??= new NDRConformantArray<ShareInfo0Entry>();
             Entries.Add(entry);
         }
     }

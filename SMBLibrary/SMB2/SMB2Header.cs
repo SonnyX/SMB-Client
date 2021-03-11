@@ -1,10 +1,10 @@
 /* Copyright (C) 2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
+
 using Utilities;
 
 namespace SMBLibrary.SMB2
@@ -14,10 +14,10 @@ namespace SMBLibrary.SMB2
         public const int Length = 64;
         public const int SignatureOffset = 48;
 
-        public static readonly byte[] ProtocolSignature = new byte[] { 0xFE, 0x53, 0x4D, 0x42 };
+        public static readonly byte[] ProtocolSignature = { 0xFE, 0x53, 0x4D, 0x42 };
 
-        private byte[] ProtocolId; // 4 bytes, 0xFE followed by "SMB"
-        private ushort StructureSize;
+        private readonly byte[] ProtocolId; // 4 bytes, 0xFE followed by "SMB"
+        private readonly ushort StructureSize;
         public ushort CreditCharge;
         public NTStatus Status;
         public SMB2CommandName Command;
@@ -29,7 +29,7 @@ namespace SMBLibrary.SMB2
         public uint TreeID;   // Sync
         public ulong AsyncID; // Async
         public ulong SessionID;
-        public byte[] Signature; // 16 bytes (present if SMB2_FLAGS_SIGNED is set)
+        public byte[]? Signature; // 16 bytes (present if SMB2_FLAGS_SIGNED is set)
 
         public SMB2Header(SMB2CommandName commandName)
         {
@@ -95,10 +95,7 @@ namespace SMBLibrary.SMB2
 
         public bool IsResponse
         {
-            get
-            {
-                return (Flags & SMB2PacketHeaderFlags.ServerToRedir) > 0;
-            }
+            get => (Flags & SMB2PacketHeaderFlags.ServerToRedir) > 0;
             set
             {
                 if (value)
@@ -111,13 +108,10 @@ namespace SMBLibrary.SMB2
                 }
             }
         }
-        
+
         public bool IsAsync
         {
-            get
-            {
-                return (Flags & SMB2PacketHeaderFlags.AsyncCommand) > 0;
-            }
+            get => (Flags & SMB2PacketHeaderFlags.AsyncCommand) > 0;
             set
             {
                 if (value)
@@ -133,10 +127,7 @@ namespace SMBLibrary.SMB2
 
         public bool IsRelatedOperations
         {
-            get
-            {
-                return (Flags & SMB2PacketHeaderFlags.RelatedOperations) > 0;
-            }
+            get => (Flags & SMB2PacketHeaderFlags.RelatedOperations) > 0;
             set
             {
                 if (value)
@@ -149,13 +140,10 @@ namespace SMBLibrary.SMB2
                 }
             }
         }
-        
+
         public bool IsSigned
         {
-            get
-            {
-                return (Flags & SMB2PacketHeaderFlags.Signed) > 0;
-            }
+            get => (Flags & SMB2PacketHeaderFlags.Signed) > 0;
             set
             {
                 if (value)
@@ -171,12 +159,10 @@ namespace SMBLibrary.SMB2
 
         public static bool IsValidSMB2Header(byte[] buffer)
         {
-            if (buffer.Length >= 4)
-            {
-                byte[] protocol = ByteReader.ReadBytes(buffer, 0, 4);
-                return ByteUtils.AreByteArraysEqual(protocol, ProtocolSignature);
-            }
-            return false;
+            if (buffer.Length < 4)
+                return false;
+            byte[] protocol = ByteReader.ReadBytes(buffer, 0, 4);
+            return ByteUtils.AreByteArraysEqual(protocol, ProtocolSignature);
         }
     }
 }

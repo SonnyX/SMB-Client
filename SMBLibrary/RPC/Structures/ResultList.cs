@@ -4,9 +4,8 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
+
 using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.RPC
@@ -20,10 +19,10 @@ namespace SMBLibrary.RPC
         public byte Reserved;
         public ushort Reserved2;
 
-        public ResultList() : base()
+        public ResultList()
         {}
 
-        public ResultList(byte[] buffer, int offset) : base()
+        public ResultList(byte[] buffer, int offset)
         {
             byte numberOfResults = ByteReader.ReadByte(buffer, offset + 0);
             Reserved = ByteReader.ReadByte(buffer, offset + 1);
@@ -32,14 +31,14 @@ namespace SMBLibrary.RPC
             for (int index = 0; index < numberOfResults; index++)
             {
                 ResultElement element = new ResultElement(buffer, offset);
-                this.Add(element);
+                Add(element);
                 offset += ResultElement.Length;
             }
         }
 
         public void WriteBytes(byte[] buffer, int offset)
         {
-            byte numberOfResults = (byte)this.Count;
+            byte numberOfResults = (byte)Count;
 
             ByteWriter.WriteByte(buffer, offset + 0, numberOfResults);
             ByteWriter.WriteByte(buffer, offset + 1, Reserved);
@@ -55,15 +54,9 @@ namespace SMBLibrary.RPC
         public void WriteBytes(byte[] buffer, ref int offset)
         {
             WriteBytes(buffer, offset);
-            offset += this.Length;
+            offset += Length;
         }
 
-        public int Length
-        {
-            get
-            {
-                return 4 + ResultElement.Length * this.Count;
-            }
-        }
+        public int Length => 4 + ResultElement.Length * Count;
     }
 }

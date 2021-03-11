@@ -4,9 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -23,12 +21,12 @@ namespace SMBLibrary.SMB1
         public byte MaximumInstances;
         public byte CurrentInstances;
         public byte PipeNameLength;
-        public string PipeName; // SMB_STRING (this field WILL be aligned to start on a 2-byte boundary from the start of the SMB header)
+        public string? PipeName; // SMB_STRING (this field WILL be aligned to start on a 2-byte boundary from the start of the SMB header)
 
-        public TransactionQueryNamedPipeInfoResponse() : base()
+        public TransactionQueryNamedPipeInfoResponse()
         {}
 
-        public TransactionQueryNamedPipeInfoResponse(byte[] data, bool isUnicode) : base()
+        public TransactionQueryNamedPipeInfoResponse(byte[] data, bool isUnicode)
         {
             OutputBufferSize = LittleEndianConverter.ToUInt16(data, 0);
             InputBufferSize = LittleEndianConverter.ToUInt16(data, 2);
@@ -41,6 +39,9 @@ namespace SMBLibrary.SMB1
 
         public override byte[] GetData(bool isUnicode)
         {
+            if (PipeName == null)
+                return new byte[0];
+
             int length = 8;
             if (isUnicode)
             {
@@ -60,12 +61,6 @@ namespace SMBLibrary.SMB1
             return data;
         }
 
-        public override TransactionSubcommandName SubcommandName
-        {
-            get
-            {
-                return TransactionSubcommandName.TRANS_QUERY_NMPIPE_INFO;
-            }
-        }
+        public override TransactionSubcommandName SubcommandName => TransactionSubcommandName.TRANS_QUERY_NMPIPE_INFO;
     }
 }

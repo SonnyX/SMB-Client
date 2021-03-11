@@ -1,11 +1,11 @@
 /* Copyright (C) 2014-2018 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
-using System.Collections.Generic;
 using Utilities;
 
 namespace SMBLibrary.RPC
@@ -19,6 +19,7 @@ namespace SMBLibrary.RPC
 
         // The common header fields, which appear in all (connection oriented) PDU types:
         public byte VersionMajor; // rpc_vers
+
         public byte VersionMinor; // rpc_vers_minor
         protected PacketTypeName PacketType;
         public PacketFlags Flags;
@@ -67,26 +68,19 @@ namespace SMBLibrary.RPC
             get;
         }
 
-        public static RPCPDU GetPDU(byte[] buffer, int offset)
+        public static RPCPDU GetPDU(byte[]? buffer, int offset)
         {
             PacketTypeName packetType = (PacketTypeName)ByteReader.ReadByte(buffer, 2);
-            switch (packetType)
+            return packetType switch
             {
-                case PacketTypeName.Request:
-                    return new RequestPDU(buffer, offset);
-                case PacketTypeName.Response:
-                    return new ResponsePDU(buffer, offset);
-                case PacketTypeName.Fault:
-                    return new FaultPDU(buffer, offset);
-                case PacketTypeName.Bind:
-                    return new BindPDU(buffer, offset);
-                case PacketTypeName.BindAck:
-                    return new BindAckPDU(buffer, offset);
-                case PacketTypeName.BindNak:
-                    return new BindNakPDU(buffer, offset);
-                default:
-                    throw new NotImplementedException();
-            }
+                PacketTypeName.Request => new RequestPDU(buffer, offset),
+                PacketTypeName.Response => new ResponsePDU(buffer, offset),
+                PacketTypeName.Fault => new FaultPDU(buffer, offset),
+                PacketTypeName.Bind => new BindPDU(buffer, offset),
+                PacketTypeName.BindAck => new BindAckPDU(buffer, offset),
+                PacketTypeName.BindNak => new BindNakPDU(buffer, offset),
+                _ => throw new NotImplementedException()
+            };
         }
 
         public static ushort GetPDULength(byte[] buffer, int offset)

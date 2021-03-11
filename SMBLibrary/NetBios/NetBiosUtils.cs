@@ -5,7 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Utilities;
@@ -23,7 +22,7 @@ namespace SMBLibrary.NetBios
         {
             if (name.Length > 15)
             {
-                name = name.Substring(0, 15);
+                name = name[..15];
             }
             else if (name.Length < 15)
             {
@@ -60,9 +59,9 @@ namespace SMBLibrary.NetBios
             return EncodeName(netBiosName, scopeID);
         }
 
-        /// <param name="name">NetBIOS name</param>
+        /// <param name="netBiosName">NetBIOS name</param>
         /// <param name="scopeID">dot-separated labels, formatted per DNS naming rules</param>
-        public static byte[] EncodeName(string netBiosName, string scopeID)
+        public static byte[] EncodeName(string? netBiosName, string scopeID)
         {
             string domainName = FirstLevelEncoding(netBiosName, scopeID);
             return SecondLevelEncoding(domainName);
@@ -75,7 +74,7 @@ namespace SMBLibrary.NetBios
         // into two nibbles and then adding the value of 'A' (0x41).
         // Thus, the '&' character (0x26) would be encoded as "CG".
         // NetBIOS names are usually padded with spaces before being encoded. 
-        /// <param name="name">NetBIOS name</param>
+        /// <param name="netBiosName">NetBIOS name</param>
         /// <param name="scopeID">dot-separated labels, formatted per DNS naming rules</param>
         public static string FirstLevelEncoding(string netBiosName, string scopeID)
         {
@@ -86,20 +85,19 @@ namespace SMBLibrary.NetBios
             }
 
             StringBuilder builder = new StringBuilder();
-            for (int index = 0; index < netBiosName.Length; index++)
+            foreach (char c in netBiosName)
             {
-                byte c = (byte)netBiosName[index];
                 byte high = (byte)(0x41 + (c >> 4));
                 byte low = (byte)(0x41 + (c & 0x0F));
                 builder.Append((char)high);
                 builder.Append((char)low);
             }
 
-            if (scopeID.Length > 0)
-            {
-                builder.Append(".");
-                builder.Append(scopeID);
-            }
+            if (scopeID.Length <= 0)
+                return builder.ToString();
+
+            builder.Append(".");
+            builder.Append(scopeID);
 
             return builder.ToString();
         }
@@ -117,10 +115,10 @@ namespace SMBLibrary.NetBios
         {
             string[] labels = domainName.Split('.');
             int length = 1; // null terminator
-            for (int index = 0; index < labels.Length; index++)
+            foreach (string label in labels)
             {
-                length += 1 + labels[index].Length;
-                if (labels[index].Length > 63)
+                length += 1 + label.Length;
+                if (label.Length > 63)
                 {
                     throw new ArgumentException("Invalid NetBIOS label length");
                 }
@@ -140,14 +138,14 @@ namespace SMBLibrary.NetBios
             return result;
         }
 
-        public static string DecodeName(byte[] buffer, ref int offset)
+        public static string DecodeName(byte[]? buffer, ref int offset)
         {
             string domainName = SecondLevelDecoding(buffer, ref offset);
             string name = domainName.Split('.')[0];
             return FirstLevelDecoding(name);
         }
 
-        public static string SecondLevelDecoding(byte[] buffer, ref int offset)
+        public static string SecondLevelDecoding(byte[]? buffer, ref int offset)
         {
             StringBuilder builder = new StringBuilder();
 

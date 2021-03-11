@@ -1,3 +1,22 @@
+# SMB-Client
+
+This is a fork of [Tal Aloni's SMBLibrary](https://github.com/TalAloni/SMBLibrary) that has been stripped down to just the client library, utilities, and tests and converted to .NET Standard 2.1 
+
+## Changes From the Original Library
+
+- SMBServer project removed
+- SMBLibrary.Win32 removed
+- SMBLibrary converted to .NET Standard 2.1
+- Utilities converted to .NET Standard 2.1
+- SMBLibrary.Tests converted to .NET Core 3.0
+- SMBLibrary.Tests converted to use xunit instead of MSTest
+- ClientMaxTransactSize, ClientMaxReadSize, and ClientMaxWriteSize changed to public so they can be set by anything that uses the library. Currently, this has to stay set to 65536 since the SMB server doesn't seem to be honoring the value agreed upon duing negotionation. Hopefully this can be fixed at some point.
+- Added IDisposable to relevant objects
+- Added Nullable to relevant objects
+
+
+The original readme:
+
 About SMBLibrary:
 =================
 SMBLibrary is an open-source C# SMB 1.0/CIFS, SMB 2.0, SMB 2.1 and SMB 3.0 server and client implementation.  
@@ -59,9 +78,7 @@ Client code examples can be found [here](ClientExamples.md).
 
 NuGet Packages:
 ===============
-[SMBLibrary](https://www.nuget.org/packages/SMBLibrary/) - Cross-platform server and client implementation.  
-[SMBLibrary.Win32](https://www.nuget.org/packages/SMBLibrary.Win32/) - Allows utilizing Integrated Windows Authentication and/or the Windows storage subsystem on a Windows host.  
-[SMBLibrary.Adapters](https://www.nuget.org/packages/SMBLibrary.Adapters/) - IFileSystem to INTFileStore adapter for SMBLibrary.  
+[SMB-Client](https://www.nuget.org/packages/SMB-Client/) - Cross-platform client implementation.  
 
 Contact:
 ========

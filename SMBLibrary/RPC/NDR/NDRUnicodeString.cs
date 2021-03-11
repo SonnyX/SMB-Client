@@ -4,20 +4,17 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
 using System.Text;
-using Utilities;
 
 namespace SMBLibrary.RPC
 {
     public class NDRUnicodeString : INDRStructure
     {
-        private bool m_writeNullTerminationCharacter;
+        private readonly bool m_writeNullTerminationCharacter;
 
-        public string Value;
+        public string? Value;
 
-        public NDRUnicodeString() : this(String.Empty, true)
+        public NDRUnicodeString() : this(string.Empty, true)
         {
         }
 
@@ -39,9 +36,9 @@ namespace SMBLibrary.RPC
         // 14.3.4.2 - Conformant and Varying Strings
         public void Read(NDRParser parser)
         {
-            uint maxCount = parser.ReadUInt32();
+            _ = parser.ReadUInt32();
             // the offset from the first index of the string to the first index of the actual subset being passed
-            uint index = parser.ReadUInt32();
+            _ = parser.ReadUInt32();
             // actualCount includes the null terminator
             uint actualCount = parser.ReadUInt32();
             StringBuilder builder = new StringBuilder();
@@ -49,12 +46,12 @@ namespace SMBLibrary.RPC
             {
                 builder.Append((char)parser.ReadUInt16());
             }
-            this.Value = builder.ToString().TrimEnd('\0');
+            Value = builder.ToString().TrimEnd('\0');
         }
 
         public void Write(NDRWriter writer)
         {
-            string valueToWrite = String.Empty;
+            string valueToWrite = string.Empty;
             if (Value != null)
             {
                 valueToWrite = Value;
@@ -72,9 +69,9 @@ namespace SMBLibrary.RPC
             writer.WriteUInt32(index);
             uint actualCount = (uint)valueToWrite.Length;
             writer.WriteUInt32(actualCount);
-            for (int position = 0; position < valueToWrite.Length; position++)
+            foreach (char value in valueToWrite)
             {
-                writer.WriteUInt16((ushort)valueToWrite[position]);
+                writer.WriteUInt16(value);
             }
         }
     }

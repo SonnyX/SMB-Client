@@ -4,9 +4,6 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using Utilities;
 
 namespace SMBLibrary
 {
@@ -15,7 +12,7 @@ namespace SMBLibrary
     /// </summary>
     public class FileAlternateNameInformation : FileNameInformation
     {
-        public FileAlternateNameInformation() : base()
+        public FileAlternateNameInformation()
         {
         }
 
@@ -23,12 +20,6 @@ namespace SMBLibrary
         {
         }
 
-        public override FileInformationClass FileInformationClass
-        {
-            get
-            {
-                return FileInformationClass.FileAlternateNameInformation;
-            }
-        }
+        public override FileInformationClass FileInformationClass => FileInformationClass.FileAlternateNameInformation;
     }
 }

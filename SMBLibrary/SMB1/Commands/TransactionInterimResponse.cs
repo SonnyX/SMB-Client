@@ -4,9 +4,6 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using Utilities;
 
 namespace SMBLibrary.SMB1
 {
@@ -17,11 +14,11 @@ namespace SMBLibrary.SMB1
     {
         public const int ParametersLength = 0;
 
-        public TransactionInterimResponse() : base()
+        public TransactionInterimResponse()
         {
         }
 
-        public TransactionInterimResponse(byte[] buffer, int offset) : base(buffer, offset, false)
+        public TransactionInterimResponse(byte[] buffer, int offset) : base(buffer, offset)
         {
         }
 
@@ -30,12 +27,6 @@ namespace SMBLibrary.SMB1
             return base.GetBytes(isUnicode);
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_TRANSACTION;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_TRANSACTION;
     }
 }

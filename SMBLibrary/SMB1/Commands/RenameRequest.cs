@@ -4,8 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
+
 using System.IO;
 using Utilities;
 
@@ -26,24 +25,24 @@ namespace SMBLibrary.SMB1
         public byte BufferFormat2;
         public string NewFileName; // SMB_STRING (If Unicode, this field MUST be aligned to start on a 2-byte boundary from the start of the SMB header)
 
-        public RenameRequest() : base()
+        public RenameRequest()
         {
             BufferFormat1 = SupportedBufferFormat;
             BufferFormat2 = SupportedBufferFormat;
         }
 
-        public RenameRequest(byte[] buffer, int offset, bool isUnicode) : base(buffer, offset, isUnicode)
+        public RenameRequest(byte[] buffer, int offset, bool isUnicode) : base(buffer, offset)
         {
-            SearchAttributes = (SMBFileAttributes)LittleEndianConverter.ToUInt16(this.SMBParameters, 0);
+            SearchAttributes = (SMBFileAttributes)LittleEndianConverter.ToUInt16(SMBParameters, 0);
 
             int dataOffset = 0;
-            BufferFormat1 = ByteReader.ReadByte(this.SMBData, ref dataOffset);
+            BufferFormat1 = ByteReader.ReadByte(SMBData, ref dataOffset);
             if (BufferFormat1 != SupportedBufferFormat)
             {
                 throw new InvalidDataException("Unsupported Buffer Format");
             }
-            OldFileName = SMB1Helper.ReadSMBString(this.SMBData, ref dataOffset, isUnicode);
-            BufferFormat2 = ByteReader.ReadByte(this.SMBData, ref dataOffset);
+            OldFileName = SMB1Helper.ReadSMBString(SMBData, ref dataOffset, isUnicode);
+            BufferFormat2 = ByteReader.ReadByte(SMBData, ref dataOffset);
             if (BufferFormat2 != SupportedBufferFormat)
             {
                 throw new InvalidDataException("Unsupported Buffer Format");
@@ -52,42 +51,36 @@ namespace SMBLibrary.SMB1
             {
                 dataOffset++;
             }
-            NewFileName = SMB1Helper.ReadSMBString(this.SMBData, ref dataOffset, isUnicode);
+            NewFileName = SMB1Helper.ReadSMBString(SMBData, ref dataOffset, isUnicode);
         }
 
         public override byte[] GetBytes(bool isUnicode)
         {
-            this.SMBParameters = new byte[ParametersLength];
-            LittleEndianWriter.WriteUInt16(this.SMBParameters, 0, (ushort)SearchAttributes);
+            SMBParameters = new byte[ParametersLength];
+            LittleEndianWriter.WriteUInt16(SMBParameters, 0, (ushort)SearchAttributes);
 
             if (isUnicode)
             {
                 int padding = 1;
-                this.SMBData = new byte[2 + OldFileName.Length * 2 + NewFileName.Length * 2 + 4 + padding];
+                SMBData = new byte[2 + OldFileName.Length * 2 + NewFileName.Length * 2 + 4 + padding];
             }
             else
             {
-                this.SMBData = new byte[2 + OldFileName.Length + NewFileName.Length + 2];
+                SMBData = new byte[2 + OldFileName.Length + NewFileName.Length + 2];
             }
             int dataOffset = 0;
-            ByteWriter.WriteByte(this.SMBData, ref dataOffset, BufferFormat1);
-            SMB1Helper.WriteSMBString(this.SMBData, ref dataOffset, isUnicode, OldFileName);
-            ByteWriter.WriteByte(this.SMBData, ref dataOffset, BufferFormat2);
+            ByteWriter.WriteByte(SMBData, ref dataOffset, BufferFormat1);
+            SMB1Helper.WriteSMBString(SMBData, ref dataOffset, isUnicode, OldFileName);
+            ByteWriter.WriteByte(SMBData, ref dataOffset, BufferFormat2);
             if (isUnicode)
             {
                 dataOffset++; // padding
             }
-            SMB1Helper.WriteSMBString(this.SMBData, ref dataOffset, isUnicode, NewFileName);
+            SMB1Helper.WriteSMBString(SMBData, ref dataOffset, isUnicode, NewFileName);
 
             return base.GetBytes(isUnicode);
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_RENAME;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_RENAME;
     }
 }

@@ -4,8 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
+
 using Utilities;
 
 namespace SMBLibrary.SMB2
@@ -18,7 +17,7 @@ namespace SMBLibrary.SMB2
         public const int FixedSize = 24;
         public const int DeclaredSize = 25;
 
-        private ushort StructureSize;
+        private readonly ushort StructureSize;
         public SessionSetupFlags Flags;
         public SecurityMode SecurityMode;
         public Capabilities Capabilities; // Values other than SMB2_GLOBAL_CAP_DFS should be treated as reserved.
@@ -68,12 +67,6 @@ namespace SMBLibrary.SMB2
             ByteWriter.WriteBytes(buffer, offset + FixedSize, SecurityBuffer);
         }
 
-        public override int CommandLength
-        {
-            get
-            {
-                return FixedSize + SecurityBuffer.Length;
-            }
-        }
+        public override int CommandLength => FixedSize + SecurityBuffer.Length;
     }
 }

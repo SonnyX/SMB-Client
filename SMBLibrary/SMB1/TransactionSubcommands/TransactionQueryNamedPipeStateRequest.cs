@@ -1,12 +1,10 @@
 /* Copyright (C) 2014 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -19,11 +17,7 @@ namespace SMBLibrary.SMB1
         // Setup:
         public ushort FID;
 
-        public TransactionQueryNamedPipeStateRequest() : base()
-        {
-        }
-
-        public TransactionQueryNamedPipeStateRequest(byte[] setup, byte[] parameters) : base()
+        public TransactionQueryNamedPipeStateRequest(byte[] setup)
         {
             FID = LittleEndianConverter.ToUInt16(setup, 2);
         }
@@ -33,12 +27,6 @@ namespace SMBLibrary.SMB1
             return LittleEndianConverter.GetBytes((ushort)SubcommandName);
         }
 
-        public override TransactionSubcommandName SubcommandName
-        {
-            get
-            {
-                return TransactionSubcommandName.TRANS_QUERY_NMPIPE_STATE;
-            }
-        }
+        public override TransactionSubcommandName SubcommandName => TransactionSubcommandName.TRANS_QUERY_NMPIPE_STATE;
     }
 }

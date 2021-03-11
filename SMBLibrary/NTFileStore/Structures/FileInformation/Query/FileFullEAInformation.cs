@@ -4,10 +4,8 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
+
 using System.Collections.Generic;
-using System.Text;
-using Utilities;
 
 namespace SMBLibrary
 {
@@ -16,7 +14,7 @@ namespace SMBLibrary
     /// </summary>
     public class FileFullEAInformation : FileInformation
     {
-        List<FileFullEAEntry> m_entries = new List<FileFullEAEntry>();
+        readonly List<FileFullEAEntry> m_entries = new List<FileFullEAEntry>();
 
         public FileFullEAInformation()
         {
@@ -32,21 +30,9 @@ namespace SMBLibrary
             WriteList(buffer, offset, m_entries);
         }
 
-        public List<FileFullEAEntry> Entries
-        {
-            get
-            {
-                return m_entries;
-            }
-        }
+        public List<FileFullEAEntry> Entries => m_entries;
 
-        public override FileInformationClass FileInformationClass
-        {
-            get
-            {
-                return FileInformationClass.FileFullEaInformation;
-            }
-        }
+        public override FileInformationClass FileInformationClass => FileInformationClass.FileFullEaInformation;
 
         public override int Length
         {

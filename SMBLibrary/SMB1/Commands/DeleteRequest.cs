@@ -5,7 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Utilities;
 
@@ -24,21 +23,21 @@ namespace SMBLibrary.SMB1
         public byte BufferFormat;
         public string FileName; // SMB_STRING
 
-        public DeleteRequest() : base()
+        public DeleteRequest()
         {
             BufferFormat = SupportedBufferFormat;
         }
 
-        public DeleteRequest(byte[] buffer, int offset, bool isUnicode) : base(buffer, offset, isUnicode)
+        public DeleteRequest(byte[] buffer, int offset, bool isUnicode) : base(buffer, offset)
         {
-            SearchAttributes = (SMBFileAttributes)LittleEndianConverter.ToUInt16(this.SMBParameters, 0);
+            SearchAttributes = (SMBFileAttributes)LittleEndianConverter.ToUInt16(SMBParameters, 0);
 
-            BufferFormat = ByteReader.ReadByte(this.SMBData, 0);
+            BufferFormat = ByteReader.ReadByte(SMBData, 0);
             if (BufferFormat != SupportedBufferFormat)
             {
                 throw new InvalidDataException("Unsupported Buffer Format");
             }
-            FileName = SMB1Helper.ReadSMBString(this.SMBData, 1, isUnicode);
+            FileName = SMB1Helper.ReadSMBString(SMBData, 1, isUnicode);
         }
 
         public override byte[] GetBytes(bool isUnicode)
@@ -46,12 +45,6 @@ namespace SMBLibrary.SMB1
             throw new NotImplementedException();
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_DELETE;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_DELETE;
     }
 }

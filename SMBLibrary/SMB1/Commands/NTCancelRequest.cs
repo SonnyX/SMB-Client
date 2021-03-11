@@ -4,10 +4,6 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Utilities;
 
 namespace SMBLibrary.SMB1
 {
@@ -20,16 +16,10 @@ namespace SMBLibrary.SMB1
         {
         }
 
-        public NTCancelRequest(byte[] buffer, int offset) : base(buffer, offset, false)
+        public NTCancelRequest(byte[] buffer, int offset) : base(buffer, offset)
         {
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_NT_CANCEL;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_NT_CANCEL;
     }
 }

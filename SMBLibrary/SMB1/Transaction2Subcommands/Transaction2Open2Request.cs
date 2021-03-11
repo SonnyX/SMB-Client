@@ -5,8 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -25,16 +23,16 @@ namespace SMBLibrary.SMB1
         public OpenMode OpenMode;
         public uint AllocationSize;
         public byte[] Reserved; // 10 bytes
-        public string FileName; // SMB_STRING
+        public string? FileName; // SMB_STRING
         // Data:
-        public FullExtendedAttributeList ExtendedAttributeList;
+        public FullExtendedAttributeList? ExtendedAttributeList;
 
-        public Transaction2Open2Request() : base()
+        public Transaction2Open2Request()
         {
             Reserved = new byte[10];
         }
 
-        public Transaction2Open2Request(byte[] parameters, byte[] data, bool isUnicode) : base()
+        public Transaction2Open2Request(byte[] parameters, byte[] data, bool isUnicode)
         {
             Flags = (Open2Flags)LittleEndianConverter.ToUInt16(parameters, 0);
             AccessMode = new AccessModeOptions(parameters, 2);
@@ -81,15 +79,9 @@ namespace SMBLibrary.SMB1
 
         public override byte[] GetData(bool isUnicode)
         {
-            return ExtendedAttributeList.GetBytes();
+            return ExtendedAttributeList?.GetBytes() ?? new byte[0];
         }
 
-        public override Transaction2SubcommandName SubcommandName
-        {
-            get
-            {
-                return Transaction2SubcommandName.TRANS2_OPEN2;
-            }
-        }
+        public override Transaction2SubcommandName SubcommandName => Transaction2SubcommandName.TRANS2_OPEN2;
     }
 }

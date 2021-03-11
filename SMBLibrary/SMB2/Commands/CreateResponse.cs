@@ -17,7 +17,7 @@ namespace SMBLibrary.SMB2
     {
         public const int DeclaredSize = 89;
 
-        private ushort StructureSize;
+        private readonly ushort StructureSize;
         public OplockLevel OplockLevel;
         public CreateResponseFlags Flags;
         public CreateAction CreateAction;
@@ -29,7 +29,7 @@ namespace SMBLibrary.SMB2
         public long EndofFile;
         public FileAttributes FileAttributes;
         public uint Reserved2;
-        public FileID FileId;
+        public FileID? FileId;
         private uint CreateContextsOffsets;
         private uint CreateContextsLength;
         public List<CreateContext> CreateContexts = new List<CreateContext>();
@@ -77,22 +77,15 @@ namespace SMBLibrary.SMB2
             LittleEndianWriter.WriteInt64(buffer, offset + 48, EndofFile);
             LittleEndianWriter.WriteUInt32(buffer, offset + 56, (uint)FileAttributes);
             LittleEndianWriter.WriteUInt32(buffer, offset + 60, Reserved2);
-            FileId.WriteBytes(buffer, offset + 64);
+            FileId?.WriteBytes(buffer, offset + 64);
             CreateContextsOffsets = 0;
             CreateContextsLength = (uint)CreateContext.GetCreateContextListLength(CreateContexts);
-            if (CreateContexts.Count > 0)
-            {
-                CreateContextsOffsets = SMB2Header.Length + 88;
-                CreateContext.WriteCreateContextList(buffer, 88, CreateContexts);
-            }
+            if (CreateContexts.Count <= 0)
+                return;
+            CreateContextsOffsets = SMB2Header.Length + 88;
+            CreateContext.WriteCreateContextList(buffer, 88, CreateContexts);
         }
 
-        public override int CommandLength
-        {
-            get
-            {
-                return 88 + CreateContext.GetCreateContextListLength(CreateContexts);
-            }
-        }
+        public override int CommandLength => 88 + CreateContext.GetCreateContextListLength(CreateContexts);
     }
 }

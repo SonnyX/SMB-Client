@@ -4,9 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -38,7 +36,7 @@ namespace SMBLibrary.SMB1
         public override byte[] GetBytes(bool isUnicode)
         {
             uint lengthOfFileSystemName = (uint)(FileSystemName.Length * 2);
-            byte[] buffer = new byte[this.Length];
+            byte[] buffer = new byte[Length];
             LittleEndianWriter.WriteUInt32(buffer, 0, (uint)FileSystemAttributes);
             LittleEndianWriter.WriteUInt32(buffer, 4, MaxFileNameLengthInBytes);
             LittleEndianWriter.WriteUInt32(buffer, 8, lengthOfFileSystemName);
@@ -46,20 +44,8 @@ namespace SMBLibrary.SMB1
             return buffer;
         }
 
-        public override int Length
-        {
-            get
-            {
-                return FixedLength + FileSystemName.Length * 2;
-            }
-        }
+        public override int Length => FixedLength + FileSystemName.Length * 2;
 
-        public override QueryFSInformationLevel InformationLevel
-        {
-            get
-            {
-                return QueryFSInformationLevel.SMB_QUERY_FS_ATTRIBUTE_INFO;
-            }
-        }
+        public override QueryFSInformationLevel InformationLevel => QueryFSInformationLevel.SMB_QUERY_FS_ATTRIBUTE_INFO;
     }
 }

@@ -5,7 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
 using Utilities;
 
 namespace SMBLibrary.SMB2
@@ -18,12 +17,12 @@ namespace SMBLibrary.SMB2
         public const int FixedSize = 48;
         public const int DeclaredSize = 49;
 
-        private ushort StructureSize;
+        private readonly ushort StructureSize;
         public byte Padding;
         public ReadFlags Flags;
         public uint ReadLength;
         public ulong Offset;
-        public FileID FileId;
+        public FileID? FileId;
         public uint MinimumCount;
         public uint Channel;
         public uint RemainingBytes;
@@ -85,13 +84,8 @@ namespace SMBLibrary.SMB2
             }
         }
 
-        public override int CommandLength
-        {
-            get
-            {
-                // The client MUST set one byte of [the buffer] field to 0
-                return Math.Max(FixedSize + ReadChannelInfo.Length, DeclaredSize);
-            }
-        }
+        public override int CommandLength =>
+            // The client MUST set one byte of [the buffer] field to 0
+            Math.Max(FixedSize + ReadChannelInfo.Length, DeclaredSize);
     }
 }

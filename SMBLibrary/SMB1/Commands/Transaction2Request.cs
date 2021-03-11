@@ -4,10 +4,6 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Utilities;
 
 namespace SMBLibrary.SMB1
 {
@@ -18,7 +14,7 @@ namespace SMBLibrary.SMB1
     /// </summary>
     public class Transaction2Request : TransactionRequest
     {
-        public Transaction2Request() : base()
+        public Transaction2Request()
         {
         }
 
@@ -26,12 +22,6 @@ namespace SMBLibrary.SMB1
         {
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_TRANSACTION2;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_TRANSACTION2;
     }
 }

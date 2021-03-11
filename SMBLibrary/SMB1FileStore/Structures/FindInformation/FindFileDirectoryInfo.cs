@@ -5,8 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -30,11 +28,11 @@ namespace SMBLibrary.SMB1
         //uint FileNameLength; // In bytes, MUST exclude the null termination.
         public string FileName; // OEM / Unicode character array. MUST be written as SMB_STRING, and read as fixed length string.
 
-        public FindFileDirectoryInfo() : base()
+        public FindFileDirectoryInfo()
         {
         }
 
-        public FindFileDirectoryInfo(byte[] buffer, int offset, bool isUnicode) : base()
+        public FindFileDirectoryInfo(byte[] buffer, int offset, bool isUnicode)
         {
             NextEntryOffset = LittleEndianReader.ReadUInt32(buffer, ref offset);
             FileIndex = LittleEndianReader.ReadUInt32(buffer, ref offset);
@@ -81,12 +79,6 @@ namespace SMBLibrary.SMB1
             return length;
         }
 
-        public override FindInformationLevel InformationLevel
-        {
-            get
-            {
-                return FindInformationLevel.SMB_FIND_FILE_DIRECTORY_INFO;
-            }
-        }
+        public override FindInformationLevel InformationLevel => FindInformationLevel.SMB_FIND_FILE_DIRECTORY_INFO;
     }
 }

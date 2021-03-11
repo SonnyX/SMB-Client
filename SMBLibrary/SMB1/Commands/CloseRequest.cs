@@ -5,8 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -24,30 +22,24 @@ namespace SMBLibrary.SMB1
         /// </summary>
         public DateTime? LastTimeModified;
 
-        public CloseRequest() : base()
+        public CloseRequest()
         {
         }
 
-        public CloseRequest(byte[] buffer, int offset) : base(buffer, offset, false)
+        public CloseRequest(byte[] buffer, int offset) : base(buffer, offset)
         {
-            FID = LittleEndianConverter.ToUInt16(this.SMBParameters, 0);
-            LastTimeModified = UTimeHelper.ReadNullableUTime(this.SMBParameters, 2);
+            FID = LittleEndianConverter.ToUInt16(SMBParameters, 0);
+            LastTimeModified = UTimeHelper.ReadNullableUTime(SMBParameters, 2);
         }
 
         public override byte[] GetBytes(bool isUnicode)
         {
-            this.SMBParameters = new byte[ParametersLength];
-            LittleEndianWriter.WriteUInt16(this.SMBParameters, 0, FID);
-            UTimeHelper.WriteUTime(this.SMBParameters, 2, LastTimeModified);
+            SMBParameters = new byte[ParametersLength];
+            LittleEndianWriter.WriteUInt16(SMBParameters, 0, FID);
+            UTimeHelper.WriteUTime(SMBParameters, 2, LastTimeModified);
             return base.GetBytes(isUnicode);
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_CLOSE;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_CLOSE;
     }
 }

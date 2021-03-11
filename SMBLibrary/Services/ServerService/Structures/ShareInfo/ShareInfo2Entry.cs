@@ -4,11 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
 using SMBLibrary.RPC;
-using Utilities;
 
 namespace SMBLibrary.Services
 {
@@ -19,14 +15,14 @@ namespace SMBLibrary.Services
     {
         public const uint UnlimitedConnections = 0xFFFFFFFF;
 
-        public NDRUnicodeString NetName;
+        public NDRUnicodeString? NetName;
         public ShareTypeExtended ShareType;
-        public NDRUnicodeString Remark;
+        public NDRUnicodeString? Remark;
         public Permissions Permissions; // Windows will leave this field empty (0)
         public uint MaxUses; // Maximum number of concurrent connections that the shared resource can accommodate.
         public uint CurrentUses; // Number of current connections to the resource.
-        public NDRUnicodeString Path; // Windows will set this field to the on-disk path (.e.g 'D:\Shared')
-        public NDRUnicodeString Password; // Windows will set it to null
+        public NDRUnicodeString? Path; // Windows will set this field to the on-disk path (.e.g 'D:\Shared')
+        public NDRUnicodeString? Password; // Windows will set it to null
 
         public ShareInfo2Entry()
         {
@@ -36,10 +32,10 @@ namespace SMBLibrary.Services
         {
             NetName = new NDRUnicodeString(shareName);
             ShareType = shareType;
-            Remark = new NDRUnicodeString(String.Empty);
+            Remark = new NDRUnicodeString(string.Empty);
 
             MaxUses = UnlimitedConnections;
-            Path = new NDRUnicodeString(String.Empty);
+            Path = new NDRUnicodeString(string.Empty);
             Password = null;
         }
 
@@ -76,12 +72,6 @@ namespace SMBLibrary.Services
             writer.EndStructure();
         }
 
-        public uint Level
-        {
-            get
-            {
-                return 2;
-            }
-        }
+        public uint Level => 2;
     }
 }

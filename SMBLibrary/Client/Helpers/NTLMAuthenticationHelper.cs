@@ -1,43 +1,47 @@
 /* Copyright (C) 2017-2018 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
-using SMBLibrary.Authentication.GSSAPI;
+using SMBLibrary.Authentication.GssApi;
 using SMBLibrary.Authentication.NTLM;
 using Utilities;
 
 namespace SMBLibrary.Client
 {
-    public class NTLMAuthenticationHelper
+    public class NtlmAuthenticationHelper
     {
         public static byte[] GetNegotiateMessage(byte[] securityBlob, string domainName, AuthenticationMethod authenticationMethod)
         {
-            bool useGSSAPI = false;
+            bool useGssapi = false;
             if (securityBlob.Length > 0)
             {
-                SimpleProtectedNegotiationTokenInit inputToken = null;
+                SimpleProtectedNegotiationTokenInit? inputToken = null;
                 try
                 {
                     inputToken = SimpleProtectedNegotiationToken.ReadToken(securityBlob, 0, true) as SimpleProtectedNegotiationTokenInit;
                 }
                 catch
                 {
+                    // ignored
                 }
 
-                if (inputToken == null || !ContainsMechanism(inputToken, GSSProvider.NTLMSSPIdentifier))
+                if (inputToken == null || !ContainsMechanism(inputToken, GssProvider.NtlmSspIdentifier))
                 {
-                    return null;
+                    throw new Exception("GetNegotiateMessage: InputToken is Null OR it doesn't contain the mechanism NtlmSspIdentifier");
                 }
-                useGSSAPI = true;
+                useGssapi = true;
             }
 
-            NegotiateMessage negotiateMessage = new NegotiateMessage();
-            negotiateMessage.NegotiateFlags = NegotiateFlags.UnicodeEncoding |
+            NegotiateMessage negotiateMessage = new NegotiateMessage
+            {
+                NegotiateFlags = NegotiateFlags.UnicodeEncoding |
                                               NegotiateFlags.OEMEncoding |
                                               NegotiateFlags.Sign |
                                               NegotiateFlags.NTLMSessionSecurity |
@@ -47,9 +51,10 @@ namespace SMBLibrary.Client
                                               NegotiateFlags.Version |
                                               NegotiateFlags.Use128BitEncryption |
                                               NegotiateFlags.KeyExchange |
-                                              NegotiateFlags.Use56BitEncryption;
+                                              NegotiateFlags.Use56BitEncryption
+            };
 
-            if (authenticationMethod == AuthenticationMethod.NTLMv1)
+            if (authenticationMethod == AuthenticationMethod.NtlmV1)
             {
                 negotiateMessage.NegotiateFlags |= NegotiateFlags.LanManagerSessionKey;
             }
@@ -58,41 +63,42 @@ namespace SMBLibrary.Client
                 negotiateMessage.NegotiateFlags |= NegotiateFlags.ExtendedSessionSecurity;
             }
 
-            negotiateMessage.Version = NTLMVersion.Server2003;
+            negotiateMessage.Version = NtlmVersion.Server2003;
             negotiateMessage.DomainName = domainName;
             negotiateMessage.Workstation = Environment.MachineName;
-            if (useGSSAPI)
-            {
-                SimpleProtectedNegotiationTokenInit outputToken = new SimpleProtectedNegotiationTokenInit();
-                outputToken.MechanismTypeList = new List<byte[]>();
-                outputToken.MechanismTypeList.Add(GSSProvider.NTLMSSPIdentifier);
-                outputToken.MechanismToken = negotiateMessage.GetBytes();
-                return outputToken.GetBytes(true);
-            }
-            else
-            {
+            if (!useGssapi)
                 return negotiateMessage.GetBytes();
-            }
+
+            SimpleProtectedNegotiationTokenInit outputToken = new SimpleProtectedNegotiationTokenInit
+            {
+                MechanismTypeList = new List<byte[]>
+                {
+                    GssProvider.NtlmSspIdentifier
+                },
+                MechanismToken = negotiateMessage.GetBytes()
+            };
+            return outputToken.GetBytes(true);
         }
 
-        public static byte[] GetAuthenticateMessage(byte[] securityBlob, string domainName, string userName, string password, AuthenticationMethod authenticationMethod, out byte[] sessionKey)
+        public static byte[]? GetAuthenticateMessage(byte[] securityBlob, string domainName, string userName, string password, AuthenticationMethod authenticationMethod, out byte[]? sessionKey)
         {
             sessionKey = null;
-            bool useGSSAPI = false;
-            SimpleProtectedNegotiationTokenResponse inputToken = null;
+            bool useGssApi = false;
+            SimpleProtectedNegotiationTokenResponse? inputToken = null;
             try
             {
                 inputToken = SimpleProtectedNegotiationToken.ReadToken(securityBlob, 0, false) as SimpleProtectedNegotiationTokenResponse;
             }
             catch
             {
+                // ignored
             }
 
-            ChallengeMessage challengeMessage;
+            ChallengeMessage? challengeMessage;
             if (inputToken != null)
             {
                 challengeMessage = GetChallengeMessage(inputToken.ResponseToken);
-                useGSSAPI = true;
+                useGssApi = true;
             }
             else
             {
@@ -108,14 +114,16 @@ namespace SMBLibrary.Client
             byte[] clientChallenge = new byte[8];
             new Random().NextBytes(clientChallenge);
 
-            AuthenticateMessage authenticateMessage = new AuthenticateMessage();
-            // https://msdn.microsoft.com/en-us/library/cc236676.aspx
-            authenticateMessage.NegotiateFlags = NegotiateFlags.Sign |
+            AuthenticateMessage authenticateMessage = new AuthenticateMessage
+            {
+                // https://msdn.microsoft.com/en-us/library/cc236676.aspx
+                NegotiateFlags = NegotiateFlags.Sign |
                                                  NegotiateFlags.NTLMSessionSecurity |
                                                  NegotiateFlags.AlwaysSign |
                                                  NegotiateFlags.Version |
                                                  NegotiateFlags.Use128BitEncryption |
-                                                 NegotiateFlags.Use56BitEncryption;
+                                                 NegotiateFlags.Use56BitEncryption
+            };
             if ((challengeMessage.NegotiateFlags & NegotiateFlags.UnicodeEncoding) > 0)
             {
                 authenticateMessage.NegotiateFlags |= NegotiateFlags.UnicodeEncoding;
@@ -130,7 +138,7 @@ namespace SMBLibrary.Client
                 authenticateMessage.NegotiateFlags |= NegotiateFlags.KeyExchange;
             }
 
-            if (authenticationMethod == AuthenticationMethod.NTLMv1)
+            if (authenticationMethod == AuthenticationMethod.NtlmV1)
             {
                 authenticateMessage.NegotiateFlags |= NegotiateFlags.LanManagerSessionKey;
             }
@@ -144,38 +152,39 @@ namespace SMBLibrary.Client
             authenticateMessage.WorkStation = Environment.MachineName;
             byte[] sessionBaseKey;
             byte[] keyExchangeKey;
-            if (authenticationMethod == AuthenticationMethod.NTLMv1 || authenticationMethod == AuthenticationMethod.NTLMv1ExtendedSessionSecurity)
+            if (authenticationMethod == AuthenticationMethod.NtlmV1 || authenticationMethod == AuthenticationMethod.NtlmV1ExtendedSessionSecurity)
             {
-                if (authenticationMethod == AuthenticationMethod.NTLMv1)
+                if (authenticationMethod == AuthenticationMethod.NtlmV1)
                 {
-                    authenticateMessage.LmChallengeResponse = NTLMCryptography.ComputeLMv1Response(challengeMessage.ServerChallenge, password);
-                    authenticateMessage.NtChallengeResponse = NTLMCryptography.ComputeNTLMv1Response(challengeMessage.ServerChallenge, password);
+                    authenticateMessage.LmChallengeResponse = NtlmCryptography.ComputeLMv1Response(challengeMessage.ServerChallenge, password);
+                    authenticateMessage.NtChallengeResponse = NtlmCryptography.ComputeNTLMv1Response(challengeMessage.ServerChallenge, password);
                 }
-                else // NTLMv1ExtendedSessionSecurity
+                else // NtlmV1ExtendedSessionSecurity
                 {
                     authenticateMessage.LmChallengeResponse = ByteUtils.Concatenate(clientChallenge, new byte[16]);
-                    authenticateMessage.NtChallengeResponse = NTLMCryptography.ComputeNTLMv1ExtendedSessionSecurityResponse(challengeMessage.ServerChallenge, clientChallenge, password);
+                    authenticateMessage.NtChallengeResponse = NtlmCryptography.ComputeNTLMv1ExtendedSessionSecurityResponse(challengeMessage.ServerChallenge, clientChallenge, password);
                 }
                 // https://msdn.microsoft.com/en-us/library/cc236699.aspx
-                sessionBaseKey = new MD4().GetByteHashFromBytes(NTLMCryptography.NTOWFv1(password));
-                byte[] lmowf = NTLMCryptography.LMOWFv1(password);
-                keyExchangeKey = NTLMCryptography.KXKey(sessionBaseKey, authenticateMessage.NegotiateFlags, authenticateMessage.LmChallengeResponse, challengeMessage.ServerChallenge, lmowf);
+                sessionBaseKey = new MD4().GetByteHashFromBytes(NtlmCryptography.NTOWFv1(password));
+                byte[] lmowf = NtlmCryptography.LMOWFv1(password);
+                keyExchangeKey = NtlmCryptography.KXKey(sessionBaseKey, authenticateMessage.NegotiateFlags, authenticateMessage.LmChallengeResponse, challengeMessage.ServerChallenge, lmowf);
             }
-            else // NTLMv2
+            else // NtlmV2
             {
                 NTLMv2ClientChallenge clientChallengeStructure = new NTLMv2ClientChallenge(time, clientChallenge, challengeMessage.TargetInfo);
                 byte[] clientChallengeStructurePadded = clientChallengeStructure.GetBytesPadded();
-                byte[] ntProofStr = NTLMCryptography.ComputeNTLMv2Proof(challengeMessage.ServerChallenge, clientChallengeStructurePadded, password, userName, domainName);
+                byte[] ntProofStr = NtlmCryptography.ComputeNTLMv2Proof(challengeMessage.ServerChallenge, clientChallengeStructurePadded, password, userName, domainName);
 
-                authenticateMessage.LmChallengeResponse = NTLMCryptography.ComputeLMv2Response(challengeMessage.ServerChallenge, clientChallenge, password, userName, challengeMessage.TargetName);
+                authenticateMessage.LmChallengeResponse = NtlmCryptography.ComputeLMv2Response(challengeMessage.ServerChallenge, clientChallenge, password, userName, challengeMessage.TargetName);
                 authenticateMessage.NtChallengeResponse = ByteUtils.Concatenate(ntProofStr, clientChallengeStructurePadded);
 
                 // https://msdn.microsoft.com/en-us/library/cc236700.aspx
-                byte[] responseKeyNT = NTLMCryptography.NTOWFv2(password, userName, domainName);
-                sessionBaseKey = new HMACMD5(responseKeyNT).ComputeHash(ntProofStr);
+                byte[] responseKeyNT = NtlmCryptography.NTOWFv2(password, userName, domainName);
+                using HMACMD5 md5 = new HMACMD5(responseKeyNT);
+                sessionBaseKey = md5.ComputeHash(ntProofStr);
                 keyExchangeKey = sessionBaseKey;
             }
-            authenticateMessage.Version = NTLMVersion.Server2003;
+            authenticateMessage.Version = NtlmVersion.Server2003;
 
             // https://msdn.microsoft.com/en-us/library/cc236676.aspx
             if ((challengeMessage.NegotiateFlags & NegotiateFlags.KeyExchange) > 0)
@@ -189,48 +198,38 @@ namespace SMBLibrary.Client
                 sessionKey = keyExchangeKey;
             }
 
-            if (useGSSAPI)
-            {
-                SimpleProtectedNegotiationTokenResponse outputToken = new SimpleProtectedNegotiationTokenResponse();
-                outputToken.ResponseToken = authenticateMessage.GetBytes();
-                return outputToken.GetBytes();
-            }
-            else
-            {
+            if (!useGssApi)
                 return authenticateMessage.GetBytes();
-            }
+
+            SimpleProtectedNegotiationTokenResponse outputToken = new SimpleProtectedNegotiationTokenResponse
+            {
+                ResponseToken = authenticateMessage.GetBytes()
+            };
+            return outputToken.GetBytes();
         }
 
-        private static ChallengeMessage GetChallengeMessage(byte[] messageBytes)
+        private static ChallengeMessage? GetChallengeMessage(byte[] messageBytes)
         {
-            if (AuthenticationMessageUtils.IsSignatureValid(messageBytes))
+            if (!AuthenticationMessageUtils.IsSignatureValid(messageBytes))
+                return null;
+
+            MessageTypeName messageType = AuthenticationMessageUtils.GetMessageType(messageBytes);
+            if (messageType != MessageTypeName.Challenge)
+                return null;
+
+            try
             {
-                MessageTypeName messageType = AuthenticationMessageUtils.GetMessageType(messageBytes);
-                if (messageType == MessageTypeName.Challenge)
-                {
-                    try
-                    {
-                        return new ChallengeMessage(messageBytes);
-                    }
-                    catch
-                    {
-                        return null;
-                    }
-                }
+                return new ChallengeMessage(messageBytes);
             }
-            return null;
+            catch
+            {
+                return null;
+            }
         }
 
         private static bool ContainsMechanism(SimpleProtectedNegotiationTokenInit token, byte[] mechanismIdentifier)
         {
-            for (int index = 0; index < token.MechanismTypeList.Count; index++)
-            {
-                if (ByteUtils.AreByteArraysEqual(token.MechanismTypeList[index], GSSProvider.NTLMSSPIdentifier))
-                {
-                    return true;
-                }
-            }
-            return false;
+            return token.MechanismTypeList.Any(t => ByteUtils.AreByteArraysEqual(t, mechanismIdentifier));
         }
     }
 }

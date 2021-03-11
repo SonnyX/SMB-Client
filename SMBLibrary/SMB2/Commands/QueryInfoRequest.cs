@@ -4,8 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
+
 using Utilities;
 
 namespace SMBLibrary.SMB2
@@ -18,7 +17,7 @@ namespace SMBLibrary.SMB2
         public const int FixedSize = 40;
         public const int DeclaredSize = 41;
 
-        private ushort StructureSize;
+        private readonly ushort StructureSize;
         public InfoType InfoType;
         private byte FileInfoClass;
         public uint OutputBufferLength;
@@ -27,7 +26,7 @@ namespace SMBLibrary.SMB2
         private uint InputBufferLength;
         public uint AdditionalInformation;
         public uint Flags;
-        public FileID FileId;
+        public FileID? FileId;
         public byte[] InputBuffer = new byte[0];
 
         public QueryInfoRequest() : base(SMB2CommandName.QueryInfo)
@@ -73,38 +72,20 @@ namespace SMBLibrary.SMB2
 
         public FileInformationClass FileInformationClass
         {
-            get
-            {
-                return (FileInformationClass)FileInfoClass;
-            }
-            set
-            {
-                FileInfoClass = (byte)value;
-            }
+            get => (FileInformationClass)FileInfoClass;
+            set => FileInfoClass = (byte)value;
         }
 
         public FileSystemInformationClass FileSystemInformationClass
         {
-            get
-            {
-                return (FileSystemInformationClass)FileInfoClass;
-            }
-            set
-            {
-                FileInfoClass = (byte)value;
-            }
+            get => (FileSystemInformationClass)FileInfoClass;
+            set => FileInfoClass = (byte)value;
         }
 
         public SecurityInformation SecurityInformation
         {
-            get
-            {
-                return (SecurityInformation)AdditionalInformation;
-            }
-            set
-            {
-                AdditionalInformation = (uint)value;
-            }
+            get => (SecurityInformation)AdditionalInformation;
+            set => AdditionalInformation = (uint)value;
         }
 
         public void SetFileInformation(FileInformation fileInformation)
@@ -112,12 +93,6 @@ namespace SMBLibrary.SMB2
             InputBuffer = fileInformation.GetBytes();
         }
 
-        public override int CommandLength
-        {
-            get
-            {
-                return FixedSize + InputBuffer.Length;
-            }
-        }
+        public override int CommandLength => FixedSize + InputBuffer.Length;
     }
 }

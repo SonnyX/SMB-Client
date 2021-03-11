@@ -6,7 +6,6 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -52,7 +51,7 @@ namespace SMBLibrary.SMB1
             CreateDisposition = (CreateDisposition)LittleEndianReader.ReadUInt32(parameters, ref parametersOffset);
             CreateOptions = (CreateOptions)LittleEndianReader.ReadUInt32(parameters, ref parametersOffset);
             uint securityDescriptiorLength = LittleEndianReader.ReadUInt32(parameters, ref parametersOffset);
-            uint eaLength = LittleEndianReader.ReadUInt32(parameters, ref parametersOffset);
+            _ = LittleEndianReader.ReadUInt32(parameters, ref parametersOffset);
             uint nameLength = LittleEndianReader.ReadUInt32(parameters, ref parametersOffset);
             ImpersonationLevel = (ImpersonationLevel)LittleEndianReader.ReadUInt32(parameters, ref parametersOffset);
             SecurityFlags = (SecurityFlags)ByteReader.ReadByte(parameters, ref parametersOffset);
@@ -79,12 +78,6 @@ namespace SMBLibrary.SMB1
             throw new NotImplementedException();
         }
 
-        public override NTTransactSubcommandName SubcommandName
-        {
-            get
-            {
-                return NTTransactSubcommandName.NT_TRANSACT_CREATE;
-            }
-        }
+        public override NTTransactSubcommandName SubcommandName => NTTransactSubcommandName.NT_TRANSACT_CREATE;
     }
 }

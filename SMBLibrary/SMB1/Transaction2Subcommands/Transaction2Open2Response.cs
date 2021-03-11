@@ -1,12 +1,11 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -17,8 +16,10 @@ namespace SMBLibrary.SMB1
     public class Transaction2Open2Response : Transaction2Subcommand
     {
         public const int ParametersLength = 30;
+
         // Parameters
         public ushort FID;
+
         public SMBFileAttributes FileAttributes;
         public DateTime? CreationTime;
         public uint FileDataSize;
@@ -30,11 +31,11 @@ namespace SMBLibrary.SMB1
         public ushort ExtendedAttributeErrorOffset;
         public uint ExtendedAttributeLength;
 
-        public Transaction2Open2Response() : base()
+        public Transaction2Open2Response()
         {
         }
 
-        public Transaction2Open2Response(byte[] parameters, byte[] data, bool isUnicode) : base()
+        public Transaction2Open2Response(byte[] parameters)
         {
             FID = LittleEndianConverter.ToUInt16(parameters, 0);
             FileAttributes = (SMBFileAttributes)LittleEndianConverter.ToUInt16(parameters, 2);
@@ -66,12 +67,6 @@ namespace SMBLibrary.SMB1
             return parameters;
         }
 
-        public override Transaction2SubcommandName SubcommandName
-        {
-            get
-            {
-                return Transaction2SubcommandName.TRANS2_OPEN2;
-            }
-        }
+        public override Transaction2SubcommandName SubcommandName => Transaction2SubcommandName.TRANS2_OPEN2;
     }
 }

@@ -17,7 +17,7 @@ namespace SMBLibrary.SMB2
     {
         public const int DeclaredSize = 36;
 
-        private ushort StructureSize;
+        private readonly ushort StructureSize;
         // ushort DialectCount;
         public SecurityMode SecurityMode;
         public ushort Reserved;
@@ -65,12 +65,6 @@ namespace SMBLibrary.SMB2
             }
         }
 
-        public override int CommandLength
-        {
-            get
-            {
-                return 36 + Dialects.Count * 2;
-            }
-        }
+        public override int CommandLength => 36 + Dialects.Count * 2;
     }
 }

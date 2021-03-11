@@ -4,8 +4,6 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
 using System.IO;
 using Utilities;
 
@@ -21,20 +19,20 @@ namespace SMBLibrary.SMB1
         public byte BufferFormat;
         public string DirectoryName; // SMB_STRING
 
-        public CheckDirectoryRequest() : base()
+        public CheckDirectoryRequest()
         {
             BufferFormat = SupportedBufferFormat;
-            DirectoryName = String.Empty;
+            DirectoryName = string.Empty;
         }
 
-        public CheckDirectoryRequest(byte[] buffer, int offset, bool isUnicode) : base(buffer, offset, isUnicode)
+        public CheckDirectoryRequest(byte[] buffer, int offset, bool isUnicode) : base(buffer, offset)
         {
-            BufferFormat = ByteReader.ReadByte(this.SMBData, 0);
+            BufferFormat = ByteReader.ReadByte(SMBData, 0);
             if (BufferFormat != SupportedBufferFormat)
             {
                 throw new InvalidDataException("Unsupported Buffer Format");
             }
-            DirectoryName = SMB1Helper.ReadSMBString(this.SMBData, 1, isUnicode);
+            DirectoryName = SMB1Helper.ReadSMBString(SMBData, 1, isUnicode);
         }
 
         public override byte[] GetBytes(bool isUnicode)
@@ -48,20 +46,14 @@ namespace SMBLibrary.SMB1
             {
                 length += DirectoryName.Length + 1;
             }
-            this.SMBData = new byte[1 + length];
-            ByteWriter.WriteByte(this.SMBData, 0, BufferFormat);
-            SMB1Helper.WriteSMBString(this.SMBData, 1, isUnicode, DirectoryName);
+            SMBData = new byte[1 + length];
+            ByteWriter.WriteByte(SMBData, 0, BufferFormat);
+            SMB1Helper.WriteSMBString(SMBData, 1, isUnicode, DirectoryName);
 
             return base.GetBytes(isUnicode);
         }
 
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_CHECK_DIRECTORY;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_CHECK_DIRECTORY;
     }
 }

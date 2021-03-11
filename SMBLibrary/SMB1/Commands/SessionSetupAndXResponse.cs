@@ -4,9 +4,6 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -27,16 +24,16 @@ namespace SMBLibrary.SMB1
         public string NativeLanMan;  // SMB_STRING (this field WILL be aligned to start on a 2-byte boundary from the start of the SMB header)
         public string PrimaryDomain; // SMB_STRING (this field WILL be aligned to start on a 2-byte boundary from the start of the SMB header)
 
-        public SessionSetupAndXResponse() : base()
+        public SessionSetupAndXResponse()
         {
-            NativeOS = String.Empty;
-            NativeLanMan = String.Empty;
-            PrimaryDomain = String.Empty;
+            NativeOS = string.Empty;
+            NativeLanMan = string.Empty;
+            PrimaryDomain = string.Empty;
         }
 
-        public SessionSetupAndXResponse(byte[] buffer, int offset, bool isUnicode) : base(buffer, offset, isUnicode)
+        public SessionSetupAndXResponse(byte[] buffer, int offset, bool isUnicode) : base(buffer, offset)
         {
-            Action = (SessionSetupAction)LittleEndianConverter.ToUInt16(this.SMBParameters, 4);
+            Action = (SessionSetupAction)LittleEndianConverter.ToUInt16(SMBParameters, 4);
 
             int dataOffset = 0;
             if (isUnicode)
@@ -45,20 +42,20 @@ namespace SMBLibrary.SMB1
                 // Note: SMBData starts at an odd offset.
                 dataOffset++;
             }
-            NativeOS = SMB1Helper.ReadSMBString(this.SMBData, ref dataOffset, isUnicode);
-            NativeLanMan = SMB1Helper.ReadSMBString(this.SMBData, ref dataOffset, isUnicode);
-            if ((this.SMBData.Length - dataOffset) % 2 == 1)
+            NativeOS = SMB1Helper.ReadSMBString(SMBData, ref dataOffset, isUnicode);
+            NativeLanMan = SMB1Helper.ReadSMBString(SMBData, ref dataOffset, isUnicode);
+            if ((SMBData.Length - dataOffset) % 2 == 1)
             {
                 // Workaround for a single terminating null byte
-                this.SMBData = ByteUtils.Concatenate(this.SMBData, new byte[1]);
+                SMBData = ByteUtils.Concatenate(SMBData, new byte[1]);
             }
-            PrimaryDomain = SMB1Helper.ReadSMBString(this.SMBData, ref dataOffset, isUnicode);
+            PrimaryDomain = SMB1Helper.ReadSMBString(SMBData, ref dataOffset, isUnicode);
         }
 
         public override byte[] GetBytes(bool isUnicode)
         {
-            this.SMBParameters = new byte[ParametersLength];
-            LittleEndianWriter.WriteUInt16(this.SMBParameters, 4, (ushort)Action);
+            SMBParameters = new byte[ParametersLength];
+            LittleEndianWriter.WriteUInt16(SMBParameters, 4, (ushort)Action);
 
             int offset = 0;
             if (isUnicode)
@@ -66,26 +63,20 @@ namespace SMBLibrary.SMB1
                 // A Unicode string MUST be aligned to a 16-bit boundary with respect to the beginning of the SMB Header.
                 // Note: SMBData starts at an odd offset.
                 int padding = 1;
-                this.SMBData = new byte[padding + NativeOS.Length * 2 + NativeLanMan.Length * 2 + PrimaryDomain.Length * 2 + 6];
+                SMBData = new byte[padding + NativeOS.Length * 2 + NativeLanMan.Length * 2 + PrimaryDomain.Length * 2 + 6];
                 offset = padding;
             }
             else
             {
-                this.SMBData = new byte[NativeOS.Length + NativeLanMan.Length + PrimaryDomain.Length + 3];
+                SMBData = new byte[NativeOS.Length + NativeLanMan.Length + PrimaryDomain.Length + 3];
             }
-            SMB1Helper.WriteSMBString(this.SMBData, ref offset, isUnicode, NativeOS);
-            SMB1Helper.WriteSMBString(this.SMBData, ref offset, isUnicode, NativeLanMan);
-            SMB1Helper.WriteSMBString(this.SMBData, ref offset, isUnicode, PrimaryDomain);
+            SMB1Helper.WriteSMBString(SMBData, ref offset, isUnicode, NativeOS);
+            SMB1Helper.WriteSMBString(SMBData, ref offset, isUnicode, NativeLanMan);
+            SMB1Helper.WriteSMBString(SMBData, ref offset, isUnicode, PrimaryDomain);
 
             return base.GetBytes(isUnicode);
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_SESSION_SETUP_ANDX;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_SESSION_SETUP_ANDX;
     }
 }

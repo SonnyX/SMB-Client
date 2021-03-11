@@ -1,12 +1,9 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using Utilities;
 
 namespace SMBLibrary.SMB1
 {
@@ -16,14 +13,15 @@ namespace SMBLibrary.SMB1
     public class Transaction2QueryFSInformationResponse : Transaction2Subcommand
     {
         public const int ParametersLength = 0;
-        // Data:
-        public byte[] InformationBytes;
 
-        public Transaction2QueryFSInformationResponse() : base()
+        // Data:
+        public byte[]? InformationBytes;
+
+        public Transaction2QueryFSInformationResponse()
         {
         }
 
-        public Transaction2QueryFSInformationResponse(byte[] parameters, byte[] data, bool isUnicode) : base()
+        public Transaction2QueryFSInformationResponse(byte[] data)
         {
             InformationBytes = data;
         }
@@ -33,9 +31,9 @@ namespace SMBLibrary.SMB1
             return InformationBytes;
         }
 
-        public QueryFSInformation GetQueryFSInformation(QueryFSInformationLevel informationLevel, bool isUnicode)
+        public QueryFSInformation GetQueryFSInformation(QueryFSInformationLevel informationLevel)
         {
-            return QueryFSInformation.GetQueryFSInformation(InformationBytes, informationLevel, isUnicode);
+            return QueryFSInformation.GetQueryFSInformation(InformationBytes, informationLevel);
         }
 
         public void SetQueryFSInformation(QueryFSInformation queryFSInformation, bool isUnicode)
@@ -59,12 +57,6 @@ namespace SMBLibrary.SMB1
             InformationBytes = information.GetBytes();
         }
 
-        public override Transaction2SubcommandName SubcommandName
-        {
-            get
-            {
-                return Transaction2SubcommandName.TRANS2_QUERY_FS_INFORMATION;
-            }
-        }
+        public override Transaction2SubcommandName SubcommandName => Transaction2SubcommandName.TRANS2_QUERY_FS_INFORMATION;
     }
 }

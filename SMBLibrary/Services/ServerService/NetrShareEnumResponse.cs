@@ -1,14 +1,11 @@
 /* Copyright (C) 2014 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using SMBLibrary.RPC;
-using Utilities;
 
 namespace SMBLibrary.Services
 {
@@ -17,7 +14,7 @@ namespace SMBLibrary.Services
     /// </summary>
     public class NetrShareEnumResponse
     {
-        public ShareEnum InfoStruct;
+        public ShareEnum? InfoStruct;
         public uint TotalEntries; // The total number of entries that could have been enumerated if the buffer had been big enough to hold all the entries
         public uint ResumeHandle;
         public Win32Error Result;
@@ -37,7 +34,7 @@ namespace SMBLibrary.Services
 
         public byte[] GetBytes()
         {
-            NDRWriter writer = new NDRWriter();
+            using NDRWriter writer = new NDRWriter();
             writer.WriteStructure(InfoStruct);
             writer.WriteUInt32(TotalEntries);
             writer.WriteUInt32(ResumeHandle);

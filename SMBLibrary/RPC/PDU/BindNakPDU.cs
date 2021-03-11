@@ -4,8 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
+
 using Utilities;
 
 namespace SMBLibrary.RPC
@@ -18,16 +17,15 @@ namespace SMBLibrary.RPC
         public const int BindNakFieldsFixedLength = 2;
 
         public RejectionReason RejectReason; // provider_reject_reason
-        public VersionsSupported Versions; // versions
+        public VersionsSupported? Versions; // versions
 
-        public BindNakPDU() : base()
+        public BindNakPDU()
         {
             PacketType = PacketTypeName.BindNak;
         }
 
         public BindNakPDU(byte[] buffer, int offset) : base(buffer, offset)
         {
-            int startOffset = offset;
             offset += CommonFieldsLength;
             RejectReason = (RejectionReason)LittleEndianReader.ReadUInt16(buffer, ref offset);
             Versions = new VersionsSupported(buffer, offset);

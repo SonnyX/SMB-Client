@@ -4,9 +4,6 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SMBLibrary.SMB1
 {
@@ -15,20 +12,14 @@ namespace SMBLibrary.SMB1
     /// </summary>
     public class RenameResponse : SMB1Command
     {
-        public RenameResponse() : base()
+        public RenameResponse()
         {
         }
 
-        public RenameResponse(byte[] buffer, int offset) : base(buffer, offset, false)
+        public RenameResponse(byte[] buffer, int offset) : base(buffer, offset)
         {
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_RENAME;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_RENAME;
     }
 }
