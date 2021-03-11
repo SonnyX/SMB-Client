@@ -4,45 +4,43 @@
     <RootNamespace>SMBLibrary</RootNamespace>
     <AssemblyName>SMBLibrary</AssemblyName>
     <PackOnBuild>true</PackOnBuild>
-    <Authors>jordanlytle,Jo0</Authors>
-    <Owners>jordanlytle,Jo0</Owners>
+
+    <Authors>Randy von der Weide</Authors>
+    <PackageId>SMB-Client</PackageId>
+    <Product>SMB-Client</Product>
+    <RepositoryType>git</RepositoryType>
+
+    <RepositoryUrl>https://github.com/SonnyX/SMB-Client</RepositoryUrl>
+    <PackageTags>smb smb-client</PackageTags>
+    <Version>1.4.7</Version>
+
     <Description>Free, Open Source, User-Mode SMB 1.0/CIFS, SMB 2.0, SMB 2.1 and SMB 3.0 Client Library</Description>
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>SMBLibraryLite</PackageId>
-    <PackageLicenseUrl>https://github.com/jordanlytle/SMBLibrary/blob/master/License.txt</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/jordanlytle/SMBLibrary</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/jordanlytle/SMBLibrary</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageVersion>1.4.6</PackageVersion>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <Version>1.4.6</Version>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Utilities\Utilities.csproj">
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.2">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="ILRepack.MSBuild.Task" Version="2.0.13" PrivateAssets="All" />
     <ProjectReference Include="..\Utilities\Utilities.csproj" PrivateAssets="All" />
   </ItemGroup>
 
   <Target Name="ILRepack" Condition="'$(Configuration)' == 'Release'" AfterTargets="AfterBuild">
-    <Exec Command="&quot;$(ProgramW6432)\ILRepack\ILRepack.exe&quot; /out=&quot;$(OutputPath)\SMBLibrary.dll&quot; &quot;$(OutputPath)\SMBLibrary.dll&quot; &quot;$(OutputPath)\Utilities.dll&quot;"></Exec>
+    <PropertyGroup>
+      <WorkingDirectory>$(MSBuildThisFileDirectory)bin\$(Configuration)\$(TargetFramework)</WorkingDirectory>
+    </PropertyGroup>
+    <ItemGroup>
+      <InputAssemblies Include="Utilities.dll" />
+    </ItemGroup>
+
+    <Message Text="MERGING: @(InputAssemblies->'%(Filename)') into $(OutputAssembly)" Importance="High" />
+    <ILRepack
+      OutputType="$(OutputType)"
+      MainAssembly="$(AssemblyName).dll"
+      OutputAssembly="$(AssemblyName).dll"
+      InputAssemblies="@(InputAssemblies)"
+      WorkingDirectory="$(WorkingDirectory)" />
   </Target>
 </Project>
