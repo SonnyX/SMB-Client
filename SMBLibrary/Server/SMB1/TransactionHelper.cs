@@ -8,8 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using SMBLibrary.SMB1;
-using SMBLibrary.RPC;
-using SMBLibrary.Services;
 using Utilities;
 
 namespace SMBLibrary.Server.SMB1
@@ -42,23 +40,17 @@ namespace SMBLibrary.Server.SMB1
                 {
                     return new Transaction2InterimResponse();
                 }
-                else
-                {
-                    return new TransactionInterimResponse();
-                }
+
+                return new TransactionInterimResponse();
             }
-            else
+
+            // We have a complete command
+            if (request is Transaction2Request)
             {
-                // We have a complete command
-                if (request is Transaction2Request)
-                {
-                    return GetCompleteTransaction2Response(header, request.MaxDataCount, request.Setup, request.TransParameters, request.TransData, share, state);
-                }
-                else
-                {
-                    return GetCompleteTransactionResponse(header, request.MaxDataCount, request.Timeout, request.Name, request.Setup, request.TransParameters, request.TransData, share, state);
-                }
+                return GetCompleteTransaction2Response(header, request.MaxDataCount, request.Setup, request.TransParameters, request.TransData, share, state);
             }
+
+            return GetCompleteTransactionResponse(header, request.MaxDataCount, request.Timeout, request.Name, request.Setup, request.TransParameters, request.TransData, share, state);
         }
 
         /// <summary>
@@ -83,24 +75,20 @@ namespace SMBLibrary.Server.SMB1
             {
                 return new List<SMB1Command>();
             }
-            else
+
+            // We have a complete command
+            state.RemoveProcessState(header.PID);
+            if (request is Transaction2SecondaryRequest)
             {
-                // We have a complete command
-                state.RemoveProcessState(header.PID);
-                if (request is Transaction2SecondaryRequest)
-                {
-                    return GetCompleteTransaction2Response(header, processState.MaxDataCount, processState.TransactionSetup, processState.TransactionParameters, processState.TransactionData, share, state);
-                }
-                else
-                {
-                    return GetCompleteTransactionResponse(header, processState.MaxDataCount, processState.Timeout, processState.Name, processState.TransactionSetup, processState.TransactionParameters, processState.TransactionData, share, state);
-                }
+                return GetCompleteTransaction2Response(header, processState.MaxDataCount, processState.TransactionSetup, processState.TransactionParameters, processState.TransactionData, share, state);
             }
+
+            return GetCompleteTransactionResponse(header, processState.MaxDataCount, processState.Timeout, processState.Name, processState.TransactionSetup, processState.TransactionParameters, processState.TransactionData, share, state);
         }
 
         internal static List<SMB1Command> GetCompleteTransactionResponse(SMB1Header header, uint maxDataCount, uint timeout, string name, byte[] requestSetup, byte[] requestParameters, byte[] requestData, ISMBShare share, SMB1ConnectionState state)
         {
-            if (String.Equals(name, @"\PIPE\lanman", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(name, @"\PIPE\lanman", StringComparison.OrdinalIgnoreCase))
             {
                 // [MS-RAP] Remote Administration Protocol request
                 state.LogToServer(Severity.Debug, "Remote Administration Protocol requests are not implemented");

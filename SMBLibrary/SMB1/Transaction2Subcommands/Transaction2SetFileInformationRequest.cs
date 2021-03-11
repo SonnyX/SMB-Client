@@ -4,8 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -56,36 +55,18 @@ namespace SMBLibrary.SMB1
             return InformationBytes;
         }
 
-        public bool IsPassthroughInformationLevel
-        {
-            get
-            {
-                return (InformationLevel >= SMB_INFO_PASSTHROUGH);
-            }
-        }
+        public bool IsPassthroughInformationLevel => (InformationLevel >= SMB_INFO_PASSTHROUGH);
 
         public SetInformationLevel SetInformationLevel
         {
-            get
-            {
-                return (SetInformationLevel)InformationLevel;
-            }
-            set
-            {
-                InformationLevel = (ushort)value;
-            }
+            get => (SetInformationLevel)InformationLevel;
+            set => InformationLevel = (ushort)value;
         }
 
         public FileInformationClass FileInformationClass
         {
-            get
-            {
-                return (FileInformationClass)(InformationLevel - SMB_INFO_PASSTHROUGH);
-            }
-            set
-            {
-                InformationLevel = (ushort)((ushort)value + SMB_INFO_PASSTHROUGH);
-            }
+            get => (FileInformationClass)(InformationLevel - SMB_INFO_PASSTHROUGH);
+            set => InformationLevel = (ushort)((ushort)value + SMB_INFO_PASSTHROUGH);
         }
 
         public void SetInformation(SetInformation information)
@@ -103,12 +84,6 @@ namespace SMBLibrary.SMB1
             InformationBytes = information.GetBytes();
         }
 
-        public override Transaction2SubcommandName SubcommandName
-        {
-            get
-            {
-                return Transaction2SubcommandName.TRANS2_SET_FILE_INFORMATION;
-            }
-        }
+        public override Transaction2SubcommandName SubcommandName => Transaction2SubcommandName.TRANS2_SET_FILE_INFORMATION;
     }
 }

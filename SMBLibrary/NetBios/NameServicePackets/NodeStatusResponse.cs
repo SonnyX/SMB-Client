@@ -4,10 +4,9 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
+
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.NetBios
@@ -26,10 +25,12 @@ namespace SMBLibrary.NetBios
 
         public NodeStatusResponse()
         {
-            Header = new NameServicePacketHeader();
-            Header.OpCode = NameServiceOperation.QueryResponse;
-            Header.Flags = OperationFlags.AuthoritativeAnswer | OperationFlags.RecursionAvailable;
-            Header.ANCount = 1;
+            Header = new NameServicePacketHeader
+            {
+                OpCode = NameServiceOperation.QueryResponse,
+                Flags = OperationFlags.AuthoritativeAnswer | OperationFlags.RecursionAvailable,
+                ANCount = 1
+            };
             Resource = new ResourceRecord(NameRecordType.NBStat);
             Statistics = new NodeStatistics();
         }

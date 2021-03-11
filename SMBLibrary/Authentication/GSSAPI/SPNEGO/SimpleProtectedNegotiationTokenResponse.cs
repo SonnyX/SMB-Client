@@ -1,11 +1,10 @@
 /* Copyright (C) 2017-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
+
 using System.IO;
 using Utilities;
 
@@ -40,10 +39,10 @@ namespace SMBLibrary.Authentication.GSSAPI
         }
 
         /// <param name="offset">The offset following the NegTokenResp tag</param>
-        /// <exception cref="System.IO.InvalidDataException"></exception>
+        /// <exception cref="InvalidDataException"></exception>
         public SimpleProtectedNegotiationTokenResponse(byte[] buffer, int offset)
         {
-            int constuctionLength = DerEncodingHelper.ReadLength(buffer, ref offset);
+            _ = DerEncodingHelper.ReadLength(buffer, ref offset);
             byte tag = ByteReader.ReadByte(buffer, ref offset);
             if (tag != (byte)DerEncodingTag.Sequence)
             {
@@ -146,19 +145,19 @@ namespace SMBLibrary.Authentication.GSSAPI
 
         private static NegState ReadNegState(byte[] buffer, ref int offset)
         {
-            int length = DerEncodingHelper.ReadLength(buffer, ref offset);
+            _ = DerEncodingHelper.ReadLength(buffer, ref offset);
             byte tag = ByteReader.ReadByte(buffer, ref offset);
             if (tag != (byte)DerEncodingTag.Enum)
             {
                 throw new InvalidDataException();
             }
-            length = DerEncodingHelper.ReadLength(buffer, ref offset);
+            _ = DerEncodingHelper.ReadLength(buffer, ref offset);
             return (NegState)ByteReader.ReadByte(buffer, ref offset);
         }
 
         private static byte[] ReadSupportedMechanism(byte[] buffer, ref int offset)
         {
-            int constructionLength = DerEncodingHelper.ReadLength(buffer, ref offset);
+            _ = DerEncodingHelper.ReadLength(buffer, ref offset);
             byte tag = ByteReader.ReadByte(buffer, ref offset);
             if (tag != (byte)DerEncodingTag.ObjectIdentifier)
             {
@@ -170,7 +169,7 @@ namespace SMBLibrary.Authentication.GSSAPI
 
         private static byte[] ReadResponseToken(byte[] buffer, ref int offset)
         {
-            int constructionLength = DerEncodingHelper.ReadLength(buffer, ref offset);
+            _ = DerEncodingHelper.ReadLength(buffer, ref offset);
             byte tag = ByteReader.ReadByte(buffer, ref offset);
             if (tag != (byte)DerEncodingTag.ByteArray)
             {
@@ -182,7 +181,7 @@ namespace SMBLibrary.Authentication.GSSAPI
 
         private static byte[] ReadMechanismListMIC(byte[] buffer, ref int offset)
         {
-            int constructionLength = DerEncodingHelper.ReadLength(buffer, ref offset);
+            _ = DerEncodingHelper.ReadLength(buffer, ref offset);
             byte tag = ByteReader.ReadByte(buffer, ref offset);
             if (tag != (byte)DerEncodingTag.ByteArray)
             {

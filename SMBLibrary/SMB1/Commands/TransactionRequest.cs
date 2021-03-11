@@ -5,8 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -43,7 +41,7 @@ namespace SMBLibrary.SMB1
 
         public TransactionRequest() : base()
         {
-            Name = String.Empty;
+            Name = string.Empty;
         }
 
         public TransactionRequest(byte[] buffer, int offset, bool isUnicode) : base(buffer, offset, isUnicode)
@@ -70,9 +68,8 @@ namespace SMBLibrary.SMB1
                 int dataOffset = 0;
                 if (this is Transaction2Request)
                 {
-                    Name = String.Empty;
+                    Name = string.Empty;
                     int nameLength = 1;
-                    dataOffset += nameLength;
                 }
                 else
                 {
@@ -162,12 +159,6 @@ namespace SMBLibrary.SMB1
             return base.GetBytes(isUnicode);
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_TRANSACTION;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_TRANSACTION;
     }
 }

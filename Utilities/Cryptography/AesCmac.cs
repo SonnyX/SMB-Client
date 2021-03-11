@@ -1,5 +1,6 @@
 /* Based on https://stackoverflow.com/a/30123190/3419770
  */
+
 using System;
 using System.IO;
 using System.Security.Cryptography;
@@ -62,20 +63,18 @@ namespace Utilities
 
         private static byte[] AESEncrypt(byte[] key, byte[] iv, byte[] data)
         {
-            using (MemoryStream ms = new MemoryStream())
+            using MemoryStream ms = new MemoryStream();
+            RijndaelManaged aes = new RijndaelManaged
             {
-                RijndaelManaged aes = new RijndaelManaged();
-                aes.Mode = CipherMode.CBC;
-                aes.Padding = PaddingMode.None;
+                Mode = CipherMode.CBC,
+                Padding = PaddingMode.None
+            };
 
-                using (CryptoStream cs = new CryptoStream(ms, aes.CreateEncryptor(key, iv), CryptoStreamMode.Write))
-                {
-                    cs.Write(data, 0, data.Length);
-                    cs.FlushFinalBlock();
+            using CryptoStream cs = new CryptoStream(ms, aes.CreateEncryptor(key, iv), CryptoStreamMode.Write);
+            cs.Write(data, 0, data.Length);
+            cs.FlushFinalBlock();
 
-                    return ms.ToArray();
-                }
-            }
+            return ms.ToArray();
         }
 
         private static byte[] Rol(byte[] b)

@@ -5,8 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -94,34 +92,16 @@ namespace SMBLibrary.SMB1
 
         public NamedPipeStatus NMPipeStatus
         {
-            get
-            {
-                return new NamedPipeStatus(NMPipeStatus_or_FileStatusFlags);
-            }
-            set
-            {
-                NMPipeStatus_or_FileStatusFlags = value.ToUInt16();
-            }
+            get => new NamedPipeStatus(NMPipeStatus_or_FileStatusFlags);
+            set => NMPipeStatus_or_FileStatusFlags = value.ToUInt16();
         }
 
         public FileStatusFlags FileStatusFlags
         {
-            get
-            {
-                return (FileStatusFlags)NMPipeStatus_or_FileStatusFlags;
-            }
-            set
-            {
-                NMPipeStatus_or_FileStatusFlags = (ushort)value;
-            }
+            get => (FileStatusFlags)NMPipeStatus_or_FileStatusFlags;
+            set => NMPipeStatus_or_FileStatusFlags = (ushort)value;
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_NT_CREATE_ANDX;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_NT_CREATE_ANDX;
     }
 }

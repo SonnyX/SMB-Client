@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -33,12 +30,6 @@ namespace SMBLibrary.SMB1
             return base.GetBytes(isUnicode);
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_WRITE;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_WRITE;
     }
 }

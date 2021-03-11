@@ -5,19 +5,18 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace SMBLibrary.Server
 {
     internal class OpenFileObject
     {
-        private uint m_treeID;
-        private string m_shareName;
+        private readonly uint m_treeID;
+        private readonly string m_shareName;
         private string m_path;
-        private object m_handle;
-        private FileAccess m_fileAccess;
-        private DateTime m_openedDT;
+        private readonly object m_handle;
+        private readonly FileAccess m_fileAccess;
+        private readonly DateTime m_openedDT;
 
         public OpenFileObject(uint treeID, string shareName, string path, object handle, FileAccess fileAccess)
         {
@@ -29,56 +28,20 @@ namespace SMBLibrary.Server
             m_openedDT = DateTime.UtcNow;
         }
 
-        public uint TreeID
-        {
-            get
-            {
-                return m_treeID;
-            }
-        }
+        public uint TreeID => m_treeID;
 
-        public string ShareName
-        {
-            get
-            {
-                return m_shareName;
-            }
-        }
+        public string ShareName => m_shareName;
 
         public string Path
         {
-            get
-            {
-                return m_path;
-            }
-            set
-            {
-                m_path = value;
-            }
+            get => m_path;
+            set => m_path = value;
         }
 
-        public object Handle
-        {
-            get
-            {
-                return m_handle;
-            }
-        }
+        public object Handle => m_handle;
 
-        public FileAccess FileAccess
-        {
-            get
-            {
-                return m_fileAccess;
-            }
-        }
+        public FileAccess FileAccess => m_fileAccess;
 
-        public DateTime OpenedDT
-        {
-            get
-            {
-                return m_openedDT;
-            }
-        }
+        public DateTime OpenedDT => m_openedDT;
     }
 }

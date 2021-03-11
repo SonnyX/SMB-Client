@@ -4,7 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
+
 using System.Collections.Generic;
 using Utilities;
 
@@ -17,7 +17,7 @@ namespace SMBLibrary.SMB2
     {
         public const int DeclaredSize = 48;
 
-        private ushort StructureSize;
+        private readonly ushort StructureSize;
         // ushort LockCount;
         public byte LSN; // 4 bits
         public uint LockSequenceIndex; // 28 bits
@@ -49,12 +49,6 @@ namespace SMBLibrary.SMB2
             LockElement.WriteLockList(buffer, offset + 24, Locks);
         }
 
-        public override int CommandLength
-        {
-            get
-            {
-                return 48 + Locks.Count * LockElement.StructureLength;
-            }
-        }
+        public override int CommandLength => 48 + Locks.Count * LockElement.StructureLength;
     }
 }

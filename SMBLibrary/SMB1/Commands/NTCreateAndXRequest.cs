@@ -4,9 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -43,7 +41,7 @@ namespace SMBLibrary.SMB1
         public NTCreateAndXRequest(byte[] buffer, int offset, bool isUnicode) : base(buffer, offset, isUnicode)
         {
             Reserved = ByteReader.ReadByte(this.SMBParameters, 4);
-            ushort nameLength = LittleEndianConverter.ToUInt16(this.SMBParameters, 5);
+            _ = LittleEndianConverter.ToUInt16(this.SMBParameters, 5);
             Flags = (NTCreateFlags)LittleEndianConverter.ToUInt32(this.SMBParameters, 7);
             RootDirectoryFID = LittleEndianConverter.ToUInt32(this.SMBParameters, 11);
             DesiredAccess = (AccessMask)LittleEndianConverter.ToUInt32(this.SMBParameters, 15);
@@ -101,12 +99,6 @@ namespace SMBLibrary.SMB1
             return base.GetBytes(isUnicode);
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_NT_CREATE_ANDX;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_NT_CREATE_ANDX;
     }
 }

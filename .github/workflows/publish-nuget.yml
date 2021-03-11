@@ -1,0 +1,23 @@
+name: Publish Nuget Package
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    name: build, pack & publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      # Publish
+      - name: publish on version change
+        id: publish_nuget
+        uses: rohith/publish-nuget@v2
+        with:
+          PROJECT_FILE_PATH: SNBLibrary/SMBLibrary.csproj
+          PACKAGE_NAME: SMB-Client
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+          INCLUDE_SYMBOLS: true
+          TAG_COMMIT: true
+          TAG_FORMAT: v*

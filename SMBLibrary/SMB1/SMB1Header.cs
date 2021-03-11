@@ -1,12 +1,10 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -14,19 +12,23 @@ namespace SMBLibrary.SMB1
     public class SMB1Header
     {
         public const int Length = 32;
-        public static readonly byte[] ProtocolSignature = new byte[] { 0xFF, 0x53, 0x4D, 0x42 };
+        public static readonly byte[] ProtocolSignature = { 0xFF, 0x53, 0x4D, 0x42 };
 
-        private byte[] Protocol; // byte[4], 0xFF followed by "SMB"
+        private readonly byte[] Protocol; // byte[4], 0xFF followed by "SMB"
         public CommandName Command;
         public NTStatus Status;
         public HeaderFlags Flags;
         public HeaderFlags2 Flags2;
+
         //ushort PIDHigh
         public ulong SecurityFeatures;
+
         // public ushort Reserved;
         public ushort TID; // Tree ID
+
         //ushort PIDLow;
         public ushort UID; // User ID
+
         public ushort MID; // Multiplex ID
 
         public uint PID; // Process ID
@@ -78,23 +80,14 @@ namespace SMBLibrary.SMB1
             return buffer;
         }
 
-        public bool ReplyFlag
-        {
-            get
-            {
-                return (Flags & HeaderFlags.Reply) > 0;
-            }
-        }
+        public bool ReplyFlag => (Flags & HeaderFlags.Reply) > 0;
 
         /// <summary>
         /// SMB_FLAGS2_EXTENDED_SECURITY
         /// </summary>
         public bool ExtendedSecurityFlag
         {
-            get
-            {
-                return (this.Flags2 & HeaderFlags2.ExtendedSecurity) > 0;
-            }
+            get => (this.Flags2 & HeaderFlags2.ExtendedSecurity) > 0;
             set
             {
                 if (value)
@@ -110,10 +103,7 @@ namespace SMBLibrary.SMB1
 
         public bool UnicodeFlag
         {
-            get
-            {
-                return (Flags2 & HeaderFlags2.Unicode) > 0;
-            }
+            get => (Flags2 & HeaderFlags2.Unicode) > 0;
             set
             {
                 if (value)

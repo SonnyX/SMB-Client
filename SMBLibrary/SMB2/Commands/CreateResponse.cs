@@ -17,7 +17,7 @@ namespace SMBLibrary.SMB2
     {
         public const int DeclaredSize = 89;
 
-        private ushort StructureSize;
+        private readonly ushort StructureSize;
         public OplockLevel OplockLevel;
         public CreateResponseFlags Flags;
         public CreateAction CreateAction;
@@ -87,12 +87,6 @@ namespace SMBLibrary.SMB2
             }
         }
 
-        public override int CommandLength
-        {
-            get
-            {
-                return 88 + CreateContext.GetCreateContextListLength(CreateContexts);
-            }
-        }
+        public override int CommandLength => 88 + CreateContext.GetCreateContextListLength(CreateContexts);
     }
 }

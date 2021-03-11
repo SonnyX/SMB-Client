@@ -47,10 +47,8 @@ namespace SMBLibrary.Server
             {
                 return this[index];
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
     }
 }

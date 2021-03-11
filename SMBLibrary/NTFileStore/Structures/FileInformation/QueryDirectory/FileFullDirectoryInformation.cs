@@ -5,7 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
 using Utilities;
 
 namespace SMBLibrary
@@ -26,7 +25,7 @@ namespace SMBLibrary
         public FileAttributes FileAttributes;
         private uint FileNameLength;
         public uint EaSize;
-        public string FileName = String.Empty;
+        public string FileName = string.Empty;
 
         public FileFullDirectoryInformation()
         {
@@ -62,20 +61,8 @@ namespace SMBLibrary
             ByteWriter.WriteUTF16String(buffer, offset + 68, FileName);
         }
 
-        public override FileInformationClass FileInformationClass
-        {
-            get
-            {
-                return FileInformationClass.FileFullDirectoryInformation;
-            }
-        }
+        public override FileInformationClass FileInformationClass => FileInformationClass.FileFullDirectoryInformation;
 
-        public override int Length
-        {
-            get
-            {
-                return FixedLength + FileName.Length * 2;
-            }
-        }
+        public override int Length => FixedLength + FileName.Length * 2;
     }
 }

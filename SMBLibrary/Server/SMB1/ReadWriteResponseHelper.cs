@@ -4,13 +4,8 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using SMBLibrary.RPC;
+
 using SMBLibrary.SMB1;
-using SMBLibrary.Services;
 using Utilities;
 
 namespace SMBLibrary.Server.SMB1
@@ -38,17 +33,18 @@ namespace SMBLibrary.Server.SMB1
                 }
             }
 
-            byte[] data;
-            header.Status = share.FileStore.ReadFile(out data, openFile.Handle, request.ReadOffsetInBytes, request.CountOfBytesToRead);
+            header.Status = share.FileStore.ReadFile(out byte[] data, openFile.Handle, request.ReadOffsetInBytes, request.CountOfBytesToRead);
             if (header.Status != NTStatus.STATUS_SUCCESS)
             {
                 state.LogToServer(Severity.Verbose, "Read from '{0}{1}' failed. NTStatus: {2}. (FID: {3})", share.Name, openFile.Path, header.Status, request.FID);
                 return new ErrorResponse(request.CommandName);
             }
 
-            ReadResponse response = new ReadResponse();
-            response.Bytes = data;
-            response.CountOfBytesReturned = (ushort)data.Length;
+            ReadResponse response = new ReadResponse
+            {
+                Bytes = data,
+                CountOfBytesReturned = (ushort)data.Length
+            };
             return response;
         }
 
@@ -78,8 +74,8 @@ namespace SMBLibrary.Server.SMB1
             {
                 maxCount = request.MaxCountLarge;
             }
-            byte[] data;
-            header.Status = share.FileStore.ReadFile(out data, openFile.Handle, (long)request.Offset, (int)maxCount);
+
+            header.Status = share.FileStore.ReadFile(out byte[] data, openFile.Handle, (long)request.Offset, (int)maxCount);
             if (header.Status == NTStatus.STATUS_END_OF_FILE)
             {
                 // [MS-CIFS] Windows servers set the DataLength field to 0x0000 and return STATUS_SUCCESS.
@@ -124,15 +120,16 @@ namespace SMBLibrary.Server.SMB1
                 }
             }
 
-            int numberOfBytesWritten;
-            header.Status = share.FileStore.WriteFile(out numberOfBytesWritten, openFile.Handle, request.WriteOffsetInBytes, request.Data);
+            header.Status = share.FileStore.WriteFile(out int numberOfBytesWritten, openFile.Handle, request.WriteOffsetInBytes, request.Data);
             if (header.Status != NTStatus.STATUS_SUCCESS)
             {
                 state.LogToServer(Severity.Verbose, "Write to '{0}{1}' failed. NTStatus: {2}. (FID: {3})", share.Name, openFile.Path, header.Status, request.FID);
                 return new ErrorResponse(request.CommandName);
             }
-            WriteResponse response = new WriteResponse();
-            response.CountOfBytesWritten = (ushort)numberOfBytesWritten;
+            WriteResponse response = new WriteResponse
+            {
+                CountOfBytesWritten = (ushort)numberOfBytesWritten
+            };
             return response;
         }
 
@@ -157,15 +154,16 @@ namespace SMBLibrary.Server.SMB1
                 }
             }
 
-            int numberOfBytesWritten;
-            header.Status = share.FileStore.WriteFile(out numberOfBytesWritten, openFile.Handle, (long)request.Offset, request.Data);
+            header.Status = share.FileStore.WriteFile(out int numberOfBytesWritten, openFile.Handle, (long)request.Offset, request.Data);
             if (header.Status != NTStatus.STATUS_SUCCESS)
             {
                 state.LogToServer(Severity.Verbose, "Write to '{0}{1}' failed. NTStatus: {2}. (FID: {3})", share.Name, openFile.Path, header.Status, request.FID);
                 return new ErrorResponse(request.CommandName);
             }
-            WriteAndXResponse response = new WriteAndXResponse();
-            response.Count = (uint)numberOfBytesWritten;
+            WriteAndXResponse response = new WriteAndXResponse
+            {
+                Count = (uint)numberOfBytesWritten
+            };
             if (share is FileSystemShare)
             {
                 // If the client wrote to a disk file, this field MUST be set to 0xFFFF.

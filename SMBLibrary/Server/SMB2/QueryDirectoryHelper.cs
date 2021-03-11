@@ -6,7 +6,6 @@
  */
 using System;
 using System.Collections.Generic;
-using SMBLibrary.Authentication;
 using SMBLibrary.SMB2;
 using Utilities;
 
@@ -30,8 +29,6 @@ namespace SMBLibrary.Server.SMB2
                 return new ErrorResponse(request.CommandName, NTStatus.STATUS_ACCESS_DENIED);
             }
 
-            FileSystemShare fileSystemShare = (FileSystemShare)share;
-
             FileID fileID = request.FileId;
             OpenSearch openSearch = session.GetOpenSearch(fileID);
             if (openSearch == null || request.Reopen)
@@ -40,8 +37,8 @@ namespace SMBLibrary.Server.SMB2
                 {
                     session.RemoveOpenSearch(fileID);
                 }
-                List<QueryDirectoryFileInformation> entries;
-                NTStatus searchStatus = share.FileStore.QueryDirectory(out entries, openFile.Handle, request.FileName, request.FileInformationClass);
+
+                NTStatus searchStatus = share.FileStore.QueryDirectory(out List<QueryDirectoryFileInformation> entries, openFile.Handle, request.FileName, request.FileInformationClass);
                 if (searchStatus != NTStatus.STATUS_SUCCESS)
                 {
                     state.LogToServer(Severity.Verbose, "Query Directory on '{0}{1}', Searched for '{2}', NTStatus: {3}", share.Name, openFile.Path, request.FileName, searchStatus.ToString());

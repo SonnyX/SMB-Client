@@ -5,8 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
-using System.IO;
 using SMBLibrary.SMB2;
 using Utilities;
 
@@ -59,8 +57,7 @@ namespace SMBLibrary.Server.SMB2
             }
 
             int maxOutputLength = (int)request.MaxOutputResponse;
-            byte[] output;
-            NTStatus status = share.FileStore.DeviceIOControl(handle, request.CtlCode, request.Input, out output, maxOutputLength);
+            NTStatus status = share.FileStore.DeviceIOControl(handle, request.CtlCode, request.Input, out byte[] output, maxOutputLength);
             if (status != NTStatus.STATUS_SUCCESS && status != NTStatus.STATUS_BUFFER_OVERFLOW)
             {
                 state.LogToServer(Severity.Verbose, "IOCTL failed. CTL Code: {0}. NTStatus: {1}.", ctlCode, status);

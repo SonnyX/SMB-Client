@@ -4,8 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -54,12 +53,6 @@ namespace SMBLibrary.SMB1
             return buffer;
         }
 
-        public override SetInformationLevel InformationLevel
-        {
-            get
-            {
-                return SetInformationLevel.SMB_SET_FILE_BASIC_INFO;
-            }
-        }
+        public override SetInformationLevel InformationLevel => SetInformationLevel.SMB_SET_FILE_BASIC_INFO;
     }
 }

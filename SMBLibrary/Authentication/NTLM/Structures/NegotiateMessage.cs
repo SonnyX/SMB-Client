@@ -1,12 +1,10 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using Utilities;
 
 namespace SMBLibrary.Authentication.NTLM
@@ -27,8 +25,8 @@ namespace SMBLibrary.Authentication.NTLM
         {
             Signature = AuthenticateMessage.ValidSignature;
             MessageType = MessageTypeName.Negotiate;
-            DomainName = String.Empty;
-            Workstation = String.Empty;
+            DomainName = string.Empty;
+            Workstation = string.Empty;
         }
 
         public NegotiateMessage(byte[] buffer)
@@ -48,12 +46,12 @@ namespace SMBLibrary.Authentication.NTLM
         {
             if ((NegotiateFlags & NegotiateFlags.DomainNameSupplied) == 0)
             {
-                DomainName = String.Empty;
+                DomainName = string.Empty;
             }
 
             if ((NegotiateFlags & NegotiateFlags.WorkstationNameSupplied) == 0)
             {
-                Workstation = String.Empty;
+                Workstation = string.Empty;
             }
 
             int fixedLength = 32;

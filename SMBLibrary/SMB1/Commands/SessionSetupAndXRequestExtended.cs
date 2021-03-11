@@ -4,9 +4,6 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -32,8 +29,8 @@ namespace SMBLibrary.SMB1
 
         public SessionSetupAndXRequestExtended(): base()
         {
-            NativeOS = String.Empty;
-            NativeLanMan = String.Empty;
+            NativeOS = string.Empty;
+            NativeLanMan = string.Empty;
         }
 
         public SessionSetupAndXRequestExtended(byte[] buffer, int offset, bool isUnicode) : base(buffer, offset, isUnicode)
@@ -95,12 +92,6 @@ namespace SMBLibrary.SMB1
             return base.GetBytes(isUnicode);
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_SESSION_SETUP_ANDX;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_SESSION_SETUP_ANDX;
     }
 }

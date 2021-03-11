@@ -1,9 +1,10 @@
 /* Copyright (C) 2016-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,8 +13,8 @@ namespace Utilities
 {
     public class SortedList<T> : ICollection<T>
     {
-        private List<T> m_innerList;
-        private Comparer<T> m_comparer;
+        private readonly List<T> m_innerList;
+        private readonly Comparer<T> m_comparer;
 
         public SortedList() : this(Comparer<T>.Default)
         {
@@ -75,13 +76,7 @@ namespace Utilities
             m_innerList.Clear();
         }
 
-        public T this[int index]
-        {
-            get
-            {
-                return m_innerList[index];
-            }
-        }
+        public T this[int index] => m_innerList[index];
 
         public IEnumerator<T> GetEnumerator()
         {
@@ -93,21 +88,9 @@ namespace Utilities
             return m_innerList.GetEnumerator();
         }
 
-        public int Count
-        {
-            get
-            {
-                return m_innerList.Count;
-            }
-        }
+        public int Count => m_innerList.Count;
 
-        public bool IsReadOnly
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public bool IsReadOnly => false;
 
         public static int FirstIndexOf(List<T> list, Comparer<T> comparer, T item)
         {
@@ -157,7 +140,8 @@ namespace Utilities
                 {
                     return middleIndex;
                 }
-                else if (comparisonResult > 0) // middle > item
+
+                if (comparisonResult > 0) // middle > item
                 {
                     upperIndex = middleIndex - 1;
                 }
@@ -175,10 +159,8 @@ namespace Utilities
             {
                 return lowerIndex + 1;
             }
-            else
-            {
-                return lowerIndex;
-            }
+
+            return lowerIndex;
         }
     }
 }

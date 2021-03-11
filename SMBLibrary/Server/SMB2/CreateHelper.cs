@@ -4,8 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
+
 using System.IO;
 using SMBLibrary.SMB2;
 using Utilities;
@@ -33,11 +32,9 @@ namespace SMBLibrary.Server.SMB2
                 }
             }
 
-            object handle;
-            FileStatus fileStatus;
             // GetFileInformation/FileNetworkOpenInformation requires FILE_READ_ATTRIBUTES
             AccessMask desiredAccess = request.DesiredAccess | (AccessMask)FileAccessMask.FILE_READ_ATTRIBUTES;
-            NTStatus createStatus = share.FileStore.CreateFile(out handle, out fileStatus, path, desiredAccess, request.FileAttributes, request.ShareAccess, request.CreateDisposition, request.CreateOptions, session.SecurityContext);
+            NTStatus createStatus = share.FileStore.CreateFile(out object handle, out FileStatus fileStatus, path, desiredAccess, request.FileAttributes, request.ShareAccess, request.CreateDisposition, request.CreateOptions, session.SecurityContext);
             if (createStatus != NTStatus.STATUS_SUCCESS)
             {
                 state.LogToServer(Severity.Verbose, "Create: Opening '{0}{1}' failed. NTStatus: {2}.", share.Name, path, createStatus);
@@ -60,35 +57,37 @@ namespace SMBLibrary.Server.SMB2
             {
                 return CreateResponseForNamedPipe(fileID.Value, FileStatus.FILE_OPENED);
             }
-            else
-            {
-                FileNetworkOpenInformation fileInfo = NTFileStoreHelper.GetNetworkOpenInformation(share.FileStore, handle);
-                CreateResponse response = CreateResponseFromFileSystemEntry(fileInfo, fileID.Value, fileStatus);
-                return response;
-            }
+
+            FileNetworkOpenInformation fileInfo = NTFileStoreHelper.GetNetworkOpenInformation(share.FileStore, handle);
+            CreateResponse response = CreateResponseFromFileSystemEntry(fileInfo, fileID.Value, fileStatus);
+            return response;
         }
 
         private static CreateResponse CreateResponseForNamedPipe(FileID fileID, FileStatus fileStatus)
         {
-            CreateResponse response = new CreateResponse();
-            response.CreateAction = (CreateAction)fileStatus;
-            response.FileAttributes = FileAttributes.Normal;
-            response.FileId = fileID;
+            CreateResponse response = new CreateResponse
+            {
+                CreateAction = (CreateAction)fileStatus,
+                FileAttributes = FileAttributes.Normal,
+                FileId = fileID
+            };
             return response;
         }
 
         private static CreateResponse CreateResponseFromFileSystemEntry(FileNetworkOpenInformation fileInfo, FileID fileID, FileStatus fileStatus)
         {
-            CreateResponse response = new CreateResponse();
-            response.CreateAction = (CreateAction)fileStatus;
-            response.CreationTime = fileInfo.CreationTime;
-            response.LastWriteTime = fileInfo.LastWriteTime;
-            response.ChangeTime = fileInfo.LastWriteTime;
-            response.LastAccessTime = fileInfo.LastAccessTime;
-            response.AllocationSize = fileInfo.AllocationSize;
-            response.EndofFile = fileInfo.EndOfFile;
-            response.FileAttributes = fileInfo.FileAttributes;
-            response.FileId = fileID;
+            CreateResponse response = new CreateResponse
+            {
+                CreateAction = (CreateAction)fileStatus,
+                CreationTime = fileInfo.CreationTime,
+                LastWriteTime = fileInfo.LastWriteTime,
+                ChangeTime = fileInfo.LastWriteTime,
+                LastAccessTime = fileInfo.LastAccessTime,
+                AllocationSize = fileInfo.AllocationSize,
+                EndofFile = fileInfo.EndOfFile,
+                FileAttributes = fileInfo.FileAttributes,
+                FileId = fileID
+            };
             return response;
         }
     }

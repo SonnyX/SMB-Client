@@ -36,8 +36,9 @@ namespace SMBLibrary.Client
                 useGSSAPI = true;
             }
 
-            NegotiateMessage negotiateMessage = new NegotiateMessage();
-            negotiateMessage.NegotiateFlags = NegotiateFlags.UnicodeEncoding |
+            NegotiateMessage negotiateMessage = new NegotiateMessage
+            {
+                NegotiateFlags = NegotiateFlags.UnicodeEncoding |
                                               NegotiateFlags.OEMEncoding |
                                               NegotiateFlags.Sign |
                                               NegotiateFlags.NTLMSessionSecurity |
@@ -47,7 +48,8 @@ namespace SMBLibrary.Client
                                               NegotiateFlags.Version |
                                               NegotiateFlags.Use128BitEncryption |
                                               NegotiateFlags.KeyExchange |
-                                              NegotiateFlags.Use56BitEncryption;
+                                              NegotiateFlags.Use56BitEncryption
+            };
 
             if (authenticationMethod == AuthenticationMethod.NTLMv1)
             {
@@ -63,16 +65,18 @@ namespace SMBLibrary.Client
             negotiateMessage.Workstation = Environment.MachineName;
             if (useGSSAPI)
             {
-                SimpleProtectedNegotiationTokenInit outputToken = new SimpleProtectedNegotiationTokenInit();
-                outputToken.MechanismTypeList = new List<byte[]>();
-                outputToken.MechanismTypeList.Add(GSSProvider.NTLMSSPIdentifier);
-                outputToken.MechanismToken = negotiateMessage.GetBytes();
+                SimpleProtectedNegotiationTokenInit outputToken = new SimpleProtectedNegotiationTokenInit
+                {
+                    MechanismTypeList = new List<byte[]>
+                {
+                    GSSProvider.NTLMSSPIdentifier
+                },
+                    MechanismToken = negotiateMessage.GetBytes()
+                };
                 return outputToken.GetBytes(true);
             }
-            else
-            {
-                return negotiateMessage.GetBytes();
-            }
+
+            return negotiateMessage.GetBytes();
         }
 
         public static byte[] GetAuthenticateMessage(byte[] securityBlob, string domainName, string userName, string password, AuthenticationMethod authenticationMethod, out byte[] sessionKey)
@@ -108,14 +112,16 @@ namespace SMBLibrary.Client
             byte[] clientChallenge = new byte[8];
             new Random().NextBytes(clientChallenge);
 
-            AuthenticateMessage authenticateMessage = new AuthenticateMessage();
-            // https://msdn.microsoft.com/en-us/library/cc236676.aspx
-            authenticateMessage.NegotiateFlags = NegotiateFlags.Sign |
+            AuthenticateMessage authenticateMessage = new AuthenticateMessage
+            {
+                // https://msdn.microsoft.com/en-us/library/cc236676.aspx
+                NegotiateFlags = NegotiateFlags.Sign |
                                                  NegotiateFlags.NTLMSessionSecurity |
                                                  NegotiateFlags.AlwaysSign |
                                                  NegotiateFlags.Version |
                                                  NegotiateFlags.Use128BitEncryption |
-                                                 NegotiateFlags.Use56BitEncryption;
+                                                 NegotiateFlags.Use56BitEncryption
+            };
             if ((challengeMessage.NegotiateFlags & NegotiateFlags.UnicodeEncoding) > 0)
             {
                 authenticateMessage.NegotiateFlags |= NegotiateFlags.UnicodeEncoding;
@@ -191,14 +197,14 @@ namespace SMBLibrary.Client
 
             if (useGSSAPI)
             {
-                SimpleProtectedNegotiationTokenResponse outputToken = new SimpleProtectedNegotiationTokenResponse();
-                outputToken.ResponseToken = authenticateMessage.GetBytes();
+                SimpleProtectedNegotiationTokenResponse outputToken = new SimpleProtectedNegotiationTokenResponse
+                {
+                    ResponseToken = authenticateMessage.GetBytes()
+                };
                 return outputToken.GetBytes();
             }
-            else
-            {
-                return authenticateMessage.GetBytes();
-            }
+
+            return authenticateMessage.GetBytes();
         }
 
         private static ChallengeMessage GetChallengeMessage(byte[] messageBytes)

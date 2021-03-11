@@ -1,12 +1,11 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
-using System.Collections.Generic;
-using System.Text;
 using SMBLibrary.SMB1;
 using Utilities;
 
@@ -22,7 +21,7 @@ namespace SMBLibrary.Server.SMB1
             ISMBShare share;
             ServiceName serviceName;
             OptionalSupportFlags supportFlags;
-            if (String.Equals(shareName, NamedPipeShare.NamedPipeShareName, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(shareName, NamedPipeShare.NamedPipeShareName, StringComparison.OrdinalIgnoreCase))
             {
                 if (request.Service != ServiceName.AnyType && request.Service != ServiceName.NamedPipe)
                 {
@@ -71,51 +70,49 @@ namespace SMBLibrary.Server.SMB1
             {
                 return CreateTreeConnectResponseExtended(serviceName, supportFlags);
             }
-            else
-            {
-                return CreateTreeConnectResponse(serviceName, supportFlags);
-            }
+
+            return CreateTreeConnectResponse(serviceName, supportFlags);
         }
 
         private static OptionalSupportFlags GetCachingSupportFlags(CachingPolicy cachingPolicy)
         {
-            switch (cachingPolicy)
+            return cachingPolicy switch
             {
-                case CachingPolicy.ManualCaching:
-                    return OptionalSupportFlags.SMB_CSC_CACHE_MANUAL_REINT;
-                case CachingPolicy.AutoCaching:
-                    return OptionalSupportFlags.SMB_CSC_CACHE_AUTO_REINT;
-                case CachingPolicy.VideoCaching:
-                    return OptionalSupportFlags.SMB_CSC_CACHE_VDO;
-                default:
-                    return OptionalSupportFlags.SMB_CSC_NO_CACHING;
-            }
+                CachingPolicy.ManualCaching => OptionalSupportFlags.SMB_CSC_CACHE_MANUAL_REINT,
+                CachingPolicy.AutoCaching => OptionalSupportFlags.SMB_CSC_CACHE_AUTO_REINT,
+                CachingPolicy.VideoCaching => OptionalSupportFlags.SMB_CSC_CACHE_VDO,
+                _ => OptionalSupportFlags.SMB_CSC_NO_CACHING
+            };
         }
 
         private static TreeConnectAndXResponse CreateTreeConnectResponse(ServiceName serviceName, OptionalSupportFlags supportFlags)
         {
-            TreeConnectAndXResponse response = new TreeConnectAndXResponse();
-            response.OptionalSupport = supportFlags;
-            response.NativeFileSystem = String.Empty;
-            response.Service = serviceName;
+            TreeConnectAndXResponse response = new TreeConnectAndXResponse
+            {
+                OptionalSupport = supportFlags,
+                NativeFileSystem = string.Empty,
+                Service = serviceName
+            };
             return response;
         }
 
         private static TreeConnectAndXResponseExtended CreateTreeConnectResponseExtended(ServiceName serviceName, OptionalSupportFlags supportFlags)
         {
-            TreeConnectAndXResponseExtended response = new TreeConnectAndXResponseExtended();
-            response.OptionalSupport = supportFlags;
-            response.MaximalShareAccessRights = (AccessMask)(FileAccessMask.FILE_READ_DATA | FileAccessMask.FILE_WRITE_DATA | FileAccessMask.FILE_APPEND_DATA |
+            TreeConnectAndXResponseExtended response = new TreeConnectAndXResponseExtended
+            {
+                OptionalSupport = supportFlags,
+                MaximalShareAccessRights = (AccessMask)(FileAccessMask.FILE_READ_DATA | FileAccessMask.FILE_WRITE_DATA | FileAccessMask.FILE_APPEND_DATA |
                                                              FileAccessMask.FILE_READ_EA | FileAccessMask.FILE_WRITE_EA |
                                                              FileAccessMask.FILE_EXECUTE |
                                                              FileAccessMask.FILE_READ_ATTRIBUTES | FileAccessMask.FILE_WRITE_ATTRIBUTES) |
-                                                             AccessMask.DELETE | AccessMask.READ_CONTROL | AccessMask.WRITE_DAC | AccessMask.WRITE_OWNER | AccessMask.SYNCHRONIZE;
-            response.GuestMaximalShareAccessRights = (AccessMask)(FileAccessMask.FILE_READ_DATA | FileAccessMask.FILE_WRITE_DATA |
+                                                             AccessMask.DELETE | AccessMask.READ_CONTROL | AccessMask.WRITE_DAC | AccessMask.WRITE_OWNER | AccessMask.SYNCHRONIZE,
+                GuestMaximalShareAccessRights = (AccessMask)(FileAccessMask.FILE_READ_DATA | FileAccessMask.FILE_WRITE_DATA |
                                                                   FileAccessMask.FILE_READ_EA | FileAccessMask.FILE_WRITE_EA |
                                                                   FileAccessMask.FILE_READ_ATTRIBUTES | FileAccessMask.FILE_WRITE_ATTRIBUTES) |
-                                                                  AccessMask.READ_CONTROL | AccessMask.SYNCHRONIZE;
-            response.NativeFileSystem = String.Empty;
-            response.Service = serviceName;
+                                                                  AccessMask.READ_CONTROL | AccessMask.SYNCHRONIZE,
+                NativeFileSystem = string.Empty,
+                Service = serviceName
+            };
             return response;
         }
 

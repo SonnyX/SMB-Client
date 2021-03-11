@@ -5,9 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using SMBLibrary.SMB1;
 using Utilities;
 
@@ -162,17 +159,18 @@ namespace SMBLibrary.Server.SMB1
                 }
             }
 
-            FileNetworkOpenInformation fileInfo;
-            header.Status = SMB1FileStoreHelper.QueryInformation(out fileInfo, share.FileStore, path, session.SecurityContext);
+            header.Status = SMB1FileStoreHelper.QueryInformation(out FileNetworkOpenInformation fileInfo, share.FileStore, path, session.SecurityContext);
             if (header.Status != NTStatus.STATUS_SUCCESS)
             {
                 return new ErrorResponse(request.CommandName);
             }
 
-            QueryInformationResponse response = new QueryInformationResponse();
-            response.FileAttributes = SMB1FileStoreHelper.GetFileAttributes(fileInfo.FileAttributes);
-            response.LastWriteTime = fileInfo.LastWriteTime;
-            response.FileSize = (uint)Math.Min(UInt32.MaxValue, fileInfo.EndOfFile);
+            QueryInformationResponse response = new QueryInformationResponse
+            {
+                FileAttributes = SMB1FileStoreHelper.GetFileAttributes(fileInfo.FileAttributes),
+                LastWriteTime = fileInfo.LastWriteTime,
+                FileSize = (uint)Math.Min(uint.MaxValue, fileInfo.EndOfFile)
+            };
             return response;
         }
 

@@ -4,7 +4,6 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
 using System.Collections.Generic;
 using SMBLibrary.RPC;
 using SMBLibrary.Services;
@@ -16,22 +15,26 @@ namespace SMBLibrary.Client
     {
         public static List<string> ListShares(INTFileStore namedPipeShare, ShareType? shareType, out NTStatus status)
         {
-            object pipeHandle;
-            int maxTransmitFragmentSize;
-            status = NamedPipeHelper.BindPipe(namedPipeShare, ServerService.ServicePipeName, ServerService.ServiceInterfaceGuid, ServerService.ServiceVersion, out pipeHandle, out maxTransmitFragmentSize);
+            status = NamedPipeHelper.BindPipe(namedPipeShare, ServerService.ServicePipeName, ServerService.ServiceInterfaceGuid, ServerService.ServiceVersion, out object pipeHandle, out int maxTransmitFragmentSize);
             if (status != NTStatus.STATUS_SUCCESS)
             {
                 return null;
             }
 
-            NetrShareEnumRequest shareEnumRequest = new NetrShareEnumRequest();
-            shareEnumRequest.InfoStruct = new ShareEnum();
-            shareEnumRequest.InfoStruct.Level = 1;
-            shareEnumRequest.InfoStruct.Info = new ShareInfo1Container();
-            shareEnumRequest.PreferedMaximumLength = UInt32.MaxValue;
-            shareEnumRequest.ServerName = "*";
-            RequestPDU requestPDU = new RequestPDU();
-            requestPDU.Flags = PacketFlags.FirstFragment | PacketFlags.LastFragment;
+            NetrShareEnumRequest shareEnumRequest = new NetrShareEnumRequest
+            {
+                InfoStruct = new ShareEnum
+                {
+                    Level = 1,
+                    Info = new ShareInfo1Container()
+                },
+                PreferedMaximumLength = uint.MaxValue,
+                ServerName = "*"
+            };
+            RequestPDU requestPDU = new RequestPDU
+            {
+                Flags = PacketFlags.FirstFragment | PacketFlags.LastFragment
+            };
             requestPDU.DataRepresentation.CharacterFormat = CharacterFormat.ASCII;
             requestPDU.DataRepresentation.ByteOrder = ByteOrder.LittleEndian;
             requestPDU.DataRepresentation.FloatingPointRepresentation = FloatingPointRepresentation.IEEE;
@@ -39,9 +42,8 @@ namespace SMBLibrary.Client
             requestPDU.Data = shareEnumRequest.GetBytes();
             requestPDU.AllocationHint = (uint)requestPDU.Data.Length;
             byte[] input = requestPDU.GetBytes();
-            byte[] output;
             int maxOutputLength = maxTransmitFragmentSize;
-            status = namedPipeShare.DeviceIOControl(pipeHandle, (uint)IoControlCode.FSCTL_PIPE_TRANSCEIVE, input, out output, maxOutputLength);
+            status = namedPipeShare.DeviceIOControl(pipeHandle, (uint)IoControlCode.FSCTL_PIPE_TRANSCEIVE, input, out byte[] output, maxOutputLength);
             if (status != NTStatus.STATUS_SUCCESS)
             {
                 return null;

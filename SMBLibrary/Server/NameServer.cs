@@ -5,13 +5,10 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using SMBLibrary.NetBios;
-using Utilities;
 
 namespace SMBLibrary.Server
 {
@@ -23,8 +20,8 @@ namespace SMBLibrary.Server
         public static readonly int NetBiosNameServicePort = 137;
         public static readonly string WorkgroupName = "WORKGROUP";
 
-        private IPAddress m_serverAddress;
-        private IPAddress m_broadcastAddress;
+        private readonly IPAddress m_serverAddress;
+        private readonly IPAddress m_broadcastAddress;
         private UdpClient m_client;
         private bool m_listening;
 
@@ -109,7 +106,7 @@ namespace SMBLibrary.Server
                             string name = NetBiosUtils.GetNameFromMSNetBiosName(request.Question.Name);
                             NetBiosSuffix suffix = (NetBiosSuffix)request.Question.Name[15];
 
-                            bool nameMatch = String.Equals(name, Environment.MachineName, StringComparison.OrdinalIgnoreCase);
+                            bool nameMatch = string.Equals(name, Environment.MachineName, StringComparison.OrdinalIgnoreCase);
                             
                             if (nameMatch && ((suffix == NetBiosSuffix.WorkstationService) || (suffix == NetBiosSuffix.FileServiceService)))
                             {
@@ -130,8 +127,10 @@ namespace SMBLibrary.Server
                             NameFlags nameFlags = new NameFlags();
                             string name1 = NetBiosUtils.GetMSNetBiosName(Environment.MachineName, NetBiosSuffix.WorkstationService);
                             string name2 = NetBiosUtils.GetMSNetBiosName(Environment.MachineName, NetBiosSuffix.FileServiceService);
-                            NameFlags nameFlags3 = new NameFlags();
-                            nameFlags3.WorkGroup = true;
+                            NameFlags nameFlags3 = new NameFlags
+                            {
+                                WorkGroup = true
+                            };
                             string name3 = NetBiosUtils.GetMSNetBiosName(WorkgroupName, NetBiosSuffix.WorkstationService);
                             response.Names.Add(name1, nameFlags);
                             response.Names.Add(name2, nameFlags);

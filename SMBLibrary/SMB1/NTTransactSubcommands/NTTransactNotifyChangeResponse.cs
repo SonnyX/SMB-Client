@@ -4,9 +4,8 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
+
 using System.Collections.Generic;
-using Utilities;
 
 namespace SMBLibrary.SMB1
 {
@@ -42,12 +41,6 @@ namespace SMBLibrary.SMB1
             FileNotifyInformationBytes = FileNotifyInformation.GetBytes(notifyInformationList);
         }
 
-        public override NTTransactSubcommandName SubcommandName
-        {
-            get
-            {
-                return NTTransactSubcommandName.NT_TRANSACT_NOTIFY_CHANGE;
-            }
-        }
+        public override NTTransactSubcommandName SubcommandName => NTTransactSubcommandName.NT_TRANSACT_NOTIFY_CHANGE;
     }
 }

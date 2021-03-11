@@ -1,11 +1,11 @@
 /* Copyright (C) 2014-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Utilities;
 
@@ -54,13 +54,7 @@ namespace SMBLibrary.NetBios
             return buffer;
         }
 
-        public virtual int Length
-        {
-            get
-            {
-                return HeaderLength + Trailer.Length;
-            }
-        }
+        public virtual int Length => HeaderLength + Trailer.Length;
 
         public static int GetSessionPacketLength(byte[] buffer, int offset)
         {
@@ -71,23 +65,17 @@ namespace SMBLibrary.NetBios
         public static SessionPacket GetSessionPacket(byte[] buffer, int offset)
         {
             SessionPacketTypeName type = (SessionPacketTypeName)ByteReader.ReadByte(buffer, offset);
-            switch (type)
+            return type switch
             {
-                case SessionPacketTypeName.SessionMessage:
-                    return new SessionMessagePacket(buffer, offset);
-                case SessionPacketTypeName.SessionRequest:
-                    return new SessionRequestPacket(buffer, offset);
-                case SessionPacketTypeName.PositiveSessionResponse:
-                    return new PositiveSessionResponsePacket(buffer, offset);
-                case SessionPacketTypeName.NegativeSessionResponse:
-                    return new NegativeSessionResponsePacket(buffer, offset);
-                case SessionPacketTypeName.RetargetSessionResponse:
-                    return new SessionRetargetResponsePacket(buffer, offset);
-                case SessionPacketTypeName.SessionKeepAlive:
-                    return new SessionKeepAlivePacket(buffer, offset);
-                default:
-                    throw new InvalidDataException("Invalid NetBIOS session packet type: 0x" + ((byte)type).ToString("X2"));
-            }
+                SessionPacketTypeName.SessionMessage => new SessionMessagePacket(buffer, offset),
+                SessionPacketTypeName.SessionRequest => new SessionRequestPacket(buffer, offset),
+                SessionPacketTypeName.PositiveSessionResponse => new PositiveSessionResponsePacket(buffer, offset),
+                SessionPacketTypeName.NegativeSessionResponse => new NegativeSessionResponsePacket(buffer, offset),
+                SessionPacketTypeName.RetargetSessionResponse => new SessionRetargetResponsePacket(buffer, offset),
+                SessionPacketTypeName.SessionKeepAlive => new SessionKeepAlivePacket(buffer, offset),
+                _ => throw new InvalidDataException("Invalid NetBIOS session packet type: 0x" +
+                                                    ((byte)type).ToString("X2"))
+            };
         }
     }
 }

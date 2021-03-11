@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -23,12 +20,6 @@ namespace SMBLibrary.SMB1
             SearchHandle = LittleEndianConverter.ToUInt16(this.SMBParameters, 0);
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_FIND_CLOSE2;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_FIND_CLOSE2;
     }
 }

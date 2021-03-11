@@ -4,9 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -39,22 +37,10 @@ namespace SMBLibrary.SMB1
 
         public byte[] Data
         {
-            get
-            {
-                return this.SMBData;
-            }
-            set
-            {
-                this.SMBData = value;
-            }
+            get => this.SMBData;
+            set => this.SMBData = value;
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_ECHO;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_ECHO;
     }
 }

@@ -5,8 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SMBLibrary.Services
 {
@@ -19,11 +17,11 @@ namespace SMBLibrary.Services
         public static readonly Guid ServiceInterfaceGuid = new Guid("6BFFD098-A112-3610-9833-46C3F87E345A");
         public const int ServiceVersion = 1;
 
-        private uint m_platformID;
-        private string m_computerName;
-        private string m_lanGroup;
-        private uint m_verMajor;
-        private uint m_verMinor;
+        private readonly uint m_platformID;
+        private readonly string m_computerName;
+        private readonly string m_lanGroup;
+        private readonly uint m_verMajor;
+        private readonly uint m_verMinor;
 
         public WorkstationService(string computerName, string lanGroup)
         {
@@ -54,8 +52,10 @@ namespace SMBLibrary.Services
             {
                 case 100:
                     {
-                        WorkstationInfo100 info = new WorkstationInfo100();
-                        info.PlatformID = m_platformID;
+                        WorkstationInfo100 info = new WorkstationInfo100
+                        {
+                            PlatformID = m_platformID
+                        };
                         info.ComputerName.Value = m_computerName;
                         info.LanGroup.Value = m_lanGroup;
                         info.VerMajor = m_verMajor;
@@ -66,8 +66,10 @@ namespace SMBLibrary.Services
                     }
                 case 101:
                     {
-                        WorkstationInfo101 info = new WorkstationInfo101();
-                        info.PlatformID = m_platformID;
+                        WorkstationInfo101 info = new WorkstationInfo101
+                        {
+                            PlatformID = m_platformID
+                        };
                         info.ComputerName.Value = m_computerName;
                         info.LanGroup.Value = m_lanGroup;
                         info.VerMajor = m_verMajor;
@@ -93,20 +95,8 @@ namespace SMBLibrary.Services
             }
         }
 
-        public override Guid InterfaceGuid
-        {
-            get
-            {
-                return ServiceInterfaceGuid;
-            }
-        }
+        public override Guid InterfaceGuid => ServiceInterfaceGuid;
 
-        public override string PipeName
-        {
-            get
-            {
-                return ServicePipeName;
-            }
-        }
+        public override string PipeName => ServicePipeName;
     }
 }

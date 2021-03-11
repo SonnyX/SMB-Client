@@ -4,9 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -46,20 +44,8 @@ namespace SMBLibrary.SMB1
             return buffer;
         }
 
-        public override int Length
-        {
-            get
-            {
-                return FixedLength + FileSystemName.Length * 2;
-            }
-        }
+        public override int Length => FixedLength + FileSystemName.Length * 2;
 
-        public override QueryFSInformationLevel InformationLevel
-        {
-            get
-            {
-                return QueryFSInformationLevel.SMB_QUERY_FS_ATTRIBUTE_INFO;
-            }
-        }
+        public override QueryFSInformationLevel InformationLevel => QueryFSInformationLevel.SMB_QUERY_FS_ATTRIBUTE_INFO;
     }
 }

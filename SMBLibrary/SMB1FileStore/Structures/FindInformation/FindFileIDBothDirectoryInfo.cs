@@ -5,8 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -105,12 +103,6 @@ namespace SMBLibrary.SMB1
             return length;
         }
 
-        public override FindInformationLevel InformationLevel
-        {
-            get
-            {
-                return FindInformationLevel.SMB_FIND_FILE_ID_BOTH_DIRECTORY_INFO;
-            }
-        }
+        public override FindInformationLevel InformationLevel => FindInformationLevel.SMB_FIND_FILE_ID_BOTH_DIRECTORY_INFO;
     }
 }

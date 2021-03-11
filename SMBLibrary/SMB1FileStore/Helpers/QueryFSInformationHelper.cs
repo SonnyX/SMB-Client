@@ -1,34 +1,28 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
-using System.Collections.Generic;
-using SMBLibrary.SMB1;
-using Utilities;
 
 namespace SMBLibrary.SMB1
 {
     public class QueryFSInformationHelper
     {
-        /// <exception cref="SMBLibrary.UnsupportedInformationLevelException"></exception>
+        /// <exception cref="UnsupportedInformationLevelException"></exception>
         public static FileSystemInformationClass ToFileSystemInformationClass(QueryFSInformationLevel informationLevel)
         {
-            switch (informationLevel)
+            return informationLevel switch
             {
-                case QueryFSInformationLevel.SMB_QUERY_FS_VOLUME_INFO:
-                    return FileSystemInformationClass.FileFsVolumeInformation;
-                case QueryFSInformationLevel.SMB_QUERY_FS_SIZE_INFO:
-                    return FileSystemInformationClass.FileFsSizeInformation;
-                case QueryFSInformationLevel.SMB_QUERY_FS_DEVICE_INFO:
-                    return FileSystemInformationClass.FileFsDeviceInformation;
-                case QueryFSInformationLevel.SMB_QUERY_FS_ATTRIBUTE_INFO:
-                    return FileSystemInformationClass.FileFsAttributeInformation;
-                default:
-                    throw new UnsupportedInformationLevelException();
-            }
+                QueryFSInformationLevel.SMB_QUERY_FS_VOLUME_INFO => FileSystemInformationClass.FileFsVolumeInformation,
+                QueryFSInformationLevel.SMB_QUERY_FS_SIZE_INFO => FileSystemInformationClass.FileFsSizeInformation,
+                QueryFSInformationLevel.SMB_QUERY_FS_DEVICE_INFO => FileSystemInformationClass.FileFsDeviceInformation,
+                QueryFSInformationLevel.SMB_QUERY_FS_ATTRIBUTE_INFO => FileSystemInformationClass
+                    .FileFsAttributeInformation,
+                _ => throw new UnsupportedInformationLevelException()
+            };
         }
 
         public static QueryFSInformation FromFileSystemInformation(FileSystemInformation fsInfo)
@@ -36,43 +30,49 @@ namespace SMBLibrary.SMB1
             if (fsInfo is FileFsVolumeInformation)
             {
                 FileFsVolumeInformation volumeInfo = (FileFsVolumeInformation)fsInfo;
-                QueryFSVolumeInfo result = new QueryFSVolumeInfo();
-                result.VolumeCreationTime = volumeInfo.VolumeCreationTime;
-                result.SerialNumber = volumeInfo.VolumeSerialNumber;
-                result.VolumeLabel = volumeInfo.VolumeLabel;
+                QueryFSVolumeInfo result = new QueryFSVolumeInfo
+                {
+                    VolumeCreationTime = volumeInfo.VolumeCreationTime,
+                    SerialNumber = volumeInfo.VolumeSerialNumber,
+                    VolumeLabel = volumeInfo.VolumeLabel
+                };
                 return result;
             }
-            else if (fsInfo is FileFsSizeInformation)
+
+            if (fsInfo is FileFsSizeInformation)
             {
                 FileFsSizeInformation fsSizeInfo = (FileFsSizeInformation)fsInfo;
-                QueryFSSizeInfo result = new QueryFSSizeInfo();
-                result.TotalAllocationUnits = fsSizeInfo.TotalAllocationUnits;
-                result.TotalFreeAllocationUnits = fsSizeInfo.AvailableAllocationUnits;
-                result.BytesPerSector = fsSizeInfo.BytesPerSector;
-                result.SectorsPerAllocationUnit = fsSizeInfo.SectorsPerAllocationUnit;
+                QueryFSSizeInfo result = new QueryFSSizeInfo
+                {
+                    TotalAllocationUnits = fsSizeInfo.TotalAllocationUnits,
+                    TotalFreeAllocationUnits = fsSizeInfo.AvailableAllocationUnits,
+                    BytesPerSector = fsSizeInfo.BytesPerSector,
+                    SectorsPerAllocationUnit = fsSizeInfo.SectorsPerAllocationUnit
+                };
                 return result;
             }
-            else if (fsInfo is FileFsDeviceInformation)
+            if (fsInfo is FileFsDeviceInformation)
             {
                 FileFsDeviceInformation fsDeviceInfo = (FileFsDeviceInformation)fsInfo;
-                QueryFSDeviceInfo result = new QueryFSDeviceInfo();
-                result.DeviceType = fsDeviceInfo.DeviceType;
-                result.DeviceCharacteristics = fsDeviceInfo.Characteristics;
+                QueryFSDeviceInfo result = new QueryFSDeviceInfo
+                {
+                    DeviceType = fsDeviceInfo.DeviceType,
+                    DeviceCharacteristics = fsDeviceInfo.Characteristics
+                };
                 return result;
             }
-            else if (fsInfo is FileFsAttributeInformation)
+            if (fsInfo is FileFsAttributeInformation)
             {
                 FileFsAttributeInformation fsAttributeInfo = (FileFsAttributeInformation)fsInfo;
-                QueryFSAttibuteInfo result = new QueryFSAttibuteInfo();
-                result.FileSystemAttributes = fsAttributeInfo.FileSystemAttributes;
-                result.MaxFileNameLengthInBytes = fsAttributeInfo.MaximumComponentNameLength;
-                result.FileSystemName = fsAttributeInfo.FileSystemName;
+                QueryFSAttibuteInfo result = new QueryFSAttibuteInfo
+                {
+                    FileSystemAttributes = fsAttributeInfo.FileSystemAttributes,
+                    MaxFileNameLengthInBytes = fsAttributeInfo.MaximumComponentNameLength,
+                    FileSystemName = fsAttributeInfo.FileSystemName
+                };
                 return result;
             }
-            else
-            {
-                throw new NotImplementedException();
-            }
+            throw new NotImplementedException();
         }
     }
 }

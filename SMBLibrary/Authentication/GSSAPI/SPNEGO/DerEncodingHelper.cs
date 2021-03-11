@@ -1,10 +1,10 @@
 /* Copyright (C) 2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
+
 using System.Collections.Generic;
 using System.Text;
 using Utilities;
@@ -48,7 +48,7 @@ namespace SMBLibrary.Authentication.GSSAPI
                 {
                     byte value = (byte)(length % 256);
                     values.Add(value);
-                    length = length / 256;
+                    length /= 256;
                 }
                 while (length > 0);
                 values.Reverse();
@@ -69,28 +69,26 @@ namespace SMBLibrary.Authentication.GSSAPI
                 int result = 1;
                 do
                 {
-                    length = length / 256;
+                    length /= 256;
                     result++;
                 }
-                while(length > 0);
+                while (length > 0);
                 return result;
             }
-            else
-            {
-                return 1;
-            }
+
+            return 1;
         }
 
         public static byte[] EncodeGeneralString(string value)
         {
             // We do not support character-set designation escape sequences
-            return ASCIIEncoding.ASCII.GetBytes(value);
+            return Encoding.ASCII.GetBytes(value);
         }
 
         public static string DecodeGeneralString(byte[] bytes)
         {
             // We do not support character-set designation escape sequences
-            return ASCIIEncoding.ASCII.GetString(bytes);
+            return Encoding.ASCII.GetString(bytes);
         }
     }
 }

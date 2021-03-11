@@ -36,11 +36,9 @@ namespace SMBLibrary.Server.SMB1
                 processState.TransactionDataReceived += request.TransData.Length;
                 return new NTTransactInterimResponse();
             }
-            else
-            {
-                // We have a complete command
-                return GetCompleteNTTransactResponse(header, request.MaxParameterCount, request.MaxDataCount, request.Function, request.Setup, request.TransParameters, request.TransData, share, state);
-            }
+
+            // We have a complete command
+            return GetCompleteNTTransactResponse(header, request.MaxParameterCount, request.MaxDataCount, request.Function, request.Setup, request.TransParameters, request.TransData, share, state);
         }
 
         /// <summary>
@@ -64,12 +62,10 @@ namespace SMBLibrary.Server.SMB1
             {
                 return new List<SMB1Command>();
             }
-            else
-            {
-                // We have a complete command
-                state.RemoveProcessState(header.PID);
-                return GetCompleteNTTransactResponse(header, processState.MaxParameterCount, processState.MaxDataCount, (NTTransactSubcommandName)processState.SubcommandID, processState.TransactionSetup, processState.TransactionParameters, processState.TransactionData, share, state);
-            }
+
+            // We have a complete command
+            state.RemoveProcessState(header.PID);
+            return GetCompleteNTTransactResponse(header, processState.MaxParameterCount, processState.MaxDataCount, (NTTransactSubcommandName)processState.SubcommandID, processState.TransactionSetup, processState.TransactionParameters, processState.TransactionData, share, state);
         }
 
         internal static List<SMB1Command> GetCompleteNTTransactResponse(SMB1Header header, uint maxParameterCount, uint maxDataCount, NTTransactSubcommandName subcommandName, byte[] requestSetup, byte[] requestParameters, byte[] requestData, ISMBShare share, SMB1ConnectionState state)
@@ -150,8 +146,7 @@ namespace SMBLibrary.Server.SMB1
             }
 
             int maxOutputLength = (int)maxDataCount;
-            byte[] output;
-            header.Status = share.FileStore.DeviceIOControl(openFile.Handle, subcommand.FunctionCode, subcommand.Data, out output, maxOutputLength);
+            header.Status = share.FileStore.DeviceIOControl(openFile.Handle, subcommand.FunctionCode, subcommand.Data, out byte[] output, maxOutputLength);
             if (header.Status != NTStatus.STATUS_SUCCESS && header.Status != NTStatus.STATUS_BUFFER_OVERFLOW)
             {
                 state.LogToServer(Severity.Verbose, "IOCTL failed. CTL Code: {0}. NTStatus: {1}. (FID: {2})", ctlCode, header.Status, subcommand.FID);
@@ -159,8 +154,10 @@ namespace SMBLibrary.Server.SMB1
             }
 
             state.LogToServer(Severity.Verbose, "IOCTL succeeded. CTL Code: {0}. (FID: {1})", ctlCode, subcommand.FID);
-            NTTransactIOCTLResponse response = new NTTransactIOCTLResponse();
-            response.Data = output;
+            NTTransactIOCTLResponse response = new NTTransactIOCTLResponse
+            {
+                Data = output
+            };
             return response;
         }
 
@@ -198,17 +195,17 @@ namespace SMBLibrary.Server.SMB1
                 return null;
             }
 
-            int maxOutputLength = (int)maxDataCount;
-            SecurityDescriptor securityDescriptor;
-            header.Status = share.FileStore.GetSecurityInformation(out securityDescriptor, openFile.Handle, subcommand.SecurityInfoFields);
+            header.Status = share.FileStore.GetSecurityInformation(out SecurityDescriptor securityDescriptor, openFile.Handle, subcommand.SecurityInfoFields);
             if (header.Status != NTStatus.STATUS_SUCCESS)
             {
                 state.LogToServer(Severity.Verbose, "GetSecurityInformation on '{0}{1}' failed. Security information: 0x{2}, NTStatus: {3}. (FID: {4})", share.Name, openFile.Path, subcommand.SecurityInfoFields.ToString("X"), header.Status, subcommand.FID);
                 return null;
             }
 
-            NTTransactQuerySecurityDescriptorResponse response = new NTTransactQuerySecurityDescriptorResponse();
-            response.LengthNeeded = (uint)securityDescriptor.Length;
+            NTTransactQuerySecurityDescriptorResponse response = new NTTransactQuerySecurityDescriptorResponse
+            {
+                LengthNeeded = (uint)securityDescriptor.Length
+            };
             if (response.LengthNeeded <= maxDataCount)
             {
                 state.LogToServer(Severity.Verbose, "GetSecurityInformation on '{0}{1}' succeeded. Security information: 0x{2}. (FID: {3})", share.Name, openFile.Path, subcommand.SecurityInfoFields.ToString("X"), subcommand.FID);

@@ -4,8 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
+
 using Utilities;
 
 namespace SMBLibrary
@@ -51,20 +50,8 @@ namespace SMBLibrary
             LittleEndianWriter.WriteUInt32(buffer, offset + 24, ByteOffsetForPartitionAlignment);
         }
 
-        public override FileSystemInformationClass FileSystemInformationClass
-        {
-            get
-            {
-                return FileSystemInformationClass.FileFsSectorSizeInformation;
-            }
-        }
+        public override FileSystemInformationClass FileSystemInformationClass => FileSystemInformationClass.FileFsSectorSizeInformation;
 
-        public override int Length
-        {
-            get
-            {
-                return FixedLength;
-            }
-        }
+        public override int Length => FixedLength;
     }
 }

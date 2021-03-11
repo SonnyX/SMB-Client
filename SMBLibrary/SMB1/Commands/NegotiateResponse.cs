@@ -5,8 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -37,8 +35,8 @@ namespace SMBLibrary.SMB1
         public NegotiateResponse() : base()
         {
             Challenge = new byte[0];
-            DomainName = String.Empty;
-            ServerName = String.Empty;
+            DomainName = string.Empty;
+            ServerName = string.Empty;
         }
 
         public NegotiateResponse(byte[] buffer, int offset, bool isUnicode) : base(buffer, offset, isUnicode)
@@ -91,12 +89,6 @@ namespace SMBLibrary.SMB1
             return base.GetBytes(isUnicode);
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_NEGOTIATE;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_NEGOTIATE;
     }
 }

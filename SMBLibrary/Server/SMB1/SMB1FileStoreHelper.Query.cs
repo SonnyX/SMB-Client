@@ -4,11 +4,8 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using SMBLibrary.SMB1;
-using Utilities;
 
 namespace SMBLibrary.Server.SMB1
 {
@@ -16,9 +13,7 @@ namespace SMBLibrary.Server.SMB1
     {
         public static NTStatus GetFileInformation(out QueryInformation result, INTFileStore fileStore, string path, QueryInformationLevel informationLevel, SecurityContext securityContext)
         {
-            object handle;
-            FileStatus fileStatus;
-            NTStatus openStatus = fileStore.CreateFile(out handle, out fileStatus, path, (AccessMask)FileAccessMask.FILE_READ_ATTRIBUTES, 0, ShareAccess.Read | ShareAccess.Write, CreateDisposition.FILE_OPEN, 0, securityContext);
+            NTStatus openStatus = fileStore.CreateFile(out object handle, out _, path, (AccessMask)FileAccessMask.FILE_READ_ATTRIBUTES, 0, ShareAccess.Read | ShareAccess.Write, CreateDisposition.FILE_OPEN, 0, securityContext);
             if (openStatus != NTStatus.STATUS_SUCCESS)
             {
                 result = null;
@@ -31,9 +26,7 @@ namespace SMBLibrary.Server.SMB1
 
         public static NTStatus GetFileInformation(out FileInformation result, INTFileStore fileStore, string path, FileInformationClass informationClass, SecurityContext securityContext)
         {
-            object handle;
-            FileStatus fileStatus;
-            NTStatus openStatus = fileStore.CreateFile(out handle, out fileStatus, path, (AccessMask)FileAccessMask.FILE_READ_ATTRIBUTES, 0, ShareAccess.Read | ShareAccess.Write, CreateDisposition.FILE_OPEN, 0, securityContext);
+            NTStatus openStatus = fileStore.CreateFile(out object handle, out _, path, (AccessMask)FileAccessMask.FILE_READ_ATTRIBUTES, 0, ShareAccess.Read | ShareAccess.Write, CreateDisposition.FILE_OPEN, 0, securityContext);
             if (openStatus != NTStatus.STATUS_SUCCESS)
             {
                 result = null;
@@ -57,8 +50,7 @@ namespace SMBLibrary.Server.SMB1
                 return NTStatus.STATUS_OS2_INVALID_LEVEL;
             }
 
-            FileInformation fileInformation;
-            NTStatus status = fileStore.GetFileInformation(out fileInformation, handle, informationClass);
+            NTStatus status = fileStore.GetFileInformation(out FileInformation fileInformation, handle, informationClass);
             if (status != NTStatus.STATUS_SUCCESS)
             {
                 return status;

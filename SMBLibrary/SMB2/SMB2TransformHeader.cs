@@ -1,10 +1,10 @@
 /* Copyright (C) 2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
+
 using Utilities;
 
 namespace SMBLibrary.SMB2
@@ -20,14 +20,14 @@ namespace SMBLibrary.SMB2
 
         private const int NonceStartOffset = 20;
 
-        public static readonly byte[] ProtocolSignature = new byte[] { 0xFD, 0x53, 0x4D, 0x42 };
+        public static readonly byte[] ProtocolSignature = { 0xFD, 0x53, 0x4D, 0x42 };
 
-        private byte[] ProtocolId; // 4 bytes, 0xFD followed by "SMB"
+        private readonly byte[] ProtocolId; // 4 bytes, 0xFD followed by "SMB"
         public byte[] Signature; // 16 bytes
         public byte[] Nonce; // 16 bytes
         public uint OriginalMessageSize;
         public ushort Reserved;
-        public SMB2TransformHeaderFlags Flags; // EncryptionAlgorithm in SMB 3.0 / 3.0.2 where the only possible value is SMB2_ENCRYPTION_AES128_CCM = 0x0001 
+        public SMB2TransformHeaderFlags Flags; // EncryptionAlgorithm in SMB 3.0 / 3.0.2 where the only possible value is SMB2_ENCRYPTION_AES128_CCM = 0x0001
         public ulong SessionId;
 
         public SMB2TransformHeader()

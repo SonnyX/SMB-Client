@@ -4,9 +4,8 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
+
 using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -42,17 +41,21 @@ namespace SMBLibrary.SMB1
 
         public static LockingRange Read32(byte[] buffer, ref int offset)
         {
-            LockingRange entry = new LockingRange();
-            entry.PID = LittleEndianReader.ReadUInt16(buffer, ref offset);
-            entry.ByteOffset = LittleEndianReader.ReadUInt32(buffer, ref offset);
-            entry.LengthInBytes = LittleEndianReader.ReadUInt32(buffer, ref offset);
+            LockingRange entry = new LockingRange
+            {
+                PID = LittleEndianReader.ReadUInt16(buffer, ref offset),
+                ByteOffset = LittleEndianReader.ReadUInt32(buffer, ref offset),
+                LengthInBytes = LittleEndianReader.ReadUInt32(buffer, ref offset)
+            };
             return entry;
         }
 
         public static LockingRange Read64(byte[] buffer, ref int offset)
         {
-            LockingRange entry = new LockingRange();
-            entry.PID = LittleEndianReader.ReadUInt16(buffer, ref offset);
+            LockingRange entry = new LockingRange
+            {
+                PID = LittleEndianReader.ReadUInt16(buffer, ref offset)
+            };
             offset += 2; // padding
             entry.ByteOffset = LittleEndianReader.ReadUInt64(buffer, ref offset);
             entry.LengthInBytes = LittleEndianReader.ReadUInt64(buffer, ref offset);
@@ -169,12 +172,6 @@ namespace SMBLibrary.SMB1
             return base.GetBytes(isUnicode);
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_LOCKING_ANDX;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_LOCKING_ANDX;
     }
 }

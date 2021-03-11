@@ -12,7 +12,7 @@ namespace Utilities
     public class CountdownLatch
     {
         private int m_count;
-        private EventWaitHandle m_waitHandle = new EventWaitHandle(true, EventResetMode.ManualReset);
+        private readonly EventWaitHandle m_waitHandle = new EventWaitHandle(true, EventResetMode.ManualReset);
 
         public CountdownLatch()
         {

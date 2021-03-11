@@ -22,10 +22,8 @@ namespace SMBLibrary.SMB2
             {
                 return new HMACSHA256(signingKey).ComputeHash(buffer, offset, paddedLength);
             }
-            else
-            {
-                return AesCmac.CalculateAesCmac(signingKey, buffer, offset, paddedLength);
-            }
+
+            return AesCmac.CalculateAesCmac(signingKey, buffer, offset, paddedLength);
         }
 
         public static byte[] GenerateSigningKey(byte[] sessionKey, SMB2Dialect dialect, byte[] preauthIntegrityHashValue)
@@ -84,8 +82,7 @@ namespace SMBLibrary.SMB2
         public static byte[] TransformMessage(byte[] key, byte[] message, ulong sessionID)
         {
             byte[] nonce = GenerateAesCcmNonce();
-            byte[] signature;
-            byte[] encryptedMessage = EncryptMessage(key, nonce, message, sessionID, out signature);
+            byte[] encryptedMessage = EncryptMessage(key, nonce, message, sessionID, out byte[] signature);
             SMB2TransformHeader transformHeader = CreateTransformHeader(nonce, message.Length, sessionID);
             transformHeader.Signature = signature;
 
@@ -114,11 +111,13 @@ namespace SMBLibrary.SMB2
             byte[] nonceWithPadding = new byte[SMB2TransformHeader.NonceLength];
             Array.Copy(nonce, nonceWithPadding, nonce.Length);
 
-            SMB2TransformHeader transformHeader = new SMB2TransformHeader();
-            transformHeader.Nonce = nonceWithPadding;
-            transformHeader.OriginalMessageSize = (uint)originalMessageLength;
-            transformHeader.Flags = SMB2TransformHeaderFlags.Encrypted;
-            transformHeader.SessionId = sessionID;
+            SMB2TransformHeader transformHeader = new SMB2TransformHeader
+            {
+                Nonce = nonceWithPadding,
+                OriginalMessageSize = (uint)originalMessageLength,
+                Flags = SMB2TransformHeaderFlags.Encrypted,
+                SessionId = sessionID
+            };
 
             return transformHeader;
         }

@@ -5,7 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
 using Utilities;
 
 namespace SMBLibrary
@@ -18,7 +17,7 @@ namespace SMBLibrary
         public const int FixedLength = 14;
 
         public ulong Timeout;
-        private uint NameLength;
+        private readonly uint NameLength;
         public bool TimeSpecified;
         public byte Padding;
         public string Name;
@@ -47,12 +46,6 @@ namespace SMBLibrary
             return buffer;
         }
 
-        public int Length
-        {
-            get
-            {
-                return FixedLength + Name.Length * 2;
-            }
-        }
+        public int Length => FixedLength + Name.Length * 2;
     }
 }

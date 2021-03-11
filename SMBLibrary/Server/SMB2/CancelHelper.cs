@@ -4,8 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
+
 using SMBLibrary.SMB2;
 using Utilities;
 
@@ -44,18 +43,14 @@ namespace SMBLibrary.Server.SMB2
                     // Note: Failing to respond might cause the client to disconnect the connection as per [MS-SMB2] 3.2.6.1 Request Expiration Timer Event
                     return null;
                 }
-                else
-                {
-                    // [MS-SMB2] If a request is not found [..] no response is sent.
-                    return null;
-                }
-            }
-            else
-            {
-                // [MS-SMB2] the SMB2 CANCEL Request MUST use an ASYNC header for canceling requests that have received an interim response.
-                // [MS-SMB2] If the target request is not successfully canceled [..] no response is sent.
+
+                // [MS-SMB2] If a request is not found [..] no response is sent.
                 return null;
             }
+
+            // [MS-SMB2] the SMB2 CANCEL Request MUST use an ASYNC header for canceling requests that have received an interim response.
+            // [MS-SMB2] If the target request is not successfully canceled [..] no response is sent.
+            return null;
         }
     }
 }

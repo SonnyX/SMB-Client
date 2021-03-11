@@ -5,8 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
-using SMBLibrary.Authentication;
 using SMBLibrary.SMB2;
 using Utilities;
 
@@ -108,7 +106,8 @@ namespace SMBLibrary.Server.SMB2
                 }
                 return new SetInfoResponse();
             }
-            else if (request.InfoType == InfoType.FileSystem)
+
+            if (request.InfoType == InfoType.FileSystem)
             {
                 FileSystemInformation fileSystemInformation;
                 try
@@ -136,7 +135,7 @@ namespace SMBLibrary.Server.SMB2
                 state.LogToServer(Severity.Verbose, "SetFileSystemInformation on '{0}' succeeded. Information class: {1}.", share.Name, request.FileSystemInformationClass);
                 return new SetInfoResponse();
             }
-            else if (request.InfoType == InfoType.Security)
+            if (request.InfoType == InfoType.Security)
             {
                 SecurityDescriptor securityDescriptor;
                 try
@@ -159,6 +158,7 @@ namespace SMBLibrary.Server.SMB2
                 state.LogToServer(Severity.Information, "SetSecurityInformation on '{0}{1}' succeeded. Security information: 0x{2}. (FileId: {3})", share.Name, openFile.Path, request.SecurityInformation.ToString("X"), request.FileId.Volatile);
                 return new SetInfoResponse();
             }
+
             return new ErrorResponse(request.CommandName, NTStatus.STATUS_NOT_SUPPORTED);
         }
     }

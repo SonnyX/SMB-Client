@@ -39,7 +39,7 @@ namespace SMBLibrary
 
         public FileNotifyInformation()
         {
-            FileName = String.Empty;
+            FileName = string.Empty;
         }
 
         public FileNotifyInformation(byte[] buffer, int offset)
@@ -59,13 +59,7 @@ namespace SMBLibrary
             ByteWriter.WriteUTF16String(buffer, offset + 12, FileName);
         }
 
-        public int Length
-        {
-            get
-            {
-                return FixedLength + FileName.Length * 2;
-            }
-        }
+        public int Length => FixedLength + FileName.Length * 2;
 
         public static List<FileNotifyInformation> ReadList(byte[] buffer, int offset)
         {

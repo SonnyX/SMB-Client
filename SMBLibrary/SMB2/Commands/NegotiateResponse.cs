@@ -18,7 +18,7 @@ namespace SMBLibrary.SMB2
         public const int FixedSize = 64;
         public const int DeclaredSize = 65;
 
-        private ushort StructureSize;
+        private readonly ushort StructureSize;
         public SecurityMode SecurityMode;
         public SMB2Dialect DialectRevision;
         private ushort NegotiateContextCount;
@@ -103,11 +103,9 @@ namespace SMBLibrary.SMB2
                 {
                     return FixedSize + SecurityBuffer.Length;
                 }
-                else
-                {
-                    int paddedSecurityBufferLength = (int)Math.Ceiling((double)SecurityBufferLength / 8) * 8;
-                    return FixedSize + paddedSecurityBufferLength + NegotiateContext.GetNegotiateContextListLength(NegotiateContextList);
-                }
+
+                int paddedSecurityBufferLength = (int)Math.Ceiling((double)SecurityBufferLength / 8) * 8;
+                return FixedSize + paddedSecurityBufferLength + NegotiateContext.GetNegotiateContextListLength(NegotiateContextList);
             }
         }
     }

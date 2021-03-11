@@ -34,14 +34,12 @@ namespace SMBLibrary
             {
                 return -1;
             }
-            else if (!m_time.HasValue)
+
+            if (!m_time.HasValue)
             {
                 return 0;
             }
-            else
-            {
-                return Time.Value.ToFileTimeUtc();
-            }
+            return Time.Value.ToFileTimeUtc();
         }
 
         public DateTime? Time
@@ -52,10 +50,8 @@ namespace SMBLibrary
                 {
                     return null;
                 }
-                else
-                {
-                    return m_time;
-                }
+
+                return m_time;
             }
             set
             {
@@ -71,18 +67,16 @@ namespace SMBLibrary
                 DateTime value = DateTime.FromFileTimeUtc(span);
                 return new SetFileTime(value);
             }
-            else if (span == 0)
+
+            if (span == 0)
             {
                 return new SetFileTime(false);
             }
-            else if (span == -1)
+            if (span == -1)
             {
                 return new SetFileTime(true);
             }
-            else
-            {
-                throw new System.IO.InvalidDataException("Set FILETIME cannot be less than -1");
-            }
+            throw new System.IO.InvalidDataException("Set FILETIME cannot be less than -1");
         }
 
         public static implicit operator DateTime?(SetFileTime setTime)

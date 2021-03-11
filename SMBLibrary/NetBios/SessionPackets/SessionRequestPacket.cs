@@ -4,8 +4,6 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
 using Utilities;
 
 namespace SMBLibrary.NetBios
@@ -31,8 +29,8 @@ namespace SMBLibrary.NetBios
 
         public override byte[] GetBytes()
         {
-            byte[] part1 = NetBiosUtils.EncodeName(CalledName, String.Empty);
-            byte[] part2 = NetBiosUtils.EncodeName(CallingName, String.Empty);
+            byte[] part1 = NetBiosUtils.EncodeName(CalledName, string.Empty);
+            byte[] part2 = NetBiosUtils.EncodeName(CallingName, string.Empty);
             this.Trailer = new byte[part1.Length + part2.Length];
             ByteWriter.WriteBytes(this.Trailer, 0, part1);
             ByteWriter.WriteBytes(this.Trailer, part1.Length, part2);
@@ -43,8 +41,8 @@ namespace SMBLibrary.NetBios
         {
             get
             {
-                byte[] part1 = NetBiosUtils.EncodeName(CalledName, String.Empty);
-                byte[] part2 = NetBiosUtils.EncodeName(CallingName, String.Empty);
+                byte[] part1 = NetBiosUtils.EncodeName(CalledName, string.Empty);
+                byte[] part2 = NetBiosUtils.EncodeName(CallingName, string.Empty);
                 return HeaderLength + part1.Length + part2.Length;
             }
         }

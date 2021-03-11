@@ -4,8 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
+
 using Utilities;
 
 namespace SMBLibrary
@@ -23,8 +22,10 @@ namespace SMBLibrary
 
         public AccessAllowedACE()
         {
-            Header = new AceHeader();
-            Header.AceType = AceType.ACCESS_ALLOWED_ACE_TYPE;
+            Header = new AceHeader
+            {
+                AceType = AceType.ACCESS_ALLOWED_ACE_TYPE
+            };
         }
 
         public AccessAllowedACE(byte[] buffer, int offset)
@@ -42,12 +43,6 @@ namespace SMBLibrary
             Sid.WriteBytes(buffer, ref offset);
         }
 
-        public override int Length
-        {
-            get
-            {
-                return FixedLength + Sid.Length;
-            }
-        }
+        public override int Length => FixedLength + Sid.Length;
     }
 }

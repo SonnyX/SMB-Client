@@ -8,30 +8,29 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using SMBLibrary.SMB2;
-using Utilities;
 
 namespace SMBLibrary.Server
 {
     internal class SMB2Session
     {
-        private SMB2ConnectionState m_connection;
-        private ulong m_sessionID;
-        private byte[] m_sessionKey;
-        private SecurityContext m_securityContext;
-        private DateTime m_creationDT;
-        private bool m_signingRequired;
-        private byte[] m_signingKey;
+        private readonly SMB2ConnectionState m_connection;
+        private readonly ulong m_sessionID;
+        private readonly byte[] m_sessionKey;
+        private readonly SecurityContext m_securityContext;
+        private readonly DateTime m_creationDT;
+        private readonly bool m_signingRequired;
+        private readonly byte[] m_signingKey;
 
         // Key is TreeID
-        private Dictionary<uint, ISMBShare> m_connectedTrees = new Dictionary<uint, ISMBShare>();
+        private readonly Dictionary<uint, ISMBShare> m_connectedTrees = new Dictionary<uint, ISMBShare>();
         private uint m_nextTreeID = 1; // TreeID uniquely identifies a tree connect within the scope of the session
 
         // Key is the volatile portion of the FileID
-        private Dictionary<ulong, OpenFileObject> m_openFiles = new Dictionary<ulong, OpenFileObject>();
+        private readonly Dictionary<ulong, OpenFileObject> m_openFiles = new Dictionary<ulong, OpenFileObject>();
         private ulong m_nextVolatileFileID = 1;
 
         // Key is the volatile portion of the FileID
-        private Dictionary<ulong, OpenSearch> m_openSearches = new Dictionary<ulong, OpenSearch>();
+        private readonly Dictionary<ulong, OpenSearch> m_openSearches = new Dictionary<ulong, OpenSearch>();
 
         public SMB2Session(SMB2ConnectionState connection, ulong sessionID, string userName, string machineName, byte[] sessionKey, object accessToken, bool signingRequired, byte[] signingKey)
         {
@@ -46,7 +45,7 @@ namespace SMBLibrary.Server
 
         private uint? AllocateTreeID()
         {
-            for (uint offset = 0; offset < UInt32.MaxValue; offset++)
+            for (uint offset = 0; offset < uint.MaxValue; offset++)
             {
                 uint treeID = (uint)(m_nextTreeID + offset);
                 if (treeID == 0 || treeID == 0xFFFFFFFF)
@@ -77,15 +76,13 @@ namespace SMBLibrary.Server
 
         public ISMBShare GetConnectedTree(uint treeID)
         {
-            ISMBShare result;
-            m_connectedTrees.TryGetValue(treeID, out result);
+            m_connectedTrees.TryGetValue(treeID, out ISMBShare result);
             return result;
         }
 
         public void DisconnectTree(uint treeID)
         {
-            ISMBShare share;
-            m_connectedTrees.TryGetValue(treeID, out share);
+            m_connectedTrees.TryGetValue(treeID, out ISMBShare share);
             if (share != null)
             {
                 lock (m_openFiles)
@@ -116,7 +113,7 @@ namespace SMBLibrary.Server
         // VolatileFileID MUST be unique for all volatile handles within the scope of a session
         private ulong? AllocateVolatileFileID()
         {
-            for (ulong offset = 0; offset < UInt64.MaxValue; offset++)
+            for (ulong offset = 0; offset < ulong.MaxValue; offset++)
             {
                 ulong volatileFileID = (ulong)(m_nextVolatileFileID + offset);
                 if (volatileFileID == 0 || volatileFileID == 0xFFFFFFFFFFFFFFFF)
@@ -139,11 +136,13 @@ namespace SMBLibrary.Server
                 ulong? volatileFileID = AllocateVolatileFileID();
                 if (volatileFileID.HasValue)
                 {
-                    FileID fileID = new FileID();
-                    fileID.Volatile = volatileFileID.Value;
-                    // [MS-SMB2] FileId.Persistent MUST be set to Open.DurableFileId.
-                    // Note: We don't support durable handles so we use volatileFileID.
-                    fileID.Persistent = volatileFileID.Value;
+                    FileID fileID = new FileID
+                    {
+                        Volatile = volatileFileID.Value,
+                        // [MS-SMB2] FileId.Persistent MUST be set to Open.DurableFileId.
+                        // Note: We don't support durable handles so we use volatileFileID.
+                        Persistent = volatileFileID.Value
+                    };
                     m_openFiles.Add(volatileFileID.Value, new OpenFileObject(treeID, shareName, relativePath, handle, fileAccess));
                     return fileID;
                 }
@@ -153,8 +152,7 @@ namespace SMBLibrary.Server
 
         public OpenFileObject GetOpenFileObject(FileID fileID)
         {
-            OpenFileObject result;
-            m_openFiles.TryGetValue(fileID.Volatile, out result);
+            m_openFiles.TryGetValue(fileID.Volatile, out OpenFileObject result);
             return result;
         }
 
@@ -189,8 +187,7 @@ namespace SMBLibrary.Server
 
         public OpenSearch GetOpenSearch(FileID fileID)
         {
-            OpenSearch openSearch;
-            m_openSearches.TryGetValue(fileID.Volatile, out openSearch);
+            m_openSearches.TryGetValue(fileID.Volatile, out OpenSearch openSearch);
             return openSearch;
         }
 
@@ -211,60 +208,18 @@ namespace SMBLibrary.Server
             }
         }
 
-        public byte[] SessionKey
-        {
-            get
-            {
-                return m_sessionKey;
-            }
-        }
+        public byte[] SessionKey => m_sessionKey;
 
-        public SecurityContext SecurityContext
-        {
-            get
-            {
-                return m_securityContext;
-            }
-        }
+        public SecurityContext SecurityContext => m_securityContext;
 
-        public string UserName
-        {
-            get
-            {
-                return m_securityContext.UserName;
-            }
-        }
+        public string UserName => m_securityContext.UserName;
 
-        public string MachineName
-        {
-            get
-            {
-                return m_securityContext.MachineName;
-            }
-        }
+        public string MachineName => m_securityContext.MachineName;
 
-        public DateTime CreationDT
-        {
-            get
-            {
-                return m_creationDT;
-            }
-        }
+        public DateTime CreationDT => m_creationDT;
 
-        public bool SigningRequired
-        {
-            get
-            {
-                return m_signingRequired;
-            }
-        }
+        public bool SigningRequired => m_signingRequired;
 
-        public byte[] SigningKey
-        {
-            get
-            {
-                return m_signingKey;
-            }
-        }
+        public byte[] SigningKey => m_signingKey;
     }
 }

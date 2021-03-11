@@ -35,10 +35,10 @@ namespace SMBLibrary.Authentication.GSSAPI
         }
 
         /// <param name="offset">The offset following the NegTokenInit tag</param>
-        /// <exception cref="System.IO.InvalidDataException"></exception>
+        /// <exception cref="InvalidDataException"></exception>
         public SimpleProtectedNegotiationTokenInit(byte[] buffer, int offset)
         {
-            int constructionLength = DerEncodingHelper.ReadLength(buffer, ref offset);
+            _ = DerEncodingHelper.ReadLength(buffer, ref offset);
             byte tag = ByteReader.ReadByte(buffer, ref offset);
             if (tag != (byte)DerEncodingTag.Sequence)
             {
@@ -134,7 +134,7 @@ namespace SMBLibrary.Authentication.GSSAPI
         protected static List<byte[]> ReadMechanismTypeList(byte[] buffer, ref int offset)
         {
             List<byte[]> result = new List<byte[]>();
-            int constructionLength = DerEncodingHelper.ReadLength(buffer, ref offset);
+            _ = DerEncodingHelper.ReadLength(buffer, ref offset);
             byte tag = ByteReader.ReadByte(buffer, ref offset);
             if (tag != (byte)DerEncodingTag.Sequence)
             {
@@ -158,7 +158,7 @@ namespace SMBLibrary.Authentication.GSSAPI
 
         protected static byte[] ReadMechanismToken(byte[] buffer, ref int offset)
         {
-            int constructionLength = DerEncodingHelper.ReadLength(buffer, ref offset);
+            _ = DerEncodingHelper.ReadLength(buffer, ref offset);
             byte tag = ByteReader.ReadByte(buffer, ref offset);
             if (tag != (byte)DerEncodingTag.ByteArray)
             {
@@ -171,7 +171,7 @@ namespace SMBLibrary.Authentication.GSSAPI
 
         protected static byte[] ReadMechanismListMIC(byte[] buffer, ref int offset)
         {
-            int constructionLength = DerEncodingHelper.ReadLength(buffer, ref offset);
+            _ = DerEncodingHelper.ReadLength(buffer, ref offset);
             byte tag = ByteReader.ReadByte(buffer, ref offset);
             if (tag != (byte)DerEncodingTag.ByteArray)
             {

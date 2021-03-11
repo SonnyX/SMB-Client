@@ -4,9 +4,8 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
+
 using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.RPC
@@ -58,12 +57,6 @@ namespace SMBLibrary.RPC
             }
         }
 
-        public int Length
-        {
-            get
-            {
-                return 4 + SyntaxID.Length * (TransferSyntaxList.Count + 1);
-            }
-        }
+        public int Length => 4 + SyntaxID.Length * (TransferSyntaxList.Count + 1);
     }
 }

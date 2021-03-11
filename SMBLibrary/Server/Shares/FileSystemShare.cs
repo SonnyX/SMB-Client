@@ -11,9 +11,9 @@ namespace SMBLibrary.Server
 {
     public class FileSystemShare : ISMBShare
     {
-        private string m_name;
-        private INTFileStore m_fileSystem;
-        private CachingPolicy m_cachingPolicy;
+        private readonly string m_name;
+        private readonly INTFileStore m_fileSystem;
+        private readonly CachingPolicy m_cachingPolicy;
 
         public event EventHandler<AccessRequestArgs> AccessRequested;
 
@@ -51,28 +51,10 @@ namespace SMBLibrary.Server
             return true;
         }
 
-        public string Name
-        {
-            get
-            {
-                return m_name;
-            }
-        }
+        public string Name => m_name;
 
-        public INTFileStore FileStore
-        {
-            get
-            {
-                return m_fileSystem;
-            }
-        }
+        public INTFileStore FileStore => m_fileSystem;
 
-        public CachingPolicy CachingPolicy
-        {
-            get
-            {
-                return m_cachingPolicy;
-            }
-        }
+        public CachingPolicy CachingPolicy => m_cachingPolicy;
     }
 }

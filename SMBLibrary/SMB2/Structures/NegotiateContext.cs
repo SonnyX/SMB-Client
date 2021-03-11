@@ -43,13 +43,7 @@ namespace SMBLibrary.SMB2
             ByteWriter.WriteBytes(buffer, offset + 8, Data);
         }
 
-        public int Length
-        {
-            get
-            {
-                return FixedLength + Data.Length;
-            }
-        }
+        public int Length => FixedLength + Data.Length;
 
         public static List<NegotiateContext> ReadNegotiateContextList(byte[] buffer, int offset, int count)
         {

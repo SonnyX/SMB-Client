@@ -4,7 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
+
 using System.Collections.Generic;
 using Utilities;
 
@@ -32,7 +32,7 @@ namespace SMBLibrary
         {
             AclRevision = ByteReader.ReadByte(buffer, offset + 0);
             Sbz1 = ByteReader.ReadByte(buffer, offset + 1);
-            ushort aclSize = LittleEndianConverter.ToUInt16(buffer, offset + 2);
+            _ = LittleEndianConverter.ToUInt16(buffer, offset + 2);
             ushort aceCount = LittleEndianConverter.ToUInt16(buffer, offset + 4);
             Sbz2 = LittleEndianConverter.ToUInt16(buffer, offset + 6);
 

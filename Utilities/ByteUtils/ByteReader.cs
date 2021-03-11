@@ -1,9 +1,10 @@
 /* Copyright (C) 2012-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.IO;
 using System.Text;
@@ -43,7 +44,7 @@ namespace Utilities
         {
             // ASCIIEncoding.ASCII.GetString will convert some values to '?' (byte value of 63)
             // Any codepage will do, but the only one that Mono supports is 28591.
-            return ASCIIEncoding.GetEncoding(28591).GetString(buffer, offset, count);
+            return Encoding.GetEncoding(28591).GetString(buffer, offset, count);
         }
 
         public static string ReadAnsiString(byte[] buffer, ref int offset, int count)
@@ -139,7 +140,7 @@ namespace Utilities
         public static string ReadAnsiString(Stream stream, int length)
         {
             byte[] buffer = ReadBytes(stream, length);
-            return ASCIIEncoding.GetEncoding(28591).GetString(buffer);
+            return Encoding.GetEncoding(28591).GetString(buffer);
         }
 
         public static string ReadNullTerminatedAnsiString(Stream stream)

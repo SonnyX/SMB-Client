@@ -5,8 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -26,7 +24,7 @@ namespace SMBLibrary.SMB1
 
         public QueryFSVolumeInfo()
         {
-            VolumeLabel = String.Empty;
+            VolumeLabel = string.Empty;
         }
 
         public QueryFSVolumeInfo(byte[] buffer, int offset)
@@ -51,20 +49,8 @@ namespace SMBLibrary.SMB1
             return buffer;
         }
 
-        public override int Length
-        {
-            get
-            {
-                return FixedLength + VolumeLabel.Length * 2;
-            }
-        }
+        public override int Length => FixedLength + VolumeLabel.Length * 2;
 
-        public override QueryFSInformationLevel InformationLevel
-        {
-            get
-            {
-                return QueryFSInformationLevel.SMB_QUERY_FS_VOLUME_INFO;
-            }
-        }
+        public override QueryFSInformationLevel InformationLevel => QueryFSInformationLevel.SMB_QUERY_FS_VOLUME_INFO;
     }
 }

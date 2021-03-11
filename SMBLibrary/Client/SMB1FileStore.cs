@@ -1,20 +1,20 @@
 /* Copyright (C) 2014-2019 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Collections.Generic;
 using SMBLibrary.SMB1;
-using Utilities;
 
 namespace SMBLibrary.Client
 {
     public class SMB1FileStore : ISMBFileStore
     {
-        private SMB1Client m_client;
-        private ushort m_treeID;
+        private readonly SMB1Client m_client;
+        private readonly ushort m_treeID;
 
         public SMB1FileStore(SMB1Client client, ushort treeID)
         {
@@ -26,14 +26,16 @@ namespace SMBLibrary.Client
         {
             handle = null;
             fileStatus = FileStatus.FILE_DOES_NOT_EXIST;
-            NTCreateAndXRequest request = new NTCreateAndXRequest();
-            request.FileName = path;
-            request.DesiredAccess = desiredAccess;
-            request.ExtFileAttributes = ToExtendedFileAttributes(fileAttributes);
-            request.ShareAccess = shareAccess;
-            request.CreateDisposition = createDisposition;
-            request.CreateOptions = createOptions;
-            request.ImpersonationLevel = ImpersonationLevel.Impersonation;
+            NTCreateAndXRequest request = new NTCreateAndXRequest
+            {
+                FileName = path,
+                DesiredAccess = desiredAccess,
+                ExtFileAttributes = ToExtendedFileAttributes(fileAttributes),
+                ShareAccess = shareAccess,
+                CreateDisposition = createDisposition,
+                CreateOptions = createOptions,
+                ImpersonationLevel = ImpersonationLevel.Impersonation
+            };
 
             TrySendMessage(request);
             SMB1Message reply = m_client.WaitForMessage(CommandName.SMB_COM_NT_CREATE_ANDX);
@@ -46,7 +48,8 @@ namespace SMBLibrary.Client
                     fileStatus = ToFileStatus(response.CreateDisposition);
                     return reply.Header.Status;
                 }
-                else if (reply.Commands[0] is ErrorResponse)
+
+                if (reply.Commands[0] is ErrorResponse)
                 {
                     return reply.Header.Status;
                 }
@@ -56,8 +59,10 @@ namespace SMBLibrary.Client
 
         public NTStatus CloseFile(object handle)
         {
-            CloseRequest request = new CloseRequest();
-            request.FID = (ushort)handle;
+            CloseRequest request = new CloseRequest
+            {
+                FID = (ushort)handle
+            };
             TrySendMessage(request);
             SMB1Message reply = m_client.WaitForMessage(CommandName.SMB_COM_CLOSE);
             if (reply != null)
@@ -70,10 +75,12 @@ namespace SMBLibrary.Client
         public NTStatus ReadFile(out byte[] data, object handle, long offset, int maxCount)
         {
             data = null;
-            ReadAndXRequest request = new ReadAndXRequest();
-            request.FID = (ushort)handle;
-            request.Offset = (ulong)offset;
-            request.MaxCountLarge = (uint)maxCount;
+            ReadAndXRequest request = new ReadAndXRequest
+            {
+                FID = (ushort)handle,
+                Offset = (ulong)offset,
+                MaxCountLarge = (uint)maxCount
+            };
 
             TrySendMessage(request);
             SMB1Message reply = m_client.WaitForMessage(CommandName.SMB_COM_READ_ANDX);
@@ -91,10 +98,12 @@ namespace SMBLibrary.Client
         public NTStatus WriteFile(out int numberOfBytesWritten, object handle, long offset, byte[] data)
         {
             numberOfBytesWritten = 0;
-            WriteAndXRequest request = new WriteAndXRequest();
-            request.FID = (ushort)handle;
-            request.Offset = (ulong)offset;
-            request.Data = data;
+            WriteAndXRequest request = new WriteAndXRequest
+            {
+                FID = (ushort)handle,
+                Offset = (ulong)offset,
+                Data = data
+            };
 
             TrySendMessage(request);
             SMB1Message reply = m_client.WaitForMessage(CommandName.SMB_COM_WRITE_ANDX);
@@ -133,17 +142,21 @@ namespace SMBLibrary.Client
         {
             result = null;
             int maxOutputLength = 4096;
-            Transaction2FindFirst2Request subcommand = new Transaction2FindFirst2Request();
-            subcommand.SearchAttributes = SMBFileAttributes.Hidden | SMBFileAttributes.System | SMBFileAttributes.Directory;
-            subcommand.SearchCount = UInt16.MaxValue;
-            subcommand.Flags = FindFlags.SMB_FIND_CLOSE_AT_EOS;
-            subcommand.InformationLevel = informationLevel;
-            subcommand.FileName = fileName;
+            Transaction2FindFirst2Request subcommand = new Transaction2FindFirst2Request
+            {
+                SearchAttributes = SMBFileAttributes.Hidden | SMBFileAttributes.System | SMBFileAttributes.Directory,
+                SearchCount = ushort.MaxValue,
+                Flags = FindFlags.SMB_FIND_CLOSE_AT_EOS,
+                InformationLevel = informationLevel,
+                FileName = fileName
+            };
 
-            Transaction2Request request = new Transaction2Request();
-            request.Setup = subcommand.GetSetup();
-            request.TransParameters = subcommand.GetParameters(m_client.Unicode);
-            request.TransData = subcommand.GetData(m_client.Unicode);
+            Transaction2Request request = new Transaction2Request
+            {
+                Setup = subcommand.GetSetup(),
+                TransParameters = subcommand.GetParameters(m_client.Unicode),
+                TransData = subcommand.GetData(m_client.Unicode)
+            };
             request.TotalDataCount = (ushort)request.TransData.Length;
             request.TotalParameterCount = (ushort)request.TransParameters.Length;
             request.MaxParameterCount = Transaction2FindFirst2Response.ParametersLength;
@@ -163,17 +176,21 @@ namespace SMBLibrary.Client
                     bool endOfSearch = subcommandResponse.EndOfSearch;
                     while (!endOfSearch)
                     {
-                        Transaction2FindNext2Request nextSubcommand = new Transaction2FindNext2Request();
-                        nextSubcommand.SID = subcommandResponse.SID;
-                        nextSubcommand.SearchCount = UInt16.MaxValue;
-                        nextSubcommand.Flags = FindFlags.SMB_FIND_CLOSE_AT_EOS | FindFlags.SMB_FIND_CONTINUE_FROM_LAST;
-                        nextSubcommand.InformationLevel = informationLevel;
-                        nextSubcommand.FileName = fileName;
+                        Transaction2FindNext2Request nextSubcommand = new Transaction2FindNext2Request
+                        {
+                            SID = subcommandResponse.SID,
+                            SearchCount = ushort.MaxValue,
+                            Flags = FindFlags.SMB_FIND_CLOSE_AT_EOS | FindFlags.SMB_FIND_CONTINUE_FROM_LAST,
+                            InformationLevel = informationLevel,
+                            FileName = fileName
+                        };
 
-                        request = new Transaction2Request();
-                        request.Setup = nextSubcommand.GetSetup();
-                        request.TransParameters = nextSubcommand.GetParameters(m_client.Unicode);
-                        request.TransData = nextSubcommand.GetData(m_client.Unicode);
+                        request = new Transaction2Request
+                        {
+                            Setup = nextSubcommand.GetSetup(),
+                            TransParameters = nextSubcommand.GetParameters(m_client.Unicode),
+                            TransData = nextSubcommand.GetData(m_client.Unicode)
+                        };
                         request.TotalDataCount = (ushort)request.TransData.Length;
                         request.TotalParameterCount = (ushort)request.TransParameters.Length;
                         request.MaxParameterCount = Transaction2FindNext2Response.ParametersLength;
@@ -206,14 +223,18 @@ namespace SMBLibrary.Client
             if (m_client.InfoLevelPassthrough)
             {
                 int maxOutputLength = 4096;
-                Transaction2QueryFileInformationRequest subcommand = new Transaction2QueryFileInformationRequest();
-                subcommand.FID = (ushort)handle;
-                subcommand.FileInformationClass = informationClass;
+                Transaction2QueryFileInformationRequest subcommand = new Transaction2QueryFileInformationRequest
+                {
+                    FID = (ushort)handle,
+                    FileInformationClass = informationClass
+                };
 
-                Transaction2Request request = new Transaction2Request();
-                request.Setup = subcommand.GetSetup();
-                request.TransParameters = subcommand.GetParameters(m_client.Unicode);
-                request.TransData = subcommand.GetData(m_client.Unicode);
+                Transaction2Request request = new Transaction2Request
+                {
+                    Setup = subcommand.GetSetup(),
+                    TransParameters = subcommand.GetParameters(m_client.Unicode),
+                    TransData = subcommand.GetData(m_client.Unicode)
+                };
                 request.TotalDataCount = (ushort)request.TransData.Length;
                 request.TotalParameterCount = (ushort)request.TransParameters.Length;
                 request.MaxParameterCount = Transaction2QueryFileInformationResponse.ParametersLength;
@@ -242,31 +263,32 @@ namespace SMBLibrary.Client
                 }
                 return NTStatus.STATUS_INVALID_SMB;
             }
-            else
+
+            QueryInformationLevel informationLevel = QueryInformationHelper.ToFileInformationLevel(informationClass);
+            NTStatus status = GetFileInformation(out QueryInformation queryInformation, handle, informationLevel);
+            if (status == NTStatus.STATUS_SUCCESS)
             {
-                QueryInformationLevel informationLevel = QueryInformationHelper.ToFileInformationLevel(informationClass);
-                QueryInformation queryInformation;
-                NTStatus status = GetFileInformation(out queryInformation, handle, informationLevel);
-                if (status == NTStatus.STATUS_SUCCESS)
-                {
-                    result = QueryInformationHelper.ToFileInformation(queryInformation);
-                }
-                return status;
+                result = QueryInformationHelper.ToFileInformation(queryInformation);
             }
+            return status;
         }
 
         public NTStatus GetFileInformation(out QueryInformation result, object handle, QueryInformationLevel informationLevel)
         {
             result = null;
             int maxOutputLength = 4096;
-            Transaction2QueryFileInformationRequest subcommand = new Transaction2QueryFileInformationRequest();
-            subcommand.FID = (ushort)handle;
-            subcommand.QueryInformationLevel = informationLevel;
+            Transaction2QueryFileInformationRequest subcommand = new Transaction2QueryFileInformationRequest
+            {
+                FID = (ushort)handle,
+                QueryInformationLevel = informationLevel
+            };
 
-            Transaction2Request request = new Transaction2Request();
-            request.Setup = subcommand.GetSetup();
-            request.TransParameters = subcommand.GetParameters(m_client.Unicode);
-            request.TransData = subcommand.GetData(m_client.Unicode);
+            Transaction2Request request = new Transaction2Request
+            {
+                Setup = subcommand.GetSetup(),
+                TransParameters = subcommand.GetParameters(m_client.Unicode),
+                TransData = subcommand.GetData(m_client.Unicode)
+            };
             request.TotalDataCount = (ushort)request.TransData.Length;
             request.TotalParameterCount = (ushort)request.TransParameters.Length;
             request.MaxParameterCount = Transaction2QueryFileInformationResponse.ParametersLength;
@@ -293,22 +315,28 @@ namespace SMBLibrary.Client
             {
                 if (information is FileRenameInformationType2)
                 {
-                    FileRenameInformationType1 informationType1 = new FileRenameInformationType1();
-                    informationType1.FileName = ((FileRenameInformationType2)information).FileName;
-                    informationType1.ReplaceIfExists = ((FileRenameInformationType2)information).ReplaceIfExists;
-                    informationType1.RootDirectory = (uint)((FileRenameInformationType2)information).RootDirectory;
+                    FileRenameInformationType1 informationType1 = new FileRenameInformationType1
+                    {
+                        FileName = ((FileRenameInformationType2)information).FileName,
+                        ReplaceIfExists = ((FileRenameInformationType2)information).ReplaceIfExists,
+                        RootDirectory = (uint)((FileRenameInformationType2)information).RootDirectory
+                    };
                     information = informationType1;
                 }
 
                 int maxOutputLength = 4096;
-                Transaction2SetFileInformationRequest subcommand = new Transaction2SetFileInformationRequest();
-                subcommand.FID = (ushort)handle;
+                Transaction2SetFileInformationRequest subcommand = new Transaction2SetFileInformationRequest
+                {
+                    FID = (ushort)handle
+                };
                 subcommand.SetInformation(information);
 
-                Transaction2Request request = new Transaction2Request();
-                request.Setup = subcommand.GetSetup();
-                request.TransParameters = subcommand.GetParameters(m_client.Unicode);
-                request.TransData = subcommand.GetData(m_client.Unicode);
+                Transaction2Request request = new Transaction2Request
+                {
+                    Setup = subcommand.GetSetup(),
+                    TransParameters = subcommand.GetParameters(m_client.Unicode),
+                    TransData = subcommand.GetData(m_client.Unicode)
+                };
                 request.TotalDataCount = (ushort)request.TransData.Length;
                 request.TotalParameterCount = (ushort)request.TransParameters.Length;
                 request.MaxParameterCount = Transaction2SetFileInformationResponse.ParametersLength;
@@ -322,23 +350,25 @@ namespace SMBLibrary.Client
                 }
                 return NTStatus.STATUS_INVALID_SMB;
             }
-            else
-            {
-                throw new NotSupportedException("Server does not support InfoLevelPassthrough");
-            }
+
+            throw new NotSupportedException("Server does not support InfoLevelPassthrough");
         }
 
         public NTStatus SetFileInformation(object handle, SetInformation information)
         {
             int maxOutputLength = 4096;
-            Transaction2SetFileInformationRequest subcommand = new Transaction2SetFileInformationRequest();
-            subcommand.FID = (ushort)handle;
+            Transaction2SetFileInformationRequest subcommand = new Transaction2SetFileInformationRequest
+            {
+                FID = (ushort)handle
+            };
             subcommand.SetInformation(information);
 
-            Transaction2Request request = new Transaction2Request();
-            request.Setup = subcommand.GetSetup();
-            request.TransParameters = subcommand.GetParameters(m_client.Unicode);
-            request.TransData = subcommand.GetData(m_client.Unicode);
+            Transaction2Request request = new Transaction2Request
+            {
+                Setup = subcommand.GetSetup(),
+                TransParameters = subcommand.GetParameters(m_client.Unicode),
+                TransData = subcommand.GetData(m_client.Unicode)
+            };
             request.TotalDataCount = (ushort)request.TransData.Length;
             request.TotalParameterCount = (ushort)request.TransParameters.Length;
             request.MaxParameterCount = Transaction2SetFileInformationResponse.ParametersLength;
@@ -359,13 +389,17 @@ namespace SMBLibrary.Client
             {
                 result = null;
                 int maxOutputLength = 4096;
-                Transaction2QueryFSInformationRequest subcommand = new Transaction2QueryFSInformationRequest();
-                subcommand.FileSystemInformationClass = informationClass;
+                Transaction2QueryFSInformationRequest subcommand = new Transaction2QueryFSInformationRequest
+                {
+                    FileSystemInformationClass = informationClass
+                };
 
-                Transaction2Request request = new Transaction2Request();
-                request.Setup = subcommand.GetSetup();
-                request.TransParameters = subcommand.GetParameters(m_client.Unicode);
-                request.TransData = subcommand.GetData(m_client.Unicode);
+                Transaction2Request request = new Transaction2Request
+                {
+                    Setup = subcommand.GetSetup(),
+                    TransParameters = subcommand.GetParameters(m_client.Unicode),
+                    TransData = subcommand.GetData(m_client.Unicode)
+                };
                 request.TotalDataCount = (ushort)request.TransData.Length;
                 request.TotalParameterCount = (ushort)request.TransParameters.Length;
                 request.MaxParameterCount = Transaction2QueryFSInformationResponse.ParametersLength;
@@ -385,23 +419,25 @@ namespace SMBLibrary.Client
                 }
                 return NTStatus.STATUS_INVALID_SMB;
             }
-            else
-            {
-                throw new NotSupportedException("Server does not support InfoLevelPassthrough");
-            }
+
+            throw new NotSupportedException("Server does not support InfoLevelPassthrough");
         }
 
         public NTStatus GetFileSystemInformation(out QueryFSInformation result, QueryFSInformationLevel informationLevel)
         {
             result = null;
             int maxOutputLength = 4096;
-            Transaction2QueryFSInformationRequest subcommand = new Transaction2QueryFSInformationRequest();
-            subcommand.QueryFSInformationLevel = informationLevel;
+            Transaction2QueryFSInformationRequest subcommand = new Transaction2QueryFSInformationRequest
+            {
+                QueryFSInformationLevel = informationLevel
+            };
 
-            Transaction2Request request = new Transaction2Request();
-            request.Setup = subcommand.GetSetup();
-            request.TransParameters = subcommand.GetParameters(m_client.Unicode);
-            request.TransData = subcommand.GetData(m_client.Unicode);
+            Transaction2Request request = new Transaction2Request
+            {
+                Setup = subcommand.GetSetup(),
+                TransParameters = subcommand.GetParameters(m_client.Unicode),
+                TransData = subcommand.GetData(m_client.Unicode)
+            };
             request.TotalDataCount = (ushort)request.TransData.Length;
             request.TotalParameterCount = (ushort)request.TransParameters.Length;
             request.MaxParameterCount = Transaction2QueryFSInformationResponse.ParametersLength;
@@ -431,15 +467,19 @@ namespace SMBLibrary.Client
         {
             result = null;
             int maxOutputLength = 4096;
-            NTTransactQuerySecurityDescriptorRequest subcommand = new NTTransactQuerySecurityDescriptorRequest();
-            subcommand.FID = (ushort)handle;
-            subcommand.SecurityInfoFields = securityInformation;
+            NTTransactQuerySecurityDescriptorRequest subcommand = new NTTransactQuerySecurityDescriptorRequest
+            {
+                FID = (ushort)handle,
+                SecurityInfoFields = securityInformation
+            };
 
-            NTTransactRequest request = new NTTransactRequest();
-            request.Function = subcommand.SubcommandName;
-            request.Setup = subcommand.GetSetup();
-            request.TransParameters = subcommand.GetParameters(m_client.Unicode);
-            request.TransData = subcommand.GetData();
+            NTTransactRequest request = new NTTransactRequest
+            {
+                Function = subcommand.SubcommandName,
+                Setup = subcommand.GetSetup(),
+                TransParameters = subcommand.GetParameters(m_client.Unicode),
+                TransData = subcommand.GetData()
+            };
             request.TotalDataCount = (uint)request.TransData.Length;
             request.TotalParameterCount = (uint)request.TransParameters.Length;
             request.MaxParameterCount = NTTransactQuerySecurityDescriptorResponse.ParametersLength;
@@ -483,17 +523,21 @@ namespace SMBLibrary.Client
             }
 
             output = null;
-            NTTransactIOCTLRequest subcommand = new NTTransactIOCTLRequest();
-            subcommand.FID = (ushort)handle;
-            subcommand.FunctionCode = ctlCode;
-            subcommand.IsFsctl = true;
-            subcommand.Data = input;
+            NTTransactIOCTLRequest subcommand = new NTTransactIOCTLRequest
+            {
+                FID = (ushort)handle,
+                FunctionCode = ctlCode,
+                IsFsctl = true,
+                Data = input
+            };
 
-            NTTransactRequest request = new NTTransactRequest();
-            request.Function = subcommand.SubcommandName;
-            request.Setup = subcommand.GetSetup();
-            request.TransParameters = subcommand.GetParameters(m_client.Unicode);
-            request.TransData = subcommand.GetData();
+            NTTransactRequest request = new NTTransactRequest
+            {
+                Function = subcommand.SubcommandName,
+                Setup = subcommand.GetSetup(),
+                TransParameters = subcommand.GetParameters(m_client.Unicode),
+                TransData = subcommand.GetData()
+            };
             request.TotalDataCount = (uint)request.TransData.Length;
             request.TotalParameterCount = (uint)request.TransParameters.Length;
             request.MaxParameterCount = NTTransactIOCTLResponse.ParametersLength;
@@ -517,14 +561,18 @@ namespace SMBLibrary.Client
         public NTStatus FsCtlPipeTranscieve(object handle, byte[] input, out byte[] output, int maxOutputLength)
         {
             output = null;
-            TransactionTransactNamedPipeRequest subcommand = new TransactionTransactNamedPipeRequest();
-            subcommand.FID = (ushort)handle;
-            subcommand.WriteData = input;
+            TransactionTransactNamedPipeRequest subcommand = new TransactionTransactNamedPipeRequest
+            {
+                FID = (ushort)handle,
+                WriteData = input
+            };
 
-            TransactionRequest request = new TransactionRequest();
-            request.Setup = subcommand.GetSetup();
-            request.TransParameters = subcommand.GetParameters();
-            request.TransData = subcommand.GetData(m_client.Unicode);
+            TransactionRequest request = new TransactionRequest
+            {
+                Setup = subcommand.GetSetup(),
+                TransParameters = subcommand.GetParameters(),
+                TransData = subcommand.GetData(m_client.Unicode)
+            };
             request.TotalDataCount = (ushort)request.TransData.Length;
             request.TotalParameterCount = (ushort)request.TransParameters.Length;
             request.MaxParameterCount = TransactionTransactNamedPipeResponse.ParametersLength;
@@ -563,21 +611,9 @@ namespace SMBLibrary.Client
             m_client.TrySendMessage(request, m_treeID);
         }
 
-        public uint MaxReadSize
-        {
-            get
-            {
-                return m_client.MaxReadSize;
-            }
-        }
+        public uint MaxReadSize => m_client.MaxReadSize;
 
-        public uint MaxWriteSize
-        {
-            get
-            {
-                return m_client.MaxWriteSize;
-            }
-        }
+        public uint MaxWriteSize => m_client.MaxWriteSize;
 
         private static ExtendedFileAttributes ToExtendedFileAttributes(FileAttributes fileAttributes)
         {
@@ -595,23 +631,16 @@ namespace SMBLibrary.Client
 
         private static FileStatus ToFileStatus(CreateDisposition createDisposition)
         {
-            switch (createDisposition)
+            return createDisposition switch
             {
-                case CreateDisposition.FILE_SUPERSEDE:
-                    return FileStatus.FILE_SUPERSEDED;
-                case CreateDisposition.FILE_OPEN:
-                    return FileStatus.FILE_OPENED;
-                case CreateDisposition.FILE_CREATE:
-                    return FileStatus.FILE_CREATED;
-                case CreateDisposition.FILE_OPEN_IF:
-                    return FileStatus.FILE_OVERWRITTEN;
-                case CreateDisposition.FILE_OVERWRITE:
-                    return FileStatus.FILE_EXISTS;
-                case CreateDisposition.FILE_OVERWRITE_IF:
-                    return FileStatus.FILE_DOES_NOT_EXIST;
-                default:
-                    return FileStatus.FILE_OPENED;
-            }
+                CreateDisposition.FILE_SUPERSEDE => FileStatus.FILE_SUPERSEDED,
+                CreateDisposition.FILE_OPEN => FileStatus.FILE_OPENED,
+                CreateDisposition.FILE_CREATE => FileStatus.FILE_CREATED,
+                CreateDisposition.FILE_OPEN_IF => FileStatus.FILE_OVERWRITTEN,
+                CreateDisposition.FILE_OVERWRITE => FileStatus.FILE_EXISTS,
+                CreateDisposition.FILE_OVERWRITE_IF => FileStatus.FILE_DOES_NOT_EXIST,
+                _ => FileStatus.FILE_OPENED
+            };
         }
     }
 }

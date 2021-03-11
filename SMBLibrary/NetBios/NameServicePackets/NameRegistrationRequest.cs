@@ -4,11 +4,9 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
+
 using System.IO;
 using System.Net;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.NetBios
@@ -28,11 +26,13 @@ namespace SMBLibrary.NetBios
         
         public NameRegistrationRequest()
         {
-            Header = new NameServicePacketHeader();
-            Header.OpCode = NameServiceOperation.RegistrationRequest;
-            Header.QDCount = 1;
-            Header.ARCount = 1;
-            Header.Flags = OperationFlags.Broadcast | OperationFlags.RecursionDesired;
+            Header = new NameServicePacketHeader
+            {
+                OpCode = NameServiceOperation.RegistrationRequest,
+                QDCount = 1,
+                ARCount = 1,
+                Flags = OperationFlags.Broadcast | OperationFlags.RecursionDesired
+            };
             Question = new QuestionSection();
             Resource = new ResourceRecord(NameRecordType.NB);
             Address = new byte[4];

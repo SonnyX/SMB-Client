@@ -4,10 +4,8 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
+
 using SMBLibrary.Authentication.GSSAPI;
-using SMBLibrary.Authentication.NTLM;
 using SMBLibrary.SMB2;
 using Utilities;
 
@@ -22,8 +20,7 @@ namespace SMBLibrary.Server.SMB2
         {
             // [MS-SMB2] Windows [..] will also accept raw Kerberos messages and implicit NTLM messages as part of GSS authentication.
             SessionSetupResponse response = new SessionSetupResponse();
-            byte[] outputToken;
-            NTStatus status = securityProvider.AcceptSecurityContext(ref state.AuthenticationContext, request.SecurityBuffer, out outputToken);
+            NTStatus status = securityProvider.AcceptSecurityContext(ref state.AuthenticationContext, request.SecurityBuffer, out byte[] outputToken);
             if (status != NTStatus.STATUS_SUCCESS && status != NTStatus.SEC_I_CONTINUE_NEEDED)
             {
                 string userName = securityProvider.GetContextAttribute(state.AuthenticationContext, GSSAttributeName.UserName) as string;

@@ -4,8 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -58,50 +57,24 @@ namespace SMBLibrary.SMB1
             {
                 return GetExtendedAttributeList.GetBytes();
             }
-            else
-            {
-                return new byte[0];
-            }
+
+            return new byte[0];
         }
 
-        public bool IsPassthroughInformationLevel
-        {
-            get
-            {
-                return (InformationLevel >= SMB_INFO_PASSTHROUGH);
-            }
-        }
+        public bool IsPassthroughInformationLevel => (InformationLevel >= SMB_INFO_PASSTHROUGH);
 
         public QueryInformationLevel QueryInformationLevel
         {
-            get
-            {
-                return (QueryInformationLevel)InformationLevel;
-            }
-            set
-            {
-                InformationLevel = (ushort)value;
-            }
+            get => (QueryInformationLevel)InformationLevel;
+            set => InformationLevel = (ushort)value;
         }
 
         public FileInformationClass FileInformationClass
         {
-            get
-            {
-                return (FileInformationClass)(InformationLevel - SMB_INFO_PASSTHROUGH);
-            }
-            set
-            {
-                InformationLevel = (ushort)((ushort)value + SMB_INFO_PASSTHROUGH);
-            }
+            get => (FileInformationClass)(InformationLevel - SMB_INFO_PASSTHROUGH);
+            set => InformationLevel = (ushort)((ushort)value + SMB_INFO_PASSTHROUGH);
         }
 
-        public override Transaction2SubcommandName SubcommandName
-        {
-            get
-            {
-                return Transaction2SubcommandName.TRANS2_QUERY_FILE_INFORMATION;
-            }
-        }
+        public override Transaction2SubcommandName SubcommandName => Transaction2SubcommandName.TRANS2_QUERY_FILE_INFORMATION;
     }
 }

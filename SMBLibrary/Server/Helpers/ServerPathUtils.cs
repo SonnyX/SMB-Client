@@ -4,10 +4,6 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Utilities;
 
 namespace SMBLibrary.Server
 {
@@ -22,12 +18,10 @@ namespace SMBLibrary.Server
                 int index = path.IndexOf('\\', 2);
                 if (index > 0)
                 {
-                    return path.Substring(index);
+                    return path[index..];
                 }
-                else
-                {
-                    return String.Empty;
-                }
+
+                return string.Empty;
             }
             return path;
         }
@@ -40,12 +34,10 @@ namespace SMBLibrary.Server
             int index = relativePath.IndexOf('\\', 1);
             if (index > 0)
             {
-                return path.Substring(index);
+                return path[index..];
             }
-            else
-            {
-                return @"\";
-            }
+
+            return @"\";
         }
 
         public static string GetShareName(string path)
@@ -53,7 +45,7 @@ namespace SMBLibrary.Server
             string relativePath = GetRelativeServerPath(path);
             if (relativePath.StartsWith(@"\"))
             {
-                relativePath = relativePath.Substring(1);
+                relativePath = relativePath[1..];
             }
 
             int indexOfSeparator = relativePath.IndexOf(@"\");

@@ -4,7 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
+
 using System.Collections.Generic;
 using SMBLibrary.SMB1;
 using Utilities;
@@ -51,31 +51,37 @@ namespace SMBLibrary.Server.SMB1
                     {
                         connection.LogToServer(Severity.Verbose, "NotifyChange: Monitoring of '{0}{1}' completed. NTStatus: {2}. PID: {3}. MID: {4}.", openFile.ShareName, openFile.Path, status, asyncContext.PID, asyncContext.MID);
                     }
-                    SMB1Header header = new SMB1Header();
-                    header.Command = CommandName.SMB_COM_NT_TRANSACT;
-                    header.Status = status;
-                    header.Flags = HeaderFlags.CaseInsensitive | HeaderFlags.CanonicalizedPaths | HeaderFlags.Reply;
-                    // [MS-CIFS] SMB_FLAGS2_LONG_NAMES SHOULD be set to 1 when the negotiated dialect is NT LANMAN.
-                    // [MS-CIFS] SMB_FLAGS2_UNICODE SHOULD be set to 1 when the negotiated dialect is NT LANMAN.
-                    // [MS-CIFS] The Windows NT Server implementation of NT_TRANSACT_NOTIFY_CHANGE always returns the names of changed files in Unicode format.
-                    header.Flags2 = HeaderFlags2.LongNamesAllowed | HeaderFlags2.NTStatusCode | HeaderFlags2.Unicode;
-                    header.UID = asyncContext.UID;
-                    header.TID = asyncContext.TID;
-                    header.PID = asyncContext.PID;
-                    header.MID = asyncContext.MID;
+                    SMB1Header header = new SMB1Header
+                    {
+                        Command = CommandName.SMB_COM_NT_TRANSACT,
+                        Status = status,
+                        Flags = HeaderFlags.CaseInsensitive | HeaderFlags.CanonicalizedPaths | HeaderFlags.Reply,
+                        // [MS-CIFS] SMB_FLAGS2_LONG_NAMES SHOULD be set to 1 when the negotiated dialect is NT LANMAN.
+                        // [MS-CIFS] SMB_FLAGS2_UNICODE SHOULD be set to 1 when the negotiated dialect is NT LANMAN.
+                        // [MS-CIFS] The Windows NT Server implementation of NT_TRANSACT_NOTIFY_CHANGE always returns the names of changed files in Unicode format.
+                        Flags2 = HeaderFlags2.LongNamesAllowed | HeaderFlags2.NTStatusCode | HeaderFlags2.Unicode,
+                        UID = asyncContext.UID,
+                        TID = asyncContext.TID,
+                        PID = asyncContext.PID,
+                        MID = asyncContext.MID
+                    };
 
                     if (status == NTStatus.STATUS_SUCCESS)
                     {
-                        NTTransactNotifyChangeResponse notifyChangeResponse = new NTTransactNotifyChangeResponse();
-                        notifyChangeResponse.FileNotifyInformationBytes = buffer;
+                        NTTransactNotifyChangeResponse notifyChangeResponse = new NTTransactNotifyChangeResponse
+                        {
+                            FileNotifyInformationBytes = buffer
+                        };
                         byte[] responseSetup = notifyChangeResponse.GetSetup();
                         byte[] responseParameters = notifyChangeResponse.GetParameters(false);
                         byte[] responseData = notifyChangeResponse.GetData();
                         List<SMB1Command> responseList = NTTransactHelper.GetNTTransactResponse(responseSetup, responseParameters, responseData, asyncContext.Connection.MaxBufferSize);
                         if (responseList.Count == 1)
                         {
-                            SMB1Message reply = new SMB1Message();
-                            reply.Header = header;
+                            SMB1Message reply = new SMB1Message
+                            {
+                                Header = header
+                            };
                             reply.Commands.Add(responseList[0]);
                             SMBServer.EnqueueMessage(asyncContext.Connection, reply);
                         }
@@ -85,8 +91,10 @@ namespace SMBLibrary.Server.SMB1
                             // the response [..] the NT Trans subsystem MUST return an error response with a Status value of STATUS_NOTIFY_ENUM_DIR.
                             header.Status = NTStatus.STATUS_NOTIFY_ENUM_DIR;
                             ErrorResponse response = new ErrorResponse(CommandName.SMB_COM_NT_TRANSACT);
-                            SMB1Message reply = new SMB1Message();
-                            reply.Header = header;
+                            SMB1Message reply = new SMB1Message
+                            {
+                                Header = header
+                            };
                             reply.Commands.Add(response);
                             SMBServer.EnqueueMessage(asyncContext.Connection, reply);
                         }
@@ -98,8 +106,10 @@ namespace SMBLibrary.Server.SMB1
                         // [MS-CIFS] In the event that the number of changes exceeds the size of the change notify buffer [..] 
                         // the NT Trans subsystem MUST return an error response with a Status value of STATUS_NOTIFY_ENUM_DIR.
                         ErrorResponse response = new ErrorResponse(CommandName.SMB_COM_NT_TRANSACT);
-                        SMB1Message reply = new SMB1Message();
-                        reply.Header = header;
+                        SMB1Message reply = new SMB1Message
+                        {
+                            Header = header
+                        };
                         reply.Commands.Add(response);
                         SMBServer.EnqueueMessage(asyncContext.Connection, reply);
                     }

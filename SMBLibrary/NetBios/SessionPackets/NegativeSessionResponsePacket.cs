@@ -4,8 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
+
 using Utilities;
 
 namespace SMBLibrary.NetBios
@@ -35,12 +34,6 @@ namespace SMBLibrary.NetBios
             return base.GetBytes();
         }
 
-        public override int Length
-        {
-            get
-            {
-                return HeaderLength + 1;
-            }
-        }
+        public override int Length => HeaderLength + 1;
     }
 }

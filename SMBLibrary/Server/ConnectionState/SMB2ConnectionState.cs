@@ -4,21 +4,18 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
 using System.Collections.Generic;
-using System.IO;
 using SMBLibrary.SMB2;
-using Utilities;
 
 namespace SMBLibrary.Server
 {
     internal class SMB2ConnectionState : ConnectionState
     {
         // Key is SessionID
-        private Dictionary<ulong, SMB2Session> m_sessions = new Dictionary<ulong, SMB2Session>();
+        private readonly Dictionary<ulong, SMB2Session> m_sessions = new Dictionary<ulong, SMB2Session>();
         private ulong m_nextSessionID = 1;
         // Key is AsyncID
-        private Dictionary<ulong, SMB2AsyncContext> m_pendingRequests = new Dictionary<ulong, SMB2AsyncContext>();
+        private readonly Dictionary<ulong, SMB2AsyncContext> m_pendingRequests = new Dictionary<ulong, SMB2AsyncContext>();
         private ulong m_nextAsyncID = 1;
 
         public SMB2ConnectionState(ConnectionState state) : base(state)
@@ -27,7 +24,7 @@ namespace SMBLibrary.Server
 
         public ulong? AllocateSessionID()
         {
-            for (ulong offset = 0; offset < UInt64.MaxValue; offset++)
+            for (ulong offset = 0; offset < ulong.MaxValue; offset++)
             {
                 ulong sessionID = (ulong)(m_nextSessionID + offset);
                 if (sessionID == 0 || sessionID == 0xFFFFFFFF)
@@ -55,15 +52,13 @@ namespace SMBLibrary.Server
 
         public SMB2Session GetSession(ulong sessionID)
         {
-            SMB2Session session;
-            m_sessions.TryGetValue(sessionID, out session);
+            m_sessions.TryGetValue(sessionID, out SMB2Session session);
             return session;
         }
 
         public void RemoveSession(ulong sessionID)
         {
-            SMB2Session session;
-            m_sessions.TryGetValue(sessionID, out session);
+            m_sessions.TryGetValue(sessionID, out SMB2Session session);
             if (session != null)
             {
                 session.Close();
@@ -102,7 +97,7 @@ namespace SMBLibrary.Server
 
         private ulong? AllocateAsyncID()
         {
-            for (ulong offset = 0; offset < UInt64.MaxValue; offset++)
+            for (ulong offset = 0; offset < ulong.MaxValue; offset++)
             {
                 ulong asyncID = (ulong)(m_nextAsyncID + offset);
                 if (asyncID == 0 || asyncID == 0xFFFFFFFF)
@@ -125,12 +120,14 @@ namespace SMBLibrary.Server
             {
                 return null;
             }
-            SMB2AsyncContext context = new SMB2AsyncContext();
-            context.AsyncID = asyncID.Value;
-            context.FileID = fileID;
-            context.Connection = connection;
-            context.SessionID = sessionID;
-            context.TreeID = treeID;
+            SMB2AsyncContext context = new SMB2AsyncContext
+            {
+                AsyncID = asyncID.Value,
+                FileID = fileID,
+                Connection = connection,
+                SessionID = sessionID,
+                TreeID = treeID
+            };
             lock (m_pendingRequests)
             {
                 m_pendingRequests.Add(asyncID.Value, context);

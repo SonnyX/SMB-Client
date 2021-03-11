@@ -471,3 +471,5 @@ Revision History:
         NTLM: Bugfix: IndependentNTLMAuthenticationProvider login failed to to modification of message byte arrays.
 
 1.4.6 - SMB2Client: Fixed InvalidCastException on failed login to SMB 3.0 server.
+
+1.4.7 - Added IsConnected and IsLoggedIn to ISMBClient

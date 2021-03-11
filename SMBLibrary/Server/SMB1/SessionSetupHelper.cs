@@ -4,9 +4,6 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
 using SMBLibrary.Authentication.GSSAPI;
 using SMBLibrary.Authentication.NTLM;
 using SMBLibrary.SMB1;
@@ -66,8 +63,8 @@ namespace SMBLibrary.Server.SMB1
             {
                 state.LargeWrite = true;
             }
-            response.NativeOS = String.Empty; // "Windows Server 2003 3790 Service Pack 2"
-            response.NativeLanMan = String.Empty; // "Windows Server 2003 5.2"
+            response.NativeOS = string.Empty; // "Windows Server 2003 3790 Service Pack 2"
+            response.NativeLanMan = string.Empty; // "Windows Server 2003 5.2"
 
             return response;
         }
@@ -77,8 +74,7 @@ namespace SMBLibrary.Server.SMB1
             SessionSetupAndXResponseExtended response = new SessionSetupAndXResponseExtended();
 
             // [MS-SMB] The Windows GSS implementation supports raw Kerberos / NTLM messages in the SecurityBlob
-            byte[] outputToken;
-            NTStatus status = securityProvider.AcceptSecurityContext(ref state.AuthenticationContext, request.SecurityBlob, out outputToken);
+            NTStatus status = securityProvider.AcceptSecurityContext(ref state.AuthenticationContext, request.SecurityBlob, out byte[] outputToken);
             if (status != NTStatus.STATUS_SUCCESS && status != NTStatus.SEC_I_CONTINUE_NEEDED)
             {
                 string userName = securityProvider.GetContextAttribute(state.AuthenticationContext, GSSAttributeName.UserName) as string;
@@ -132,23 +128,25 @@ namespace SMBLibrary.Server.SMB1
                     response.Action = SessionSetupAction.SetupGuest;
                 }
             }
-            response.NativeOS = String.Empty; // "Windows Server 2003 3790 Service Pack 2"
-            response.NativeLanMan = String.Empty; // "Windows Server 2003 5.2"
+            response.NativeOS = string.Empty; // "Windows Server 2003 3790 Service Pack 2"
+            response.NativeLanMan = string.Empty; // "Windows Server 2003 5.2"
 
             return response;
         }
 
         private static AuthenticateMessage CreateAuthenticateMessage(string accountNameToAuth, byte[] lmChallengeResponse, byte[] ntChallengeResponse)
         {
-            AuthenticateMessage authenticateMessage = new AuthenticateMessage();
-            authenticateMessage.NegotiateFlags = NegotiateFlags.UnicodeEncoding |
+            AuthenticateMessage authenticateMessage = new AuthenticateMessage
+            {
+                NegotiateFlags = NegotiateFlags.UnicodeEncoding |
                                                  NegotiateFlags.OEMEncoding |
                                                  NegotiateFlags.Sign |
                                                  NegotiateFlags.NTLMSessionSecurity |
                                                  NegotiateFlags.AlwaysSign |
                                                  NegotiateFlags.Version |
                                                  NegotiateFlags.Use128BitEncryption |
-                                                 NegotiateFlags.Use56BitEncryption;
+                                                 NegotiateFlags.Use56BitEncryption
+            };
             if (AuthenticationMessageUtils.IsNTLMv1ExtendedSessionSecurity(lmChallengeResponse) ||
                 AuthenticationMessageUtils.IsNTLMv2NTResponse(ntChallengeResponse))
             {

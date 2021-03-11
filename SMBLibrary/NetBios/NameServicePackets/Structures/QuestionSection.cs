@@ -4,8 +4,6 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
 using System.IO;
 using Utilities;
 
@@ -34,7 +32,7 @@ namespace SMBLibrary.NetBios
 
         public void WriteBytes(Stream stream)
         {
-            byte[] encodedName = NetBiosUtils.EncodeName(Name, String.Empty);
+            byte[] encodedName = NetBiosUtils.EncodeName(Name, string.Empty);
             ByteWriter.WriteBytes(stream, encodedName);
             BigEndianWriter.WriteUInt16(stream, (ushort)Type);
             BigEndianWriter.WriteUInt16(stream, (ushort)Class);

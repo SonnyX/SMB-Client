@@ -4,7 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
+
 using System.Collections.Generic;
 using Utilities;
 
@@ -37,10 +37,7 @@ namespace SMBLibrary.SMB2
 
         public bool SharedLock
         {
-            get
-            {
-                return (Flags & LockFlags.SharedLock) > 0;
-            }
+            get => (Flags & LockFlags.SharedLock) > 0;
             set
             {
                 if (value)
@@ -56,10 +53,7 @@ namespace SMBLibrary.SMB2
 
         public bool ExclusiveLock
         {
-            get
-            {
-                return (Flags & LockFlags.ExclusiveLock) > 0;
-            }
+            get => (Flags & LockFlags.ExclusiveLock) > 0;
             set
             {
                 if (value)
@@ -75,10 +69,7 @@ namespace SMBLibrary.SMB2
 
         public bool Unlock
         {
-            get
-            {
-                return (Flags & LockFlags.Unlock) > 0;
-            }
+            get => (Flags & LockFlags.Unlock) > 0;
             set
             {
                 if (value)
@@ -94,10 +85,7 @@ namespace SMBLibrary.SMB2
 
         public bool FailImmediately
         {
-            get
-            {
-                return (Flags & LockFlags.FailImmediately) > 0;
-            }
+            get => (Flags & LockFlags.FailImmediately) > 0;
             set
             {
                 if (value)

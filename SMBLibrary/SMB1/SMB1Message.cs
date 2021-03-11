@@ -1,9 +1,10 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,7 +31,7 @@ namespace SMBLibrary.SMB1
             Header = new SMB1Header(buffer);
             SMB1Command command = SMB1Command.ReadCommand(buffer, SMB1Header.Length, Header.Command, Header);
             Commands.Add(command);
-            while(command is SMBAndXCommand)
+            while (command is SMBAndXCommand)
             {
                 SMBAndXCommand andXCommand = (SMBAndXCommand)command;
                 if (andXCommand.AndXCommand == CommandName.SMB_COM_NO_ANDX_COMMAND)
@@ -57,7 +58,7 @@ namespace SMBLibrary.SMB1
                 }
             }
 
-            SMB1Command lastCommand = Commands[Commands.Count - 1];
+            SMB1Command lastCommand = Commands[^1];
             if (lastCommand is SMBAndXCommand)
             {
                 ((SMBAndXCommand)lastCommand).AndXCommand = CommandName.SMB_COM_NO_ANDX_COMMAND;
@@ -80,7 +81,7 @@ namespace SMBLibrary.SMB1
             commandBytes = lastCommand.GetBytes(Header.UnicodeFlag);
             sequence.Add(commandBytes);
             length += commandBytes.Length;
-            
+
             Header.Command = Commands[0].CommandName;
 
             byte[] buffer = new byte[length];

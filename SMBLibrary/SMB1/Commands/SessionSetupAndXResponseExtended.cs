@@ -4,9 +4,6 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -22,7 +19,7 @@ namespace SMBLibrary.SMB1
         // byte AndXReserved;
         // ushort AndXOffset;
         public SessionSetupAction Action;
-        private ushort SecurityBlobLength;
+        private readonly ushort SecurityBlobLength;
         // Data:
         public byte[] SecurityBlob;
         public string NativeOS;     // SMB_STRING (If Unicode, this field MUST be aligned to start on a 2-byte boundary from the start of the SMB header)
@@ -31,8 +28,8 @@ namespace SMBLibrary.SMB1
         public SessionSetupAndXResponseExtended() : base()
         {
             SecurityBlob = new byte[0];
-            NativeOS = String.Empty;
-            NativeLanMan = String.Empty;
+            NativeOS = string.Empty;
+            NativeLanMan = string.Empty;
         }
 
         public SessionSetupAndXResponseExtended(byte[] buffer, int offset, bool isUnicode) : base(buffer, offset, isUnicode)
@@ -88,12 +85,6 @@ namespace SMBLibrary.SMB1
             return base.GetBytes(isUnicode);
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_SESSION_SETUP_ANDX;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_SESSION_SETUP_ANDX;
     }
 }

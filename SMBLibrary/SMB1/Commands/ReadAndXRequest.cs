@@ -4,9 +4,6 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -56,7 +53,7 @@ namespace SMBLibrary.SMB1
         public override byte[] GetBytes(bool isUnicode)
         {
             int parametersLength = ParametersFixedLength;
-            if (Offset > UInt32.MaxValue)
+            if (Offset > uint.MaxValue)
             {
                 parametersLength += 4;
             }
@@ -68,7 +65,7 @@ namespace SMBLibrary.SMB1
             LittleEndianWriter.WriteUInt16(this.SMBParameters, 12, MinCountOfBytesToReturn);
             LittleEndianWriter.WriteUInt32(this.SMBParameters, 14, Timeout_or_MaxCountHigh);
             LittleEndianWriter.WriteUInt16(this.SMBParameters, 18, Remaining);
-            if (Offset > UInt32.MaxValue)
+            if (Offset > uint.MaxValue)
             {
                 uint offsetHigh = (uint)(Offset >> 32);
                 LittleEndianWriter.WriteUInt32(this.SMBParameters, 20, offsetHigh);
@@ -99,22 +96,10 @@ namespace SMBLibrary.SMB1
         /// </summary>
         public ushort MaxCount
         {
-            get
-            {
-                return MaxCountOfBytesToReturn;
-            }
-            set
-            {
-                MaxCountOfBytesToReturn = value;
-            }
+            get => MaxCountOfBytesToReturn;
+            set => MaxCountOfBytesToReturn = value;
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_READ_ANDX;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_READ_ANDX;
     }
 }

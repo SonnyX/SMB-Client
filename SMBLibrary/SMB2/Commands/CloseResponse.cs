@@ -5,7 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
 using Utilities;
 
 namespace SMBLibrary.SMB2
@@ -17,7 +16,7 @@ namespace SMBLibrary.SMB2
     {
         public const int DeclaredSize = 60;
 
-        private ushort StructureSize;
+        private readonly ushort StructureSize;
         public CloseFlags Flags;
         public uint Reserved;
         public DateTime? CreationTime;
@@ -62,12 +61,6 @@ namespace SMBLibrary.SMB2
             LittleEndianWriter.WriteUInt32(buffer, offset + 56, (uint)FileAttributes);
         }
 
-        public override int CommandLength
-        {
-            get
-            {
-                return DeclaredSize;
-            }
-        }
+        public override int CommandLength => DeclaredSize;
     }
 }

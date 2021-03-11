@@ -1,11 +1,11 @@
 /* Copyright (C) 2014-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
-using System.Collections.Generic;
 using System.Security.Cryptography;
 using SMBLibrary.Authentication.GSSAPI;
 using Utilities;
@@ -44,9 +44,10 @@ namespace SMBLibrary.Authentication.NTLM
         // \\servername\sharename\dir1\dir2\dir3\dir4      - 81 login attempts
         // \\servername\sharename\dir1\dir2\dir3\dir4\dir5 - 57 login attempts
         private static readonly int DefaultMaxLoginAttemptsInWindow = 100;
+
         private static readonly TimeSpan DefaultLoginWindowDuration = new TimeSpan(0, 20, 0);
-        private GetUserPassword m_GetUserPassword;
-        private LoginCounter m_loginCounter;
+        private readonly GetUserPassword m_GetUserPassword;
+        private readonly LoginCounter m_loginCounter;
 
         /// <param name="getUserPassword">
         /// The NTLM challenge response will be compared against the provided password.
@@ -78,12 +79,14 @@ namespace SMBLibrary.Authentication.NTLM
             byte[] serverChallenge = GenerateServerChallenge();
             context = new AuthContext(serverChallenge);
 
-            ChallengeMessage challengeMessage = new ChallengeMessage();
-            // https://msdn.microsoft.com/en-us/library/cc236691.aspx
-            challengeMessage.NegotiateFlags = NegotiateFlags.TargetTypeServer |
+            ChallengeMessage challengeMessage = new ChallengeMessage
+            {
+                // https://msdn.microsoft.com/en-us/library/cc236691.aspx
+                NegotiateFlags = NegotiateFlags.TargetTypeServer |
                                               NegotiateFlags.TargetInfo |
                                               NegotiateFlags.TargetNameSupplied |
-                                              NegotiateFlags.Version;
+                                              NegotiateFlags.Version
+            };
             // [MS-NLMP] NTLMSSP_NEGOTIATE_NTLM MUST be set in the [..] CHALLENGE_MESSAGE to the client.
             challengeMessage.NegotiateFlags |= NegotiateFlags.NTLMSessionSecurity;
 
@@ -162,7 +165,7 @@ namespace SMBLibrary.Authentication.NTLM
             {
                 return NTStatus.SEC_E_INVALID_TOKEN;
             }
-            
+
             AuthContext authContext = context as AuthContext;
             if (authContext == null)
             {
@@ -189,10 +192,8 @@ namespace SMBLibrary.Authentication.NTLM
                     authContext.IsGuest = true;
                     return NTStatus.STATUS_SUCCESS;
                 }
-                else
-                {
-                    return NTStatus.STATUS_LOGON_FAILURE;
-                }
+
+                return NTStatus.STATUS_LOGON_FAILURE;
             }
 
             if (!m_loginCounter.HasRemainingLoginAttempts(message.UserName.ToLower()))
@@ -208,17 +209,13 @@ namespace SMBLibrary.Authentication.NTLM
                     authContext.IsGuest = true;
                     return NTStatus.STATUS_SUCCESS;
                 }
-                else
+
+                if (m_loginCounter.HasRemainingLoginAttempts(message.UserName.ToLower(), true))
                 {
-                    if (m_loginCounter.HasRemainingLoginAttempts(message.UserName.ToLower(), true))
-                    {
-                        return NTStatus.STATUS_LOGON_FAILURE;
-                    }
-                    else
-                    {
-                        return NTStatus.STATUS_ACCOUNT_LOCKED_OUT;
-                    }
+                    return NTStatus.STATUS_LOGON_FAILURE;
                 }
+
+                return NTStatus.STATUS_ACCOUNT_LOCKED_OUT;
             }
 
             bool success;
@@ -279,17 +276,13 @@ namespace SMBLibrary.Authentication.NTLM
                 }
                 return NTStatus.STATUS_SUCCESS;
             }
-            else
+
+            if (m_loginCounter.HasRemainingLoginAttempts(message.UserName.ToLower(), true))
             {
-                if (m_loginCounter.HasRemainingLoginAttempts(message.UserName.ToLower(), true))
-                {
-                    return NTStatus.STATUS_LOGON_FAILURE;
-                }
-                else
-                {
-                    return NTStatus.STATUS_ACCOUNT_LOCKED_OUT;
-                }
+                return NTStatus.STATUS_LOGON_FAILURE;
             }
+
+            return NTStatus.STATUS_ACCOUNT_LOCKED_OUT;
         }
 
         public override bool DeleteSecurityContext(ref object context)
@@ -307,14 +300,19 @@ namespace SMBLibrary.Authentication.NTLM
                 {
                     case GSSAttributeName.DomainName:
                         return authContext.DomainName;
+
                     case GSSAttributeName.IsGuest:
                         return authContext.IsGuest;
+
                     case GSSAttributeName.MachineName:
                         return authContext.WorkStation;
+
                     case GSSAttributeName.OSVersion:
                         return authContext.OSVersion;
+
                     case GSSAttributeName.SessionKey:
                         return authContext.SessionKey;
+
                     case GSSAttributeName.UserName:
                         return authContext.UserName;
                 }
@@ -323,13 +321,7 @@ namespace SMBLibrary.Authentication.NTLM
             return null;
         }
 
-        private bool EnableGuestLogin
-        {
-            get
-            {
-                return (m_GetUserPassword("Guest") == String.Empty);
-            }
-        }
+        private bool EnableGuestLogin => (m_GetUserPassword("Guest") == string.Empty);
 
         /// <summary>
         /// LM v1 / NTLM v1
