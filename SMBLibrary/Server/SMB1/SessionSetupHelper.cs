@@ -1,12 +1,10 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using SMBLibrary.Authentication.GSSAPI;
 using SMBLibrary.Authentication.NTLM;
 using SMBLibrary.SMB1;
@@ -36,9 +34,8 @@ namespace SMBLibrary.Server.SMB1
             string osVersion = securityProvider.GetContextAttribute(state.AuthenticationContext, GSSAttributeName.OSVersion) as string;
             byte[] sessionKey = securityProvider.GetContextAttribute(state.AuthenticationContext, GSSAttributeName.SessionKey) as byte[];
             object accessToken = securityProvider.GetContextAttribute(state.AuthenticationContext, GSSAttributeName.AccessToken);
-            bool? isGuest = securityProvider.GetContextAttribute(state.AuthenticationContext, GSSAttributeName.IsGuest) as bool?;
             SMB1Session session;
-            if (!isGuest.HasValue || !isGuest.Value)
+            if (!(securityProvider.GetContextAttribute(state.AuthenticationContext, GSSAttributeName.IsGuest) is bool isGuest) || !isGuest)
             {
                 state.LogToServer(Severity.Information, "Session Setup: User '{0}' authenticated successfully (Domain: '{1}', Workstation: '{2}', OS version: '{3}').", message.UserName, message.DomainName, message.WorkStation, osVersion);
                 session = state.CreateSession(message.UserName, message.WorkStation, sessionKey, accessToken);
@@ -66,8 +63,8 @@ namespace SMBLibrary.Server.SMB1
             {
                 state.LargeWrite = true;
             }
-            response.NativeOS = String.Empty; // "Windows Server 2003 3790 Service Pack 2"
-            response.NativeLanMan = String.Empty; // "Windows Server 2003 5.2"
+            response.NativeOS = string.Empty; // "Windows Server 2003 3790 Service Pack 2"
+            response.NativeLanMan = string.Empty; // "Windows Server 2003 5.2"
 
             return response;
         }
@@ -77,8 +74,7 @@ namespace SMBLibrary.Server.SMB1
             SessionSetupAndXResponseExtended response = new SessionSetupAndXResponseExtended();
 
             // [MS-SMB] The Windows GSS implementation supports raw Kerberos / NTLM messages in the SecurityBlob
-            byte[] outputToken;
-            NTStatus status = securityProvider.AcceptSecurityContext(ref state.AuthenticationContext, request.SecurityBlob, out outputToken);
+            NTStatus status = securityProvider.AcceptSecurityContext(ref state.AuthenticationContext, request.SecurityBlob, out byte[] outputToken);
             if (status != NTStatus.STATUS_SUCCESS && status != NTStatus.SEC_I_CONTINUE_NEEDED)
             {
                 string userName = securityProvider.GetContextAttribute(state.AuthenticationContext, GSSAttributeName.UserName) as string;
@@ -119,8 +115,7 @@ namespace SMBLibrary.Server.SMB1
                 string osVersion = securityProvider.GetContextAttribute(state.AuthenticationContext, GSSAttributeName.OSVersion) as string;
                 byte[] sessionKey = securityProvider.GetContextAttribute(state.AuthenticationContext, GSSAttributeName.SessionKey) as byte[];
                 object accessToken = securityProvider.GetContextAttribute(state.AuthenticationContext, GSSAttributeName.AccessToken);
-                bool? isGuest = securityProvider.GetContextAttribute(state.AuthenticationContext, GSSAttributeName.IsGuest) as bool?;
-                if (!isGuest.HasValue || !isGuest.Value)
+                if (!(securityProvider.GetContextAttribute(state.AuthenticationContext, GSSAttributeName.IsGuest) is bool isGuest) || !isGuest)
                 {
                     state.LogToServer(Severity.Information, "Session Setup: User '{0}' authenticated successfully (Domain: '{1}', Workstation: '{2}', OS version: '{3}').", userName, domainName, machineName, osVersion);
                     state.CreateSession(header.UID, userName, machineName, sessionKey, accessToken);
@@ -132,23 +127,25 @@ namespace SMBLibrary.Server.SMB1
                     response.Action = SessionSetupAction.SetupGuest;
                 }
             }
-            response.NativeOS = String.Empty; // "Windows Server 2003 3790 Service Pack 2"
-            response.NativeLanMan = String.Empty; // "Windows Server 2003 5.2"
+            response.NativeOS = string.Empty; // "Windows Server 2003 3790 Service Pack 2"
+            response.NativeLanMan = string.Empty; // "Windows Server 2003 5.2"
 
             return response;
         }
 
         private static AuthenticateMessage CreateAuthenticateMessage(string accountNameToAuth, byte[] lmChallengeResponse, byte[] ntChallengeResponse)
         {
-            AuthenticateMessage authenticateMessage = new AuthenticateMessage();
-            authenticateMessage.NegotiateFlags = NegotiateFlags.UnicodeEncoding |
+            AuthenticateMessage authenticateMessage = new AuthenticateMessage
+            {
+                NegotiateFlags = NegotiateFlags.UnicodeEncoding |
                                                  NegotiateFlags.OEMEncoding |
                                                  NegotiateFlags.Sign |
                                                  NegotiateFlags.NTLMSessionSecurity |
                                                  NegotiateFlags.AlwaysSign |
                                                  NegotiateFlags.Version |
                                                  NegotiateFlags.Use128BitEncryption |
-                                                 NegotiateFlags.Use56BitEncryption;
+                                                 NegotiateFlags.Use56BitEncryption
+            };
             if (AuthenticationMessageUtils.IsNTLMv1ExtendedSessionSecurity(lmChallengeResponse) ||
                 AuthenticationMessageUtils.IsNTLMv2NTResponse(ntChallengeResponse))
             {

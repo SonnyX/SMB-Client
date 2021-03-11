@@ -4,9 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -20,28 +18,22 @@ namespace SMBLibrary.SMB1
         // Parameters;
         public ushort Count;
 
-        public WriteRawFinalResponse() : base()
+        public WriteRawFinalResponse()
         {}
 
-        public WriteRawFinalResponse(byte[] buffer, int offset) : base(buffer, offset, false)
+        public WriteRawFinalResponse(byte[] buffer, int offset) : base(buffer, offset)
         {
-            Count = LittleEndianConverter.ToUInt16(this.SMBParameters, 0);
+            Count = LittleEndianConverter.ToUInt16(SMBParameters, 0);
         }
 
         public override byte[] GetBytes(bool isUnicode)
         {
-            this.SMBParameters = new byte[ParametersLength];
-            LittleEndianWriter.WriteUInt16(this.SMBParameters, 0, Count);
+            SMBParameters = new byte[ParametersLength];
+            LittleEndianWriter.WriteUInt16(SMBParameters, 0, Count);
 
             return base.GetBytes(isUnicode);
         }
 
-        public override CommandName CommandName
-        {
-            get 
-            {
-                return CommandName.SMB_COM_WRITE_COMPLETE;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_WRITE_COMPLETE;
     }
 }

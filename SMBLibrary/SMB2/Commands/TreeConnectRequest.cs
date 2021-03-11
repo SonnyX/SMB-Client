@@ -4,8 +4,6 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
 using Utilities;
 
 namespace SMBLibrary.SMB2
@@ -18,11 +16,11 @@ namespace SMBLibrary.SMB2
         public const int FixedSize = 8;
         public const int DeclaredSize = 9;
 
-        private ushort StructureSize;
+        private readonly ushort StructureSize;
         public ushort Reserved;
         private ushort PathOffset;
         private ushort PathLength;
-        public string Path = String.Empty;
+        public string Path = string.Empty;
 
         public TreeConnectRequest() : base(SMB2CommandName.TreeConnect)
         {
@@ -59,12 +57,6 @@ namespace SMBLibrary.SMB2
             }
         }
 
-        public override int CommandLength
-        {
-            get
-            {
-                return 8 + Path.Length * 2;
-            }
-        }
+        public override int CommandLength => 8 + Path.Length * 2;
     }
 }

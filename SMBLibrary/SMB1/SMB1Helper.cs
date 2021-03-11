@@ -5,8 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -20,15 +18,13 @@ namespace SMBLibrary.SMB1
             {
                 return DateTime.FromFileTimeUtc(span);
             }
-            else if (span == 0)
+
+            if (span == 0)
             {
                 return null;
             }
-            else
-            {
-                // Tick = 100ns
-                return DateTime.UtcNow.Subtract(TimeSpan.FromTicks(span));
-            }
+            // Tick = 100ns
+            return DateTime.UtcNow.Subtract(TimeSpan.FromTicks(span));
         }
 
         public static DateTime? ReadNullableFileTime(byte[] buffer, ref int offset)
@@ -118,10 +114,8 @@ namespace SMBLibrary.SMB1
             {
                 return ByteReader.ReadNullTerminatedUTF16String(buffer, offset);
             }
-            else
-            {
-                return ByteReader.ReadNullTerminatedAnsiString(buffer, offset);
-            }
+
+            return ByteReader.ReadNullTerminatedAnsiString(buffer, offset);
         }
 
         public static string ReadSMBString(byte[] buffer, ref int offset, bool isUnicode)
@@ -130,10 +124,8 @@ namespace SMBLibrary.SMB1
             {
                 return ByteReader.ReadNullTerminatedUTF16String(buffer, ref offset);
             }
-            else
-            {
-                return ByteReader.ReadNullTerminatedAnsiString(buffer, ref offset);
-            }
+
+            return ByteReader.ReadNullTerminatedAnsiString(buffer, ref offset);
         }
 
         public static void WriteSMBString(byte[] buffer, int offset, bool isUnicode, string value)
@@ -166,10 +158,8 @@ namespace SMBLibrary.SMB1
             {
                 return ByteReader.ReadUTF16String(buffer, ref offset, byteCount / 2);
             }
-            else
-            {
-                return ByteReader.ReadAnsiString(buffer, ref offset, byteCount);
-            }
+
+            return ByteReader.ReadAnsiString(buffer, ref offset, byteCount);
         }
 
         public static void WriteFixedLengthString(byte[] buffer, ref int offset, bool isUnicode, string value)

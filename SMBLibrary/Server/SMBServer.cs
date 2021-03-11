@@ -1,9 +1,10 @@
 /* Copyright (C) 2014-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -11,14 +12,13 @@ using System.Net.Sockets;
 using System.Threading;
 using SMBLibrary.Authentication.GSSAPI;
 using SMBLibrary.NetBios;
-using SMBLibrary.Services;
 using SMBLibrary.SMB1;
 using SMBLibrary.SMB2;
 using Utilities;
 
 namespace SMBLibrary.Server
 {
-    public partial class SMBServer
+    public sealed partial class SMBServer : IDisposable
     {
         public static readonly int NetBiosOverTCPPort = 139;
         public static readonly int DirectTCPPort = 445;
@@ -26,12 +26,12 @@ namespace SMBLibrary.Server
         public static readonly bool EnableExtendedSecurity = true;
         private static readonly int InactivityMonitoringInterval = 30000; // Check every 30 seconds
 
-        private SMBShareCollection m_shares; // e.g. Shared folders
-        private GSSProvider m_securityProvider;
-        private NamedPipeShare m_services; // Named pipes
-        private Guid m_serverGuid;
+        private readonly SMBShareCollection m_shares; // e.g. Shared folders
+        private readonly GSSProvider m_securityProvider;
+        private readonly NamedPipeShare m_services; // Named pipes
+        private readonly Guid m_serverGuid;
 
-        private ConnectionManager m_connectionManager;
+        private readonly ConnectionManager m_connectionManager;
         private Thread m_sendSMBKeepAliveThread;
 
         private IPAddress m_serverAddress;
@@ -44,6 +44,7 @@ namespace SMBLibrary.Server
         private DateTime m_serverStartTime;
 
         public event EventHandler<ConnectionRequestEventArgs> ConnectionRequested;
+
         public event EventHandler<LogEntry> LogEntryAdded;
 
         public SMBServer(SMBShareCollection shares, GSSProvider securityProvider)
@@ -75,7 +76,7 @@ namespace SMBLibrary.Server
         /// Some broken NATs will reply to TCP KeepAlive even after the client initiating the connection has long gone,
         /// to prevent such connections from hanging around indefinitely, this parameter can be used.
         /// </param>
-        /// <exception cref="System.Net.Sockets.SocketException"></exception>
+        /// <exception cref="SocketException"></exception>
         public void Start(IPAddress serverAddress, SMBTransportType transport, bool enableSMB1, bool enableSMB2, bool enableSMB3, TimeSpan? connectionInactivityTimeout)
         {
             if (!m_listening)
@@ -94,6 +95,7 @@ namespace SMBLibrary.Server
                 m_listening = true;
                 m_serverStartTime = DateTime.Now;
 
+                m_listenerSocket?.Dispose();
                 m_listenerSocket = new Socket(m_serverAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
                 int port = (m_transport == SMBTransportType.DirectTCPTransport ? DirectTCPPort : NetBiosOverTCPPort);
                 m_listenerSocket.Bind(new IPEndPoint(m_serverAddress, port));
@@ -102,15 +104,17 @@ namespace SMBLibrary.Server
 
                 if (connectionInactivityTimeout.HasValue)
                 {
-                    m_sendSMBKeepAliveThread = new Thread(delegate()
+                    m_sendSMBKeepAliveThread = new Thread(delegate ()
                     {
                         while (m_listening)
                         {
                             Thread.Sleep(InactivityMonitoringInterval);
                             m_connectionManager.SendSMBKeepAlive(connectionInactivityTimeout.Value);
                         }
-                    });
-                    m_sendSMBKeepAliveThread.IsBackground = true;
+                    })
+                    {
+                        IsBackground = true
+                    };
                     m_sendSMBKeepAliveThread.Start();
                 }
             }
@@ -120,10 +124,7 @@ namespace SMBLibrary.Server
         {
             Log(Severity.Information, "Stopping server");
             m_listening = false;
-            if (m_sendSMBKeepAliveThread != null)
-            {
-                m_sendSMBKeepAliveThread.Abort();
-            }
+            m_sendSMBKeepAliveThread?.Abort();
             SocketUtils.ReleaseSocket(m_listenerSocket);
             m_connectionManager.ReleaseAllConnections();
         }
@@ -174,11 +175,13 @@ namespace SMBLibrary.Server
             {
                 ConnectionState state = new ConnectionState(clientSocket, clientEndPoint, Log);
                 state.LogToServer(Severity.Verbose, "New connection request accepted");
-                Thread senderThread = new Thread(delegate()
+                Thread senderThread = new Thread(delegate ()
                 {
                     ProcessSendQueue(state);
-                });
-                senderThread.IsBackground = true;
+                })
+                {
+                    IsBackground = true
+                };
                 senderThread.Start();
 
                 try
@@ -271,12 +274,12 @@ namespace SMBLibrary.Server
 
         private void ProcessConnectionBuffer(ref ConnectionState state)
         {
-            Socket clientSocket = state.ClientSocket;
+            _ = state.ClientSocket;
 
             NBTConnectionReceiveBuffer receiveBuffer = state.ReceiveBuffer;
             while (receiveBuffer.HasCompletePacket())
             {
-                SessionPacket packet = null;
+                SessionPacket packet;
                 try
                 {
                     packet = receiveBuffer.DequeuePacket();
@@ -313,7 +316,7 @@ namespace SMBLibrary.Server
                         return;
                     }
 
-                    SMB1Message message = null;
+                    SMB1Message message;
                     try
                     {
                         message = SMB1Message.GetSMB1Message(packet.Trailer);
@@ -405,8 +408,7 @@ namespace SMBLibrary.Server
             state.LogToServer(Severity.Trace, "Entering ProcessSendQueue");
             while (true)
             {
-                SessionPacket response;
-                bool stopped = !state.SendQueue.TryDequeue(out response);
+                bool stopped = !state.SendQueue.TryDequeue(out SessionPacket response);
                 if (stopped)
                 {
                     return;
@@ -449,15 +451,17 @@ namespace SMBLibrary.Server
         {
             // To be thread-safe we must capture the delegate reference first
             EventHandler<LogEntry> handler = LogEntryAdded;
-            if (handler != null)
-            {
-                handler(this, new LogEntry(DateTime.Now, severity, "SMB Server", message));
-            }
+            handler?.Invoke(this, new LogEntry(DateTime.Now, severity, "SMB Server", message));
         }
 
         private void Log(Severity severity, string message, params object[] args)
         {
-            Log(severity, String.Format(message, args));
+            Log(severity, string.Format(message, args));
+        }
+
+        public void Dispose()
+        {
+            m_listenerSocket?.Dispose();
         }
     }
 }

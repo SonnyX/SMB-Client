@@ -4,8 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
+
 using Utilities;
 
 namespace SMBLibrary.SMB2
@@ -17,7 +16,7 @@ namespace SMBLibrary.SMB2
     {
         public const int DeclaredSize = 32;
 
-        private ushort StructureSize;
+        private readonly ushort StructureSize;
         public ChangeNotifyFlags Flags;
         public uint OutputBufferLength;
         public FileID FileId;
@@ -51,10 +50,7 @@ namespace SMBLibrary.SMB2
 
         public bool WatchTree
         {
-            get
-            {
-                return ((Flags & ChangeNotifyFlags.WatchTree) > 0);
-            }
+            get => ((Flags & ChangeNotifyFlags.WatchTree) > 0);
             set
             {
                 if (value)
@@ -68,12 +64,6 @@ namespace SMBLibrary.SMB2
             }
         }
 
-        public override int CommandLength
-        {
-            get
-            {
-                return DeclaredSize;
-            }
-        }
+        public override int CommandLength => DeclaredSize;
     }
 }

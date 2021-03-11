@@ -6,8 +6,6 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Text;
-using Utilities;
 
 namespace SMBLibrary.Services
 {
@@ -22,13 +20,13 @@ namespace SMBLibrary.Services
 
         public const int MaxPreferredLength = -1; // MAX_PREFERRED_LENGTH
 
-        private PlatformName m_platformID;
-        private string m_serverName;
-        private uint m_verMajor;
-        private uint m_verMinor;
-        private ServerType m_serverType;
+        private readonly PlatformName m_platformID;
+        private readonly string m_serverName;
+        private readonly uint m_verMajor;
+        private readonly uint m_verMinor;
+        private readonly ServerType m_serverType;
 
-        private List<string> m_shares;
+        private readonly List<string> m_shares;
 
         public ServerService(string serverName, List<string> shares)
         {
@@ -177,8 +175,10 @@ namespace SMBLibrary.Services
             {
                 case 100:
                     {
-                        ServerInfo100 info = new ServerInfo100();
-                        info.PlatformID = m_platformID;
+                        ServerInfo100 info = new ServerInfo100
+                        {
+                            PlatformID = m_platformID
+                        };
                         info.ServerName.Value = m_serverName;
                         response.InfoStruct = new ServerInfo(info);
                         response.Result = Win32Error.ERROR_SUCCESS;
@@ -186,13 +186,15 @@ namespace SMBLibrary.Services
                     }
                 case 101:
                     {
-                        ServerInfo101 info = new ServerInfo101();
-                        info.PlatformID = m_platformID;
+                        ServerInfo101 info = new ServerInfo101
+                        {
+                            PlatformID = m_platformID
+                        };
                         info.ServerName.Value = m_serverName;
                         info.VerMajor = m_verMajor;
                         info.VerMinor = m_verMinor;
                         info.Type = m_serverType;
-                        info.Comment.Value = String.Empty;
+                        info.Comment.Value = string.Empty;
                         response.InfoStruct = new ServerInfo(info);
                         response.Result = Win32Error.ERROR_SUCCESS;
                         return response;
@@ -228,20 +230,8 @@ namespace SMBLibrary.Services
             return -1;
         }
 
-        public override Guid InterfaceGuid
-        {
-            get
-            {
-                return ServiceInterfaceGuid;
-            }
-        }
+        public override Guid InterfaceGuid => ServiceInterfaceGuid;
 
-        public override string PipeName
-        {
-            get
-            {
-                return ServicePipeName;
-            }
-        }
+        public override string PipeName => ServicePipeName;
     }
 }

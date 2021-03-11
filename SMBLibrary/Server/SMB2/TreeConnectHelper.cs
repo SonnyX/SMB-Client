@@ -1,12 +1,11 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
-using System.Collections.Generic;
-using System.Text;
 using SMBLibrary.SMB2;
 using Utilities;
 
@@ -22,7 +21,7 @@ namespace SMBLibrary.Server.SMB2
             ISMBShare share;
             ShareType shareType;
             ShareFlags shareFlags;
-            if (String.Equals(shareName, NamedPipeShare.NamedPipeShareName, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(shareName, NamedPipeShare.NamedPipeShareName, StringComparison.OrdinalIgnoreCase))
             {
                 share = services;
                 shareType = ShareType.Pipe;
@@ -64,17 +63,13 @@ namespace SMBLibrary.Server.SMB2
 
         private static ShareFlags GetShareCachingFlags(CachingPolicy cachingPolicy)
         {
-            switch (cachingPolicy)
+            return cachingPolicy switch
             {
-                case CachingPolicy.ManualCaching:
-                    return ShareFlags.ManualCaching;
-                case CachingPolicy.AutoCaching:
-                    return ShareFlags.AutoCaching;
-                case CachingPolicy.VideoCaching:
-                    return ShareFlags.VdoCaching;
-                default:
-                    return ShareFlags.NoCaching;
-            }
+                CachingPolicy.ManualCaching => ShareFlags.ManualCaching,
+                CachingPolicy.AutoCaching => ShareFlags.AutoCaching,
+                CachingPolicy.VideoCaching => ShareFlags.VdoCaching,
+                _ => ShareFlags.NoCaching
+            };
         }
 
         internal static SMB2Command GetTreeDisconnectResponse(TreeDisconnectRequest request, ISMBShare share, SMB2ConnectionState state)

@@ -212,7 +212,7 @@ namespace Utilities
 
         public static string ToString(object obj)
         {
-            string result = String.Empty;
+            string result = string.Empty;
             if (obj != null)
             {
                 try

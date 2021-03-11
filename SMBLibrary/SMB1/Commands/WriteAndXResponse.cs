@@ -4,9 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -26,38 +24,32 @@ namespace SMBLibrary.SMB1
         public ushort Available;
         public ushort Reserved;
 
-        public WriteAndXResponse() : base()
+        public WriteAndXResponse()
         {}
 
-        public WriteAndXResponse(byte[] buffer, int offset): base(buffer, offset, false)
+        public WriteAndXResponse(byte[] buffer, int offset): base(buffer, offset)
         {
-            Count = LittleEndianConverter.ToUInt16(this.SMBParameters, 4);
-            Available = LittleEndianConverter.ToUInt16(this.SMBParameters, 6);
-            ushort countHigh = LittleEndianConverter.ToUInt16(this.SMBParameters, 8);
-            Reserved = LittleEndianConverter.ToUInt16(this.SMBParameters, 10);
+            Count = LittleEndianConverter.ToUInt16(SMBParameters, 4);
+            Available = LittleEndianConverter.ToUInt16(SMBParameters, 6);
+            ushort countHigh = LittleEndianConverter.ToUInt16(SMBParameters, 8);
+            Reserved = LittleEndianConverter.ToUInt16(SMBParameters, 10);
 
             Count |= (uint)(countHigh << 16);
         }
 
         public override byte[] GetBytes(bool isUnicode)
         {
-            this.SMBParameters = new byte[ParametersLength];
+            SMBParameters = new byte[ParametersLength];
             ushort counthHigh = (ushort)(Count >> 16);
 
-            LittleEndianWriter.WriteUInt16(this.SMBParameters, 4, (ushort)(Count & 0xFFFF));
-            LittleEndianWriter.WriteUInt16(this.SMBParameters, 6, Available);
-            LittleEndianWriter.WriteUInt16(this.SMBParameters, 8, counthHigh);
-            LittleEndianWriter.WriteUInt16(this.SMBParameters, 10, Reserved);
+            LittleEndianWriter.WriteUInt16(SMBParameters, 4, (ushort)(Count & 0xFFFF));
+            LittleEndianWriter.WriteUInt16(SMBParameters, 6, Available);
+            LittleEndianWriter.WriteUInt16(SMBParameters, 8, counthHigh);
+            LittleEndianWriter.WriteUInt16(SMBParameters, 10, Reserved);
 
             return base.GetBytes(isUnicode);
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_WRITE_ANDX;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_WRITE_ANDX;
     }
 }

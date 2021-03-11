@@ -1,13 +1,13 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Utilities;
 
 namespace SMBLibrary.Server
 {
@@ -15,20 +15,21 @@ namespace SMBLibrary.Server
     {
         private const int MaxSearches = 2048; // Windows servers initialize Server.MaxSearches to 2048.
 
-        private SMB1ConnectionState m_connection;
-        private ushort m_userID;
-        private byte[] m_sessionKey;
-        private SecurityContext m_securityContext;
-        private DateTime m_creationDT;
+        private readonly SMB1ConnectionState m_connection;
+        private readonly ushort m_userID;
+        private readonly byte[] m_sessionKey;
+        private readonly SecurityContext m_securityContext;
+        private readonly DateTime m_creationDT;
 
         // Key is TID
-        private Dictionary<ushort, ISMBShare> m_connectedTrees = new Dictionary<ushort, ISMBShare>();
+        private readonly Dictionary<ushort, ISMBShare> m_connectedTrees = new Dictionary<ushort, ISMBShare>();
 
         // Key is FID
-        private Dictionary<ushort, OpenFileObject> m_openFiles = new Dictionary<ushort, OpenFileObject>();
+        private readonly Dictionary<ushort, OpenFileObject> m_openFiles = new Dictionary<ushort, OpenFileObject>();
 
         // Key is search handle a.k.a. Search ID
-        private Dictionary<ushort, OpenSearch> m_openSearches = new Dictionary<ushort, OpenSearch>();
+        private readonly Dictionary<ushort, OpenSearch> m_openSearches = new Dictionary<ushort, OpenSearch>();
+
         private ushort m_nextSearchHandle = 1;
 
         public SMB1Session(SMB1ConnectionState connection, ushort userID, string userName, string machineName, byte[] sessionKey, object accessToken)
@@ -55,15 +56,13 @@ namespace SMBLibrary.Server
 
         public ISMBShare GetConnectedTree(ushort treeID)
         {
-            ISMBShare share;
-            m_connectedTrees.TryGetValue(treeID, out share);
+            m_connectedTrees.TryGetValue(treeID, out ISMBShare share);
             return share;
         }
 
         public void DisconnectTree(ushort treeID)
         {
-            ISMBShare share;
-            m_connectedTrees.TryGetValue(treeID, out share);
+            m_connectedTrees.TryGetValue(treeID, out ISMBShare share);
             if (share != null)
             {
                 lock (m_connection)
@@ -105,8 +104,7 @@ namespace SMBLibrary.Server
 
         public OpenFileObject GetOpenFileObject(ushort fileID)
         {
-            OpenFileObject openFile;
-            m_openFiles.TryGetValue(fileID, out openFile);
+            m_openFiles.TryGetValue(fileID, out OpenFileObject openFile);
             return openFile;
         }
 
@@ -133,7 +131,7 @@ namespace SMBLibrary.Server
 
         private ushort? AllocateSearchHandle()
         {
-            for (ushort offset = 0; offset < UInt16.MaxValue; offset++)
+            for (ushort offset = 0; offset < ushort.MaxValue; offset++)
             {
                 ushort searchHandle = (ushort)(m_nextSearchHandle + offset);
                 if (searchHandle == 0 || searchHandle == 0xFFFF)
@@ -162,8 +160,7 @@ namespace SMBLibrary.Server
 
         public OpenSearch GetOpenSearch(ushort searchHandle)
         {
-            OpenSearch openSearch;
-            m_openSearches.TryGetValue(searchHandle, out openSearch);
+            m_openSearches.TryGetValue(searchHandle, out OpenSearch openSearch);
             return openSearch;
         }
 
@@ -184,44 +181,14 @@ namespace SMBLibrary.Server
             }
         }
 
-        public ushort UserID
-        {
-            get
-            {
-                return m_userID;
-            }
-        }
+        public ushort UserID => m_userID;
 
-        public SecurityContext SecurityContext
-        {
-            get
-            {
-                return m_securityContext;
-            }
-        }
+        public SecurityContext SecurityContext => m_securityContext;
 
-        public string UserName
-        {
-            get
-            {
-                return m_securityContext.UserName;
-            }
-        }
+        public string UserName => m_securityContext.UserName;
 
-        public string MachineName
-        {
-            get
-            {
-                return m_securityContext.MachineName;
-            }
-        }
+        public string MachineName => m_securityContext.MachineName;
 
-        public DateTime CreationDT
-        {
-            get
-            {
-                return m_creationDT;
-            }
-        }
+        public DateTime CreationDT => m_creationDT;
     }
 }

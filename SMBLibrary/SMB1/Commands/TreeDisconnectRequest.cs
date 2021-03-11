@@ -4,10 +4,6 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Utilities;
 
 namespace SMBLibrary.SMB1
 {
@@ -16,20 +12,14 @@ namespace SMBLibrary.SMB1
     /// </summary>
     public class TreeDisconnectRequest : SMB1Command
     {
-        public TreeDisconnectRequest() : base()
+        public TreeDisconnectRequest()
         {
         }
 
-        public TreeDisconnectRequest(byte[] buffer, int offset) : base(buffer, offset, false)
+        public TreeDisconnectRequest(byte[] buffer, int offset) : base(buffer, offset)
         {
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_TREE_DISCONNECT;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_TREE_DISCONNECT;
     }
 }

@@ -4,9 +4,8 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
+
 using System.Collections.Generic;
-using Utilities;
 
 namespace SMBLibrary
 {
@@ -15,7 +14,7 @@ namespace SMBLibrary
     /// </summary>
     public class FileStreamInformation : FileInformation
     {
-        List<FileStreamEntry> m_entries = new List<FileStreamEntry>();
+        readonly List<FileStreamEntry> m_entries = new List<FileStreamEntry>();
 
         public FileStreamInformation()
         {
@@ -48,21 +47,9 @@ namespace SMBLibrary
             }
         }
 
-        public List<FileStreamEntry> Entries
-        {
-            get
-            {
-                return m_entries;
-            }
-        }
+        public List<FileStreamEntry> Entries => m_entries;
 
-        public override FileInformationClass FileInformationClass
-        {
-            get
-            {
-                return FileInformationClass.FileStreamInformation;
-            }
-        }
+        public override FileInformationClass FileInformationClass => FileInformationClass.FileStreamInformation;
 
         public override int Length
         {

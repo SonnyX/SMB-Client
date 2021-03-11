@@ -1,12 +1,11 @@
 /* Copyright (C) 2014 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.RPC
@@ -41,9 +40,9 @@ namespace SMBLibrary.RPC
 
         public override bool Equals(object obj)
         {
-            if (obj is SyntaxID)
+            if (obj is SyntaxID syntaxId)
             {
-                return this.InterfaceUUID.Equals(((SyntaxID)obj).InterfaceUUID) && this.InterfaceVersion.Equals(((SyntaxID)obj).InterfaceVersion);
+                return InterfaceUUID.Equals(syntaxId.InterfaceUUID) && InterfaceVersion.Equals(syntaxId.InterfaceVersion);
             }
             return false;
         }

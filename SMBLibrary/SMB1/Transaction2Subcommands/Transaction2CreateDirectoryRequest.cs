@@ -4,9 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -22,10 +20,10 @@ namespace SMBLibrary.SMB1
         // Data
         public FullExtendedAttributeList ExtendedAttributeList;
 
-        public Transaction2CreateDirectoryRequest() : base()
+        public Transaction2CreateDirectoryRequest()
         {}
 
-        public Transaction2CreateDirectoryRequest(byte[] parameters, byte[] data, bool isUnicode) : base()
+        public Transaction2CreateDirectoryRequest(byte[] parameters, byte[] data, bool isUnicode)
         {
             Reserved = LittleEndianConverter.ToUInt32(parameters, 0);
             DirectoryName = SMB1Helper.ReadSMBString(parameters, 4, isUnicode);
@@ -52,12 +50,6 @@ namespace SMBLibrary.SMB1
             return ExtendedAttributeList.GetBytes();
         }
 
-        public override Transaction2SubcommandName SubcommandName
-        {
-            get
-            {
-                return Transaction2SubcommandName.TRANS2_CREATE_DIRECTORY;
-            }
-        }
+        public override Transaction2SubcommandName SubcommandName => Transaction2SubcommandName.TRANS2_CREATE_DIRECTORY;
     }
 }

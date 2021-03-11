@@ -4,7 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
+
 using System.Collections.Generic;
 using System.IO;
 using Utilities;
@@ -20,21 +20,21 @@ namespace SMBLibrary.SMB1
         // Data:
         public List<string> Dialects = new List<string>();
 
-        public NegotiateRequest() : base()
+        public NegotiateRequest()
         {
         }
 
-        public NegotiateRequest(byte[] buffer, int offset) : base(buffer, offset, false)
+        public NegotiateRequest(byte[] buffer, int offset) : base(buffer, offset)
         {
             int dataOffset = 0;
-            while (dataOffset < this.SMBData.Length)
+            while (dataOffset < SMBData.Length)
             {
-                byte bufferFormat = ByteReader.ReadByte(this.SMBData, ref dataOffset);
+                byte bufferFormat = ByteReader.ReadByte(SMBData, ref dataOffset);
                 if (bufferFormat != SupportedBufferFormat)
                 {
                     throw new InvalidDataException("Unsupported Buffer Format");
                 }
-                string dialect = ByteReader.ReadNullTerminatedAnsiString(this.SMBData, dataOffset);
+                string dialect = ByteReader.ReadNullTerminatedAnsiString(SMBData, dataOffset);
                 Dialects.Add(dialect);
                 dataOffset += dialect.Length + 1;
             }
@@ -43,30 +43,24 @@ namespace SMBLibrary.SMB1
         public override byte[] GetBytes(bool isUnicode)
         {
             int length = 0;
-            foreach (string dialect in this.Dialects)
+            foreach (string dialect in Dialects)
             {
                 length += 1 + dialect.Length + 1;
             }
 
-            this.SMBParameters = new byte[0];
-            this.SMBData = new byte[length];
+            SMBParameters = new byte[0];
+            SMBData = new byte[length];
             int offset = 0;
-            foreach (string dialect in this.Dialects)
+            foreach (string dialect in Dialects)
             {
-                ByteWriter.WriteByte(this.SMBData, offset, 0x02);
-                ByteWriter.WriteAnsiString(this.SMBData, offset + 1, dialect, dialect.Length);
-                ByteWriter.WriteByte(this.SMBData, offset + 1 + dialect.Length, 0x00);
+                ByteWriter.WriteByte(SMBData, offset, 0x02);
+                ByteWriter.WriteAnsiString(SMBData, offset + 1, dialect, dialect.Length);
+                ByteWriter.WriteByte(SMBData, offset + 1 + dialect.Length, 0x00);
                 offset += 1 + dialect.Length + 1;
             }
             return base.GetBytes(isUnicode);
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_NEGOTIATE;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_NEGOTIATE;
     }
 }

@@ -1,30 +1,28 @@
 /* Copyright (C) 2014-2018 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using SMBLibrary.NetBios;
-using Utilities;
 
 namespace SMBLibrary.Server
 {
     /// <summary>
     /// NetBIOS name service server
     /// </summary>
-    public class NameServer
+    public sealed class NameServer : IDisposable
     {
         public static readonly int NetBiosNameServicePort = 137;
         public static readonly string WorkgroupName = "WORKGROUP";
 
-        private IPAddress m_serverAddress;
-        private IPAddress m_broadcastAddress;
+        private readonly IPAddress m_serverAddress;
+        private readonly IPAddress m_broadcastAddress;
         private UdpClient m_client;
         private bool m_listening;
 
@@ -35,7 +33,7 @@ namespace SMBLibrary.Server
                 throw new ArgumentException("NetBIOS name service can only supply IPv4 addresses");
             }
 
-            if (IPAddress.Equals(serverAddress, IPAddress.Any))
+            if (Equals(serverAddress, IPAddress.Any))
             {
                 // When registering a NetBIOS name, we must supply the client with a usable IPAddress.
                 throw new ArgumentException("NetBIOS name service requires an IPAddress that is associated with a specific network interface");
@@ -51,6 +49,7 @@ namespace SMBLibrary.Server
             {
                 m_listening = true;
 
+                m_client?.Dispose();
                 m_client = new UdpClient(new IPEndPoint(m_serverAddress, NetBiosNameServicePort));
                 m_client.BeginReceive(ReceiveCallback, null);
 
@@ -109,8 +108,8 @@ namespace SMBLibrary.Server
                             string name = NetBiosUtils.GetNameFromMSNetBiosName(request.Question.Name);
                             NetBiosSuffix suffix = (NetBiosSuffix)request.Question.Name[15];
 
-                            bool nameMatch = String.Equals(name, Environment.MachineName, StringComparison.OrdinalIgnoreCase);
-                            
+                            bool nameMatch = string.Equals(name, Environment.MachineName, StringComparison.OrdinalIgnoreCase);
+
                             if (nameMatch && ((suffix == NetBiosSuffix.WorkstationService) || (suffix == NetBiosSuffix.FileServiceService)))
                             {
                                 PositiveNameQueryResponse response = new PositiveNameQueryResponse();
@@ -130,8 +129,10 @@ namespace SMBLibrary.Server
                             NameFlags nameFlags = new NameFlags();
                             string name1 = NetBiosUtils.GetMSNetBiosName(Environment.MachineName, NetBiosSuffix.WorkstationService);
                             string name2 = NetBiosUtils.GetMSNetBiosName(Environment.MachineName, NetBiosSuffix.FileServiceService);
-                            NameFlags nameFlags3 = new NameFlags();
-                            nameFlags3.WorkGroup = true;
+                            NameFlags nameFlags3 = new NameFlags
+                            {
+                                WorkGroup = true
+                            };
                             string name3 = NetBiosUtils.GetMSNetBiosName(WorkgroupName, NetBiosSuffix.WorkstationService);
                             response.Names.Add(name1, nameFlags);
                             response.Names.Add(name2, nameFlags);
@@ -189,7 +190,7 @@ namespace SMBLibrary.Server
 
                 if (index < 3)
                 {
-                    System.Threading.Thread.Sleep(250);
+                    Thread.Sleep(250);
                 }
             }
         }
@@ -205,6 +206,11 @@ namespace SMBLibrary.Server
                 broadcastAddress[i] = (byte)(ipAdressBytes[i] | (subnetMaskBytes[i] ^ 255));
             }
             return new IPAddress(broadcastAddress);
+        }
+
+        public void Dispose()
+        {
+            m_client?.Dispose();
         }
     }
 }

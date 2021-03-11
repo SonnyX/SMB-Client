@@ -4,11 +4,8 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
+
 using System.Collections.Generic;
-using System.Text;
-using SMBLibrary.SMB1;
-using Utilities;
 
 namespace SMBLibrary.Server.SMB1
 {
@@ -28,12 +25,10 @@ namespace SMBLibrary.Server.SMB1
             if (separatorIndex >= 0)
             {
                 string path = fileNamePattern.Substring(0, separatorIndex + 1);
-                string fileName = fileNamePattern.Substring(separatorIndex + 1);
-                object handle;
-                FileStatus fileStatus;
+                string fileName = fileNamePattern[(separatorIndex + 1)..];
                 DirectoryAccessMask accessMask = DirectoryAccessMask.FILE_LIST_DIRECTORY | DirectoryAccessMask.FILE_TRAVERSE | DirectoryAccessMask.SYNCHRONIZE;
                 CreateOptions createOptions = CreateOptions.FILE_DIRECTORY_FILE | CreateOptions.FILE_SYNCHRONOUS_IO_NONALERT;
-                NTStatus status = fileStore.CreateFile(out handle, out fileStatus, path, (AccessMask)accessMask, 0, ShareAccess.Read | ShareAccess.Write, CreateDisposition.FILE_OPEN, createOptions, securityContext);
+                NTStatus status = fileStore.CreateFile(out object handle, out FileStatus fileStatus, path, (AccessMask)accessMask, 0, ShareAccess.Read | ShareAccess.Write, CreateDisposition.FILE_OPEN, createOptions, securityContext);
                 if (status != NTStatus.STATUS_SUCCESS)
                 {
                     result = null;
@@ -43,11 +38,9 @@ namespace SMBLibrary.Server.SMB1
                 fileStore.CloseFile(handle);
                 return status;
             }
-            else
-            {
-                result = null;
-                return NTStatus.STATUS_INVALID_PARAMETER;
-            }
+
+            result = null;
+            return NTStatus.STATUS_INVALID_PARAMETER;
         }
     }
 }

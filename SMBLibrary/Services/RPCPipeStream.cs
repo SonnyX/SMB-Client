@@ -13,8 +13,8 @@ namespace SMBLibrary.Services
 {
     public class RPCPipeStream : Stream
     {
-        private RemoteService m_service;
-        private List<MemoryStream> m_outputStreams; // A stream for each message in order to support message mode named pipe
+        private readonly RemoteService m_service;
+        private readonly List<MemoryStream> m_outputStreams; // A stream for each message in order to support message mode named pipe
         private int? m_maxTransmitFragmentSize;
 
         public RPCPipeStream(RemoteService service)
@@ -34,10 +34,8 @@ namespace SMBLibrary.Services
                 }
                 return result;
             }
-            else
-            {
-                return 0;
-            }
+
+            return 0;
         }
 
         public override void Write(byte[] buffer, int offset, int count)
@@ -65,12 +63,14 @@ namespace SMBLibrary.Services
             }
             else
             {
-                FaultPDU faultPDU = new FaultPDU();
-                faultPDU.Flags = PacketFlags.FirstFragment | PacketFlags.LastFragment;
-                faultPDU.DataRepresentation = new DataRepresentationFormat(CharacterFormat.ASCII, ByteOrder.LittleEndian, FloatingPointRepresentation.IEEE);
-                faultPDU.CallID = 0;
-                faultPDU.AllocationHint = RPCPDU.CommonFieldsLength + FaultPDU.FaultFieldsLength;
-                faultPDU.Status = FaultStatus.ProtocolError;
+                FaultPDU faultPDU = new FaultPDU
+                {
+                    Flags = PacketFlags.FirstFragment | PacketFlags.LastFragment,
+                    DataRepresentation = new DataRepresentationFormat(CharacterFormat.ASCII, ByteOrder.LittleEndian, FloatingPointRepresentation.IEEE),
+                    CallID = 0,
+                    AllocationHint = RPCPDU.CommonFieldsLength + FaultPDU.FaultFieldsLength,
+                    Status = FaultStatus.ProtocolError
+                };
                 Append(faultPDU.GetBytes());
             }
         }
@@ -99,49 +99,20 @@ namespace SMBLibrary.Services
             throw new NotSupportedException();
         }
 
-        public override bool CanSeek
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override bool CanSeek => false;
 
-        public override bool CanRead
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool CanRead => true;
 
-        public override bool CanWrite
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool CanWrite => true;
 
-        public override long Length
-        {
-            get
-            {
-                // Stream.Length only works on Stream implementations where seeking is available.
-                throw new NotSupportedException();
-            }
-        }
+        public override long Length => throw
+            // Stream.Length only works on Stream implementations where seeking is available.
+            new NotSupportedException();
 
         public override long Position
         {
-            get
-            {
-                throw new NotSupportedException();
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
         }
 
         /// <summary>
@@ -155,10 +126,8 @@ namespace SMBLibrary.Services
                 {
                     return (int)m_outputStreams[0].Length;
                 }
-                else
-                {
-                    return 0;
-                }
+
+                return 0;
             }
         }
     }

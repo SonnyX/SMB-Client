@@ -4,9 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -26,12 +24,12 @@ namespace SMBLibrary.SMB1
         // Data:
         public ExtendedAttributeNameList GetExtendedAttributeList; // Used with FindInformationLevel.SMB_INFO_QUERY_EAS_FROM_LIST
 
-        public Transaction2FindFirst2Request() : base()
+        public Transaction2FindFirst2Request()
         {
             GetExtendedAttributeList = new ExtendedAttributeNameList();
         }
 
-        public Transaction2FindFirst2Request(byte[] parameters, byte[] data, bool isUnicode) : base()
+        public Transaction2FindFirst2Request(byte[] parameters, byte[] data, bool isUnicode)
         {
             SearchAttributes = (SMBFileAttributes)LittleEndianConverter.ToUInt16(parameters, 0);
             SearchCount = LittleEndianConverter.ToUInt16(parameters, 2);
@@ -80,56 +78,42 @@ namespace SMBLibrary.SMB1
             {
                 return GetExtendedAttributeList.GetBytes();
             }
-            else
-            {
-                return new byte[0];
-            }
+
+            return new byte[0];
         }
 
         public bool CloseAfterRequest
         {
-            get
-            {
-                return ((this.Flags & FindFlags.SMB_FIND_CLOSE_AFTER_REQUEST) > 0);
-            }
+            get => ((Flags & FindFlags.SMB_FIND_CLOSE_AFTER_REQUEST) > 0);
             set
             {
                 if (value)
                 {
-                    this.Flags |= FindFlags.SMB_FIND_CLOSE_AFTER_REQUEST;
+                    Flags |= FindFlags.SMB_FIND_CLOSE_AFTER_REQUEST;
                 }
                 else
                 {
-                    this.Flags &= ~FindFlags.SMB_FIND_CLOSE_AFTER_REQUEST;
+                    Flags &= ~FindFlags.SMB_FIND_CLOSE_AFTER_REQUEST;
                 }
             }
         }
 
         public bool CloseAtEndOfSearch
         {
-            get
-            {
-                return ((this.Flags & FindFlags.SMB_FIND_CLOSE_AT_EOS) > 0);
-            }
+            get => ((Flags & FindFlags.SMB_FIND_CLOSE_AT_EOS) > 0);
             set
             {
                 if (value)
                 {
-                    this.Flags |= FindFlags.SMB_FIND_CLOSE_AT_EOS;
+                    Flags |= FindFlags.SMB_FIND_CLOSE_AT_EOS;
                 }
                 else
                 {
-                    this.Flags &= ~FindFlags.SMB_FIND_CLOSE_AT_EOS;
+                    Flags &= ~FindFlags.SMB_FIND_CLOSE_AT_EOS;
                 }
             }
         }
 
-        public override Transaction2SubcommandName SubcommandName
-        {
-            get
-            {
-                return Transaction2SubcommandName.TRANS2_FIND_FIRST2;
-            }
-        }
+        public override Transaction2SubcommandName SubcommandName => Transaction2SubcommandName.TRANS2_FIND_FIRST2;
     }
 }

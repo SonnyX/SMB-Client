@@ -5,7 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
 using Utilities;
 
 namespace SMBLibrary.SMB2
@@ -18,7 +17,7 @@ namespace SMBLibrary.SMB2
         public const int FixedSize = 8;
         public const int DeclaredSize = 9;
 
-        private ushort StructureSize;
+        private readonly ushort StructureSize;
         public byte ErrorContextCount;
         public byte Reserved;
         private uint ByteCount;
@@ -73,13 +72,8 @@ namespace SMBLibrary.SMB2
             
         }
 
-        public override int CommandLength
-        {
-            get
-            {
-                // If the ByteCount field is zero then the server MUST supply an ErrorData field that is one byte in length
-                return FixedSize + Math.Max(ErrorData.Length, 1);
-            }
-        }
+        public override int CommandLength =>
+            // If the ByteCount field is zero then the server MUST supply an ErrorData field that is one byte in length
+            FixedSize + Math.Max(ErrorData.Length, 1);
     }
 }

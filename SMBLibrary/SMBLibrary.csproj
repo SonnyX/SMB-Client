@@ -1,27 +1,42 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <RootNamespace>SMBLibrary</RootNamespace>
+    <AssemblyName>SMBLibrary</AssemblyName>
+    <PackOnBuild>true</PackOnBuild>
+
+    <Authors>Randy von der Weide</Authors>
+    <PackageId>SMB-Client</PackageId>
+    <Product>SMB-Client</Product>
+    <RepositoryType>git</RepositoryType>
+
+    <RepositoryUrl>https://github.com/SonnyX/SMB-Client</RepositoryUrl>
+    <PackageTags>smb smb-client</PackageTags>
+    <Version>1.4.7.4</Version>
+
+    <Description>Free, Open Source, User-Mode SMB 1.0/CIFS, SMB 2.0, SMB 2.1 and SMB 3.0 Client Library</Description>
+  </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFrameworks>net20;net40;netstandard2.0</TargetFrameworks>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <AssemblyName>SMBLibrary</AssemblyName>
-    <Version>1.4.6</Version>
-    <NoWarn>1573;1591</NoWarn>
-    <RootNamespace>SMBLibrary</RootNamespace>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Authors>Tal Aloni</Authors>
-    <PackageDescription>SMBLibrary is an open-source C# SMB 1.0/CIFS, SMB 2.0, SMB 2.1 and SMB 3.0 server and client implementation</PackageDescription>
-    <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/TalAloni/SMBLibrary</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/TalAloni/SMBLibrary</RepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <IncludeSymbols>true</IncludeSymbols>
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="IDisposableAnalyzers" Version="3.4.13">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="ilmerge" Version="3.0.41" PrivateAssets="All" />
     <ProjectReference Include="..\Utilities\Utilities.csproj" PrivateAssets="All" />
   </ItemGroup>
 
-  <Target Name="ILRepack" Condition="'$(Configuration)' == 'Release'" AfterTargets="AfterBuild">
-    <Exec Command="&quot;$(ProgramW6432)\ILRepack\ILRepack.exe&quot; /out=&quot;$(OutputPath)\SMBLibrary.dll&quot; &quot;$(OutputPath)\SMBLibrary.dll&quot; &quot;$(OutputPath)\Utilities.dll&quot;"></Exec>
+  <Target Name="ILMerge" Condition="'$(Configuration)' == 'Release'" AfterTargets="AfterBuild">
+    <Message Text="MERGING: into $(OutputAssembly)" Importance="High" />
+    <Exec Command="$(ILMergeConsolePath) /out:$(OutputPath)\\$(AssemblyName).dll $(OutputPath)\\$(AssemblyName).dll $(OutputPath)\\Utilities.dll" />
   </Target>
-
 </Project>

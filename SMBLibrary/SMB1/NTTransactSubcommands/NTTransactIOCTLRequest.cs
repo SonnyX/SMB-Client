@@ -5,8 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -25,12 +23,12 @@ namespace SMBLibrary.SMB1
         // Data:
         public byte[] Data;
 
-        public NTTransactIOCTLRequest() : base()
+        public NTTransactIOCTLRequest()
         {
             Data = new byte[0];
         }
 
-        public NTTransactIOCTLRequest(byte[] setup, byte[] data) : base()
+        public NTTransactIOCTLRequest(byte[] setup, byte[] data)
         {
             FunctionCode = LittleEndianConverter.ToUInt32(setup, 0);
             FID = LittleEndianConverter.ToUInt16(setup, 4);
@@ -55,12 +53,6 @@ namespace SMBLibrary.SMB1
  	        return Data;
         }
 
-        public override NTTransactSubcommandName SubcommandName
-        {
-            get
-            {
-                return NTTransactSubcommandName.NT_TRANSACT_IOCTL;
-            }
-        }
+        public override NTTransactSubcommandName SubcommandName => NTTransactSubcommandName.NT_TRANSACT_IOCTL;
     }
 }

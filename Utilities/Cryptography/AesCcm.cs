@@ -1,9 +1,10 @@
 /* Copyright (C) 2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.IO;
 using System.Security.Cryptography;
@@ -151,20 +152,18 @@ namespace Utilities
 
         private static byte[] AesEncrypt(byte[] key, byte[] iv, byte[] data, CipherMode cipherMode)
         {
-            using (MemoryStream ms = new MemoryStream())
+            using MemoryStream ms = new MemoryStream();
+            using RijndaelManaged aes = new RijndaelManaged
             {
-                RijndaelManaged aes = new RijndaelManaged();
-                aes.Mode = cipherMode;
-                aes.Padding = PaddingMode.None;
+                Mode = cipherMode,
+                Padding = PaddingMode.None
+            };
 
-                using (CryptoStream cs = new CryptoStream(ms, aes.CreateEncryptor(key, iv), CryptoStreamMode.Write))
-                {
-                    cs.Write(data, 0, data.Length);
-                    cs.FlushFinalBlock();
+            using CryptoStream cs = new CryptoStream(ms, aes.CreateEncryptor(key, iv), CryptoStreamMode.Write);
+            cs.Write(data, 0, data.Length);
+            cs.FlushFinalBlock();
 
-                    return ms.ToArray();
-                }
-            }
+            return ms.ToArray();
         }
     }
 }

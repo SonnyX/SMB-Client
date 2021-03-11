@@ -27,7 +27,7 @@ namespace SMBLibrary.SMB2
         public ushort Reserved;
         private ushort DataOffset; // The offset from the beginning of this structure to the 8-byte aligned data payload
         private uint DataLength;
-        public string Name = String.Empty;
+        public string Name = string.Empty;
         public byte[] Data = new byte[0];
 
         public CreateContext()
@@ -85,10 +85,8 @@ namespace SMBLibrary.SMB2
                     int paddedNameLength = (int)Math.Ceiling((double)(Name.Length * 2) / 8) * 8;
                     return FixedLength + paddedNameLength + Data.Length;
                 }
-                else
-                {
-                    return FixedLength + Name.Length * 2;
-                }
+
+                return FixedLength + Name.Length * 2;
             }
         }
 

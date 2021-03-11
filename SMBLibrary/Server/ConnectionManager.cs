@@ -13,7 +13,7 @@ namespace SMBLibrary.Server
 {
     internal class ConnectionManager
     {
-        private List<ConnectionState> m_activeConnections = new List<ConnectionState>();
+        private readonly List<ConnectionState> m_activeConnections = new List<ConnectionState>();
 
         public void AddConnection(ConnectionState connection)
         {

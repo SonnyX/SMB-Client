@@ -4,10 +4,6 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Utilities;
 
 namespace SMBLibrary.NetBios
 {
@@ -37,9 +33,11 @@ namespace SMBLibrary.NetBios
 
         public static explicit operator NameFlags(ushort value)
         {
-            NameFlags result = new NameFlags();
-            result.NodeType = (OwnerNodeType)((value >> 13) & 0x3);
-            result.WorkGroup = (value & 0x8000) > 0;
+            NameFlags result = new NameFlags
+            {
+                NodeType = (OwnerNodeType)((value >> 13) & 0x3),
+                WorkGroup = (value & 0x8000) > 0
+            };
             return result;
         }
     }

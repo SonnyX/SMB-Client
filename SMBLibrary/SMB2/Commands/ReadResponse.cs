@@ -4,8 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
+
 using Utilities;
 
 namespace SMBLibrary.SMB2
@@ -18,7 +17,7 @@ namespace SMBLibrary.SMB2
         public const int FixedSize = 16;
         public const int DeclaredSize = 17;
 
-        private ushort StructureSize;
+        private readonly ushort StructureSize;
         private byte DataOffset;
         public byte Reserved;
         private uint DataLength;
@@ -66,12 +65,6 @@ namespace SMBLibrary.SMB2
             }
         }
 
-        public override int CommandLength
-        {
-            get
-            {
-                return FixedSize + Data.Length;
-            }
-        }
+        public override int CommandLength => FixedSize + Data.Length;
     }
 }

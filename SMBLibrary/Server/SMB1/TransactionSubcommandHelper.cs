@@ -5,11 +5,7 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
-using System.Text;
-using SMBLibrary.RPC;
 using SMBLibrary.SMB1;
-using SMBLibrary.Services;
 using Utilities;
 
 namespace SMBLibrary.Server.SMB1
@@ -28,15 +24,16 @@ namespace SMBLibrary.Server.SMB1
             }
 
             int maxOutputLength = (int)maxDataCount;
-            byte[] output;
-            header.Status = share.FileStore.DeviceIOControl(openFile.Handle, (uint)IoControlCode.FSCTL_PIPE_TRANSCEIVE, subcommand.WriteData, out output, maxOutputLength);
+            header.Status = share.FileStore.DeviceIOControl(openFile.Handle, (uint)IoControlCode.FSCTL_PIPE_TRANSCEIVE, subcommand.WriteData, out byte[] output, maxOutputLength);
             if (header.Status != NTStatus.STATUS_SUCCESS && header.Status != NTStatus.STATUS_BUFFER_OVERFLOW)
             {
                 state.LogToServer(Severity.Verbose, "TransactNamedPipe failed. NTStatus: {0}.", header.Status);
                 return null;
             }
-            TransactionTransactNamedPipeResponse response = new TransactionTransactNamedPipeResponse();
-            response.ReadData = output;
+            TransactionTransactNamedPipeResponse response = new TransactionTransactNamedPipeResponse
+            {
+                ReadData = output
+            };
             return response;
         }
 
@@ -49,14 +46,15 @@ namespace SMBLibrary.Server.SMB1
                 header.Status = NTStatus.STATUS_INVALID_SMB;
             }
 
-            string pipeName = name.Substring(6);
-            PipeWaitRequest pipeWaitRequest = new PipeWaitRequest();
-            pipeWaitRequest.Timeout = timeout;
-            pipeWaitRequest.TimeSpecified = true;
-            pipeWaitRequest.Name = pipeName;
+            string pipeName = name[6..];
+            PipeWaitRequest pipeWaitRequest = new PipeWaitRequest
+            {
+                Timeout = timeout,
+                TimeSpecified = true,
+                Name = pipeName
+            };
             byte[] input = pipeWaitRequest.GetBytes();
-            byte[] output;
-            header.Status = share.FileStore.DeviceIOControl(null, (uint)IoControlCode.FSCTL_PIPE_WAIT, input, out output, 0);
+            header.Status = share.FileStore.DeviceIOControl(null, (uint)IoControlCode.FSCTL_PIPE_WAIT, input, out byte[] output, 0);
             if (header.Status != NTStatus.STATUS_SUCCESS)
             {
                 state.LogToServer(Severity.Verbose, "TransactWaitNamedPipe failed. Pipe name: {0}. NTStatus: {1}.", pipeName, header.Status);

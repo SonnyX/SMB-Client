@@ -1,0 +1,29 @@
+name: Check Upstream for new Commits
+
+on:
+  schedule:
+    - cron:  '0 0 * * MON'
+  workflow_dispatch:
+
+jobs:
+  check-upstream:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+
+      - name: Check upstream
+        id: upstream_commits
+        run: |
+          git remote add upstream https://github.com/TalAloni/SMBLibrary.git
+          git fetch upstream master
+          echo "::set-output name=count::$(echo $(git rev-list origin/master..upstream/master --count))"
+      - name: Create issue
+        uses: actions-cool/issues-helper@v2.1.2
+        if: ${{ steps.upstream_commits.outputs.count != 0 }}
+        with:
+          actions: 'create-issue'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: 'Rebase on TalAloni/SMBLibrary'
+          body: 'There are currently ${{ steps.upstream_commits.outputs.count }} commits on TalAloni/SMBLibrary that aren''t pulled yet'

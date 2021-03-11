@@ -13,12 +13,12 @@ namespace SMBLibrary.Server
     {
         public bool Contains(string shareName, StringComparison comparisonType)
         {
-            return (this.IndexOf(shareName, comparisonType) != -1);
+            return (IndexOf(shareName, comparisonType) != -1);
         }
 
         public int IndexOf(string shareName, StringComparison comparisonType)
         {
-            for (int index = 0; index < this.Count; index++)
+            for (int index = 0; index < Count; index++)
             {
                 if (this[index].Name.Equals(shareName, comparisonType))
                 {
@@ -47,10 +47,8 @@ namespace SMBLibrary.Server
             {
                 return this[index];
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
     }
 }

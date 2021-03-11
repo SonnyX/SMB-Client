@@ -1,12 +1,12 @@
 /* Copyright (C) 2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SMBLibrary.Authentication
 {
@@ -18,9 +18,9 @@ namespace SMBLibrary.Authentication
             public int NumberOfAttempts;
         }
 
-        private int m_maxLoginAttemptsInWindow;
-        private TimeSpan m_loginWindowDuration;
-        private Dictionary<string, LoginEntry> m_loginEntries = new Dictionary<string, LoginEntry>();
+        private readonly int m_maxLoginAttemptsInWindow;
+        private readonly TimeSpan m_loginWindowDuration;
+        private readonly Dictionary<string, LoginEntry> m_loginEntries = new Dictionary<string, LoginEntry>();
 
         public LoginCounter(int maxLoginAttemptsInWindow, TimeSpan loginWindowDuration)
         {
@@ -37,8 +37,7 @@ namespace SMBLibrary.Authentication
         {
             lock (m_loginEntries)
             {
-                LoginEntry entry;
-                if (m_loginEntries.TryGetValue(userID, out entry))
+                if (m_loginEntries.TryGetValue(userID, out LoginEntry entry))
                 {
                     if (entry.LoginWindowStartDT.Add(m_loginWindowDuration) >= DateTime.UtcNow)
                     {
@@ -65,9 +64,11 @@ namespace SMBLibrary.Authentication
                     {
                         return true;
                     }
-                    entry = new LoginEntry();
-                    entry.LoginWindowStartDT = DateTime.UtcNow;
-                    entry.NumberOfAttempts = 1;
+                    entry = new LoginEntry
+                    {
+                        LoginWindowStartDT = DateTime.UtcNow,
+                        NumberOfAttempts = 1
+                    };
                     m_loginEntries.Add(userID, entry);
                 }
                 return (entry.NumberOfAttempts < m_maxLoginAttemptsInWindow);

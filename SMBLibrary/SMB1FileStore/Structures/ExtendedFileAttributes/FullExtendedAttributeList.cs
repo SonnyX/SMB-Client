@@ -4,9 +4,8 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
+
 using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -40,14 +39,14 @@ namespace SMBLibrary.SMB1
             while (position < eof)
             {
                 FullExtendedAttribute attribute = new FullExtendedAttribute(buffer, position);
-                this.Add(attribute);
+                Add(attribute);
                 position += attribute.Length;
             }
         }
 
         public byte[] GetBytes()
         {
-            byte[] buffer = new byte[this.Length];
+            byte[] buffer = new byte[Length];
             WriteBytes(buffer, 0);
             return buffer;
         }
@@ -55,7 +54,7 @@ namespace SMBLibrary.SMB1
         public void WriteBytes(byte[] buffer, ref int offset)
         {
             WriteBytes(buffer, offset);
-            offset += this.Length;
+            offset += Length;
         }
 
         public void WriteBytes(byte[] buffer, int offset)

@@ -1,10 +1,10 @@
 /* Copyright (C) 2014 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
+
 using System.Collections.Generic;
 using System.Text;
 using Utilities;
@@ -15,9 +15,11 @@ namespace SMBLibrary.Authentication.NTLM
     {
         public static KeyValuePairList<AVPairKey, byte[]> GetAVPairSequence(string domainName, string computerName)
         {
-            KeyValuePairList<AVPairKey, byte[]> pairs = new KeyValuePairList<AVPairKey, byte[]>();
-            pairs.Add(AVPairKey.NbDomainName, UnicodeEncoding.Unicode.GetBytes(domainName));
-            pairs.Add(AVPairKey.NbComputerName, UnicodeEncoding.Unicode.GetBytes(computerName));
+            KeyValuePairList<AVPairKey, byte[]> pairs = new KeyValuePairList<AVPairKey, byte[]>
+            {
+                {AVPairKey.NbDomainName, Encoding.Unicode.GetBytes(domainName)},
+                {AVPairKey.NbComputerName, Encoding.Unicode.GetBytes(computerName)}
+            };
             return pairs;
         }
 
@@ -30,25 +32,25 @@ namespace SMBLibrary.Authentication.NTLM
             return result;
         }
 
-		public static int GetAVPairSequenceLength(KeyValuePairList<AVPairKey, byte[]> pairs)
-		{
-			int length = 0;
+        public static int GetAVPairSequenceLength(KeyValuePairList<AVPairKey, byte[]> pairs)
+        {
+            int length = 0;
             foreach (KeyValuePair<AVPairKey, byte[]> pair in pairs)
             {
                 length += 4 + pair.Value.Length;
             }
-			return length + 4;
-		}
+            return length + 4;
+        }
 
-		public static void WriteAVPairSequence(byte[] buffer, ref int offset, KeyValuePairList<AVPairKey, byte[]> pairs)
-		{
-			foreach (KeyValuePair<AVPairKey, byte[]> pair in pairs)
+        public static void WriteAVPairSequence(byte[] buffer, ref int offset, KeyValuePairList<AVPairKey, byte[]> pairs)
+        {
+            foreach (KeyValuePair<AVPairKey, byte[]> pair in pairs)
             {
                 WriteAVPair(buffer, ref offset, pair.Key, pair.Value);
             }
             LittleEndianWriter.WriteUInt16(buffer, ref offset, (ushort)AVPairKey.EOL);
             LittleEndianWriter.WriteUInt16(buffer, ref offset, 0);
-		}
+        }
 
         private static void WriteAVPair(byte[] buffer, ref int offset, AVPairKey key, byte[] value)
         {
@@ -59,7 +61,7 @@ namespace SMBLibrary.Authentication.NTLM
 
         public static KeyValuePairList<AVPairKey, byte[]> ReadAVPairSequence(byte[] buffer, int offset)
         {
-            KeyValuePairList<AVPairKey, byte[]> result = new KeyValuePairList<AVPairKey,byte[]>();
+            KeyValuePairList<AVPairKey, byte[]> result = new KeyValuePairList<AVPairKey, byte[]>();
             AVPairKey key = (AVPairKey)LittleEndianConverter.ToUInt16(buffer, offset);
             while (key != AVPairKey.EOL)
             {

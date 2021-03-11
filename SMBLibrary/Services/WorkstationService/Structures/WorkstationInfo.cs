@@ -5,7 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
 using SMBLibrary.RPC;
 
 namespace SMBLibrary.Services
@@ -46,12 +45,12 @@ namespace SMBLibrary.Services
             {
                 case 100:
                     WorkstationInfo100 info100 = null;
-                    parser.ReadEmbeddedStructureFullPointer<WorkstationInfo100>(ref info100);
+                    parser.ReadEmbeddedStructureFullPointer(ref info100);
                     Info = info100;
                     break;
                 case 101:
                     WorkstationInfo101 info101 = null;
-                    parser.ReadEmbeddedStructureFullPointer<WorkstationInfo101>(ref info101);
+                    parser.ReadEmbeddedStructureFullPointer(ref info101);
                     Info = info101;
                     break;
                 default:

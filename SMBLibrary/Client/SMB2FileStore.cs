@@ -1,13 +1,13 @@
 /* Copyright (C) 2017-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Collections.Generic;
 using SMBLibrary.SMB2;
-using Utilities;
 
 namespace SMBLibrary.Client
 {
@@ -15,9 +15,9 @@ namespace SMBLibrary.Client
     {
         private const int BytesPerCredit = 65536;
 
-        private SMB2Client m_client;
-        private uint m_treeID;
-        private bool m_encryptShareData;
+        private readonly SMB2Client m_client;
+        private readonly uint m_treeID;
+        private readonly bool m_encryptShareData;
 
         public SMB2FileStore(SMB2Client client, uint treeID, bool encryptShareData)
         {
@@ -30,22 +30,23 @@ namespace SMBLibrary.Client
         {
             handle = null;
             fileStatus = FileStatus.FILE_DOES_NOT_EXIST;
-            CreateRequest request = new CreateRequest();
-            request.Name = path;
-            request.DesiredAccess = desiredAccess;
-            request.FileAttributes = fileAttributes;
-            request.ShareAccess = shareAccess;
-            request.CreateDisposition = createDisposition;
-            request.CreateOptions = createOptions;
-            request.ImpersonationLevel = ImpersonationLevel.Impersonation;
+            CreateRequest request = new CreateRequest
+            {
+                Name = path,
+                DesiredAccess = desiredAccess,
+                FileAttributes = fileAttributes,
+                ShareAccess = shareAccess,
+                CreateDisposition = createDisposition,
+                CreateOptions = createOptions,
+                ImpersonationLevel = ImpersonationLevel.Impersonation
+            };
             TrySendCommand(request);
 
-            SMB2Command response = m_client.WaitForCommand(SMB2CommandName.Create);
+            SMB2Command response = WaitForCommand(SMB2CommandName.Create);
             if (response != null)
             {
-                if (response.Header.Status == NTStatus.STATUS_SUCCESS && response is CreateResponse)
+                if (response.Header.Status == NTStatus.STATUS_SUCCESS && response is CreateResponse createResponse)
                 {
-                    CreateResponse createResponse = ((CreateResponse)response);
                     handle = createResponse.FileId;
                     fileStatus = ToFileStatus(createResponse.CreateAction);
                 }
@@ -57,10 +58,12 @@ namespace SMBLibrary.Client
 
         public NTStatus CloseFile(object handle)
         {
-            CloseRequest request = new CloseRequest();
-            request.FileId = (FileID)handle;
+            CloseRequest request = new CloseRequest
+            {
+                FileId = (FileID)handle
+            };
             TrySendCommand(request);
-            SMB2Command response = m_client.WaitForCommand(SMB2CommandName.Close);
+            SMB2Command response = WaitForCommand(SMB2CommandName.Close);
             if (response != null)
             {
                 return response.Header.Status;
@@ -77,19 +80,17 @@ namespace SMBLibrary.Client
             request.FileId = (FileID)handle;
             request.Offset = (ulong)offset;
             request.ReadLength = (uint)maxCount;
-            
-            TrySendCommand(request);
-            SMB2Command response = m_client.WaitForCommand(SMB2CommandName.Read);
-            if (response != null)
-            {
-                if (response.Header.Status == NTStatus.STATUS_SUCCESS && response is ReadResponse)
-                {
-                    data = ((ReadResponse)response).Data;
-                }
-                return response.Header.Status;
-            }
 
-            return NTStatus.STATUS_INVALID_SMB;
+            TrySendCommand(request);
+            SMB2Command response = WaitForCommand(SMB2CommandName.Read);
+            if (response == null)
+                return NTStatus.STATUS_INVALID_SMB;
+
+            if (response.Header.Status == NTStatus.STATUS_SUCCESS && response is ReadResponse readResponse)
+            {
+                data = readResponse.Data;
+            }
+            return response.Header.Status;
         }
 
         public NTStatus WriteFile(out int numberOfBytesWritten, object handle, long offset, byte[] data)
@@ -102,17 +103,15 @@ namespace SMBLibrary.Client
             request.Data = data;
 
             TrySendCommand(request);
-            SMB2Command response = m_client.WaitForCommand(SMB2CommandName.Write);
-            if (response != null)
-            {
-                if (response.Header.Status == NTStatus.STATUS_SUCCESS && response is WriteResponse)
-                {
-                    numberOfBytesWritten = (int)((WriteResponse)response).Count;
-                }
-                return response.Header.Status;
-            }
+            SMB2Command response = WaitForCommand(SMB2CommandName.Write);
+            if (response == null)
+                return NTStatus.STATUS_INVALID_SMB;
 
-            return NTStatus.STATUS_INVALID_SMB;
+            if (response.Header.Status == NTStatus.STATUS_SUCCESS && response is WriteResponse writeResponse)
+            {
+                numberOfBytesWritten = (int)writeResponse.Count;
+            }
+            return response.Header.Status;
         }
 
         public NTStatus FlushFileBuffers(object handle)
@@ -142,70 +141,63 @@ namespace SMBLibrary.Client
             request.FileName = fileName;
 
             TrySendCommand(request);
-            SMB2Command response = m_client.WaitForCommand(SMB2CommandName.QueryDirectory);
-            if (response != null)
-            {
-                while (response.Header.Status == NTStatus.STATUS_SUCCESS && response is QueryDirectoryResponse)
-                {
-                    List<QueryDirectoryFileInformation> page = ((QueryDirectoryResponse)response).GetFileInformationList(informationClass);
-                    result.AddRange(page);
-                    request.Reopen = false;
-                    TrySendCommand(request);
-                    response = m_client.WaitForCommand(SMB2CommandName.QueryDirectory);
-                }
-                return response.Header.Status;
-            }
+            SMB2Command response = WaitForCommand(SMB2CommandName.QueryDirectory);
+            if (response == null)
+                return NTStatus.STATUS_INVALID_SMB;
 
-            return NTStatus.STATUS_INVALID_SMB;
+            while (response.Header.Status == NTStatus.STATUS_SUCCESS && response is QueryDirectoryResponse queryDirectoryResponse)
+            {
+                List<QueryDirectoryFileInformation> page = queryDirectoryResponse.GetFileInformationList(informationClass);
+                result.AddRange(page);
+                request.Reopen = false;
+                TrySendCommand(request);
+                response = WaitForCommand(SMB2CommandName.QueryDirectory);
+            }
+            return response.Header.Status;
         }
 
         public NTStatus GetFileInformation(out FileInformation result, object handle, FileInformationClass informationClass)
         {
             result = null;
-            QueryInfoRequest request = new QueryInfoRequest();
-            request.InfoType = InfoType.File;
-            request.FileInformationClass = informationClass;
-            request.OutputBufferLength = 4096;
-            request.FileId = (FileID)handle;
+            QueryInfoRequest request = new QueryInfoRequest
+            {
+                InfoType = InfoType.File,
+                FileInformationClass = informationClass,
+                OutputBufferLength = 4096,
+                FileId = (FileID)handle
+            };
 
             TrySendCommand(request);
-            SMB2Command response = m_client.WaitForCommand(SMB2CommandName.QueryInfo);
-            if (response != null)
-            {
-                if (response.Header.Status == NTStatus.STATUS_SUCCESS && response is QueryInfoResponse)
-                {
-                    result = ((QueryInfoResponse)response).GetFileInformation(informationClass);
-                }
-                return response.Header.Status;
-            }
+            SMB2Command response = WaitForCommand(SMB2CommandName.QueryInfo);
+            if (response == null)
+                return NTStatus.STATUS_INVALID_SMB;
 
-            return NTStatus.STATUS_INVALID_SMB;
+            if (response.Header.Status == NTStatus.STATUS_SUCCESS && response is QueryInfoResponse queryInfoResponse)
+            {
+                result = queryInfoResponse.GetFileInformation(informationClass);
+            }
+            return response.Header.Status;
         }
 
         public NTStatus SetFileInformation(object handle, FileInformation information)
         {
-            SetInfoRequest request = new SetInfoRequest();
-            request.InfoType = InfoType.File;
-            request.FileInformationClass = information.FileInformationClass;
-            request.FileId = (FileID)handle;
+            SetInfoRequest request = new SetInfoRequest
+            {
+                InfoType = InfoType.File,
+                FileInformationClass = information.FileInformationClass,
+                FileId = (FileID)handle
+            };
             request.SetFileInformation(information);
 
             TrySendCommand(request);
-            SMB2Command response = m_client.WaitForCommand(SMB2CommandName.SetInfo);
-            if (response != null)
-            {
-                return response.Header.Status;
-            }
-
-            return NTStatus.STATUS_INVALID_SMB;
+            SMB2Command response = WaitForCommand(SMB2CommandName.SetInfo);
+            return response?.Header.Status ?? NTStatus.STATUS_INVALID_SMB;
         }
 
         public NTStatus GetFileSystemInformation(out FileSystemInformation result, FileSystemInformationClass informationClass)
         {
             result = null;
-            object fileHandle;
-            FileStatus fileStatus;
-            NTStatus status = CreateFile(out fileHandle, out fileStatus, String.Empty, (AccessMask)DirectoryAccessMask.FILE_LIST_DIRECTORY | (AccessMask)DirectoryAccessMask.FILE_READ_ATTRIBUTES | AccessMask.SYNCHRONIZE, 0, ShareAccess.Read | ShareAccess.Write | ShareAccess.Delete, CreateDisposition.FILE_OPEN, CreateOptions.FILE_SYNCHRONOUS_IO_NONALERT | CreateOptions.FILE_DIRECTORY_FILE, null);
+            NTStatus status = CreateFile(out object fileHandle, out _, string.Empty, (AccessMask)DirectoryAccessMask.FILE_LIST_DIRECTORY | (AccessMask)DirectoryAccessMask.FILE_READ_ATTRIBUTES | AccessMask.SYNCHRONIZE, 0, ShareAccess.Read | ShareAccess.Write | ShareAccess.Delete, CreateDisposition.FILE_OPEN, CreateOptions.FILE_SYNCHRONOUS_IO_NONALERT | CreateOptions.FILE_DIRECTORY_FILE, null);
             if (status != NTStatus.STATUS_SUCCESS)
             {
                 return status;
@@ -219,24 +211,24 @@ namespace SMBLibrary.Client
         public NTStatus GetFileSystemInformation(out FileSystemInformation result, object handle, FileSystemInformationClass informationClass)
         {
             result = null;
-            QueryInfoRequest request = new QueryInfoRequest();
-            request.InfoType = InfoType.FileSystem;
-            request.FileSystemInformationClass = informationClass;
-            request.OutputBufferLength = 4096;
-            request.FileId = (FileID)handle;
+            QueryInfoRequest request = new QueryInfoRequest
+            {
+                InfoType = InfoType.FileSystem,
+                FileSystemInformationClass = informationClass,
+                OutputBufferLength = 4096,
+                FileId = (FileID)handle
+            };
 
             TrySendCommand(request);
-            SMB2Command response = m_client.WaitForCommand(SMB2CommandName.QueryInfo);
-            if (response != null)
-            {
-                if (response.Header.Status == NTStatus.STATUS_SUCCESS && response is QueryInfoResponse)
-                {
-                    result = ((QueryInfoResponse)response).GetFileSystemInformation(informationClass);
-                }
-                return response.Header.Status;
-            }
+            SMB2Command response = WaitForCommand(SMB2CommandName.QueryInfo);
+            if (response == null)
+                return NTStatus.STATUS_INVALID_SMB;
 
-            return NTStatus.STATUS_INVALID_SMB;
+            if (response.Header.Status == NTStatus.STATUS_SUCCESS && response is QueryInfoResponse queryInfoResponse)
+            {
+                result = queryInfoResponse.GetFileSystemInformation(informationClass);
+            }
+            return response.Header.Status;
         }
 
         public NTStatus SetFileSystemInformation(FileSystemInformation information)
@@ -247,19 +239,21 @@ namespace SMBLibrary.Client
         public NTStatus GetSecurityInformation(out SecurityDescriptor result, object handle, SecurityInformation securityInformation)
         {
             result = null;
-            QueryInfoRequest request = new QueryInfoRequest();
-            request.InfoType = InfoType.Security;
-            request.SecurityInformation = securityInformation;
-            request.OutputBufferLength = 4096;
-            request.FileId = (FileID)handle;
+            QueryInfoRequest request = new QueryInfoRequest
+            {
+                InfoType = InfoType.Security,
+                SecurityInformation = securityInformation,
+                OutputBufferLength = 4096,
+                FileId = (FileID)handle
+            };
 
             TrySendCommand(request);
-            SMB2Command response = m_client.WaitForCommand(SMB2CommandName.QueryInfo);
+            SMB2Command response = WaitForCommand(SMB2CommandName.QueryInfo);
             if (response != null)
             {
-                if (response.Header.Status == NTStatus.STATUS_SUCCESS && response is QueryInfoResponse)
+                if (response.Header.Status == NTStatus.STATUS_SUCCESS && response is QueryInfoResponse queryInfoResponse)
                 {
-                    result = ((QueryInfoResponse)response).GetSecurityInformation();
+                    result = queryInfoResponse.GetSecurityInformation();
                 }
                 return response.Header.Status;
             }
@@ -293,12 +287,12 @@ namespace SMBLibrary.Client
             request.Input = input;
             request.MaxOutputResponse = (uint)maxOutputLength;
             TrySendCommand(request);
-            SMB2Command response = m_client.WaitForCommand(SMB2CommandName.IOCtl);
+            SMB2Command response = WaitForCommand(SMB2CommandName.IOCtl);
             if (response != null)
             {
-                if ((response.Header.Status == NTStatus.STATUS_SUCCESS || response.Header.Status == NTStatus.STATUS_BUFFER_OVERFLOW) && response is IOCtlResponse)
+                if ((response.Header.Status == NTStatus.STATUS_SUCCESS || response.Header.Status == NTStatus.STATUS_BUFFER_OVERFLOW) && response is IOCtlResponse ioCtlResponse)
                 {
-                    output = ((IOCtlResponse)response).Output;
+                    output = ioCtlResponse.Output;
                 }
                 return response.Header.Status;
             }
@@ -310,13 +304,13 @@ namespace SMBLibrary.Client
         {
             TreeDisconnectRequest request = new TreeDisconnectRequest();
             TrySendCommand(request);
-            SMB2Command response = m_client.WaitForCommand(SMB2CommandName.TreeDisconnect);
-            if (response != null)
-            {
-                return response.Header.Status;
-            }
+            SMB2Command response = WaitForCommand(SMB2CommandName.TreeDisconnect);
+            return response?.Header.Status ?? NTStatus.STATUS_INVALID_SMB;
+        }
 
-            return NTStatus.STATUS_INVALID_SMB;
+        private SMB2Command WaitForCommand(SMB2CommandName commandName)
+        {
+            return m_client.WaitForCommand(commandName);
         }
 
         private void TrySendCommand(SMB2Command request)
@@ -325,37 +319,20 @@ namespace SMBLibrary.Client
             m_client.TrySendCommand(request, m_encryptShareData);
         }
 
-        public uint MaxReadSize
-        {
-            get
-            {
-                return m_client.MaxReadSize;
-            }
-        }
+        public uint MaxReadSize => m_client.MaxReadSize;
 
-        public uint MaxWriteSize
-        {
-            get
-            {
-                return m_client.MaxWriteSize;
-            }
-        }
+        public uint MaxWriteSize => m_client.MaxWriteSize;
 
         private static FileStatus ToFileStatus(CreateAction createAction)
         {
-            switch (createAction)
+            return createAction switch
             {
-                case CreateAction.FILE_SUPERSEDED:
-                    return FileStatus.FILE_SUPERSEDED;
-                case CreateAction.FILE_OPENED:
-                    return FileStatus.FILE_OPENED;
-                case CreateAction.FILE_CREATED:
-                    return FileStatus.FILE_CREATED;
-                case CreateAction.FILE_OVERWRITTEN:
-                    return FileStatus.FILE_OVERWRITTEN;
-                default:
-                    return FileStatus.FILE_OPENED;
-            }
+                CreateAction.FILE_SUPERSEDED => FileStatus.FILE_SUPERSEDED,
+                CreateAction.FILE_OPENED => FileStatus.FILE_OPENED,
+                CreateAction.FILE_CREATED => FileStatus.FILE_CREATED,
+                CreateAction.FILE_OVERWRITTEN => FileStatus.FILE_OVERWRITTEN,
+                _ => FileStatus.FILE_OPENED
+            };
         }
     }
 }

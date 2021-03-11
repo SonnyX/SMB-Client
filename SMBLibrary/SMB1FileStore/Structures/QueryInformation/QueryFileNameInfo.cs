@@ -1,12 +1,10 @@
 /* Copyright (C) 2014 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -23,7 +21,7 @@ namespace SMBLibrary.SMB1
         {
         }
 
-        public QueryFileNameInfo(byte[] buffer, int offset)
+        public QueryFileNameInfo(byte[] buffer)
         {
             uint fileNameLength = LittleEndianConverter.ToUInt32(buffer, 0);
             FileName = ByteReader.ReadUTF16String(buffer, 4, (int)(fileNameLength / 2));
@@ -38,12 +36,6 @@ namespace SMBLibrary.SMB1
             return buffer;
         }
 
-        public override QueryInformationLevel InformationLevel
-        {
-            get
-            {
-                return QueryInformationLevel.SMB_QUERY_FILE_NAME_INFO;
-            }
-        }
+        public override QueryInformationLevel InformationLevel => QueryInformationLevel.SMB_QUERY_FILE_NAME_INFO;
     }
 }

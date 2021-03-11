@@ -1,11 +1,10 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
+
 using Utilities;
 
 namespace SMBLibrary
@@ -20,11 +19,13 @@ namespace SMBLibrary
         public byte Revision;
         public byte Sbz1;
         public SecurityDescriptorControl Control;
+
         // uint OffsetOwner;
         // uint OffsetGroup;
         // uint OffsetSacl;
         // uint OffsetDacl;
         public SID OwnerSid;
+
         public SID GroupSid;
         public ACL Sacl;
         public ACL Dacl;
@@ -93,7 +94,7 @@ namespace SMBLibrary
             if (Dacl != null)
             {
                 offsetDacl = (uint)offset;
-                offset += Dacl.Length;
+                _ = Dacl.Length;
             }
 
             offset = 0;
@@ -104,25 +105,13 @@ namespace SMBLibrary
             LittleEndianWriter.WriteUInt32(buffer, ref offset, offsetGroup);
             LittleEndianWriter.WriteUInt32(buffer, ref offset, offsetSacl);
             LittleEndianWriter.WriteUInt32(buffer, ref offset, offsetDacl);
-            if (OwnerSid != null)
-            {
-                OwnerSid.WriteBytes(buffer, ref offset);
-            }
+            OwnerSid?.WriteBytes(buffer, ref offset);
 
-            if (GroupSid != null)
-            {
-                GroupSid.WriteBytes(buffer, ref offset);
-            }
+            GroupSid?.WriteBytes(buffer, ref offset);
 
-            if (Sacl != null)
-            {
-                Sacl.WriteBytes(buffer, ref offset);
-            }
+            Sacl?.WriteBytes(buffer, ref offset);
 
-            if (Dacl != null)
-            {
-                Dacl.WriteBytes(buffer, ref offset);
-            }
+            Dacl?.WriteBytes(buffer, ref offset);
 
             return buffer;
         }

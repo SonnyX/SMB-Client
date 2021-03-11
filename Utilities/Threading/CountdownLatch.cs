@@ -1,22 +1,19 @@
 /* Copyright (C) 2016-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Threading;
 
 namespace Utilities
 {
-    public class CountdownLatch
+    public sealed class CountdownLatch : IDisposable
     {
         private int m_count;
-        private EventWaitHandle m_waitHandle = new EventWaitHandle(true, EventResetMode.ManualReset);
-
-        public CountdownLatch()
-        {
-        }
+        private readonly EventWaitHandle m_waitHandle = new EventWaitHandle(true, EventResetMode.ManualReset);
 
         public void Increment()
         {
@@ -52,6 +49,11 @@ namespace Utilities
         public void WaitUntilZero()
         {
             m_waitHandle.WaitOne();
+        }
+
+        public void Dispose()
+        {
+            m_waitHandle?.Dispose();
         }
     }
 }

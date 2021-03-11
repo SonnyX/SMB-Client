@@ -4,10 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
 using System.Collections.Generic;
-using System.IO;
-using Utilities;
 
 namespace SMBLibrary.Server
 {
@@ -18,15 +15,15 @@ namespace SMBLibrary.Server
         public bool LargeWrite;
 
         // Key is UID
-        private Dictionary<ushort, SMB1Session> m_sessions = new Dictionary<ushort, SMB1Session>();
+        private readonly Dictionary<ushort, SMB1Session> m_sessions = new Dictionary<ushort, SMB1Session>();
         private ushort m_nextUID = 1; // UID MUST be unique within an SMB connection
         private ushort m_nextTID = 1; // TID MUST be unique within an SMB connection
         private ushort m_nextFID = 1; // FID MUST be unique within an SMB connection
 
         // Key is PID (PID MUST be unique within an SMB connection)
-        private Dictionary<uint, ProcessStateObject> m_processStateList = new Dictionary<uint, ProcessStateObject>();
+        private readonly Dictionary<uint, ProcessStateObject> m_processStateList = new Dictionary<uint, ProcessStateObject>();
         
-        private List<SMB1AsyncContext> m_pendingRequests = new List<SMB1AsyncContext>();
+        private readonly List<SMB1AsyncContext> m_pendingRequests = new List<SMB1AsyncContext>();
 
         public SMB1ConnectionState(ConnectionState state) : base(state)
         {
@@ -38,7 +35,7 @@ namespace SMBLibrary.Server
         /// </summary>
         public ushort? AllocateUserID()
         {
-            for (ushort offset = 0; offset < UInt16.MaxValue; offset++)
+            for (ushort offset = 0; offset < ushort.MaxValue; offset++)
             {
                 ushort userID = (ushort)(m_nextUID + offset);
                 if (userID == 0 || userID == 0xFFFE || userID == 0xFFFF)
@@ -77,15 +74,13 @@ namespace SMBLibrary.Server
 
         public SMB1Session GetSession(ushort userID)
         {
-            SMB1Session session;
-            m_sessions.TryGetValue(userID, out session);
+            m_sessions.TryGetValue(userID, out SMB1Session session);
             return session;
         }
 
         public void RemoveSession(ushort userID)
         {
-            SMB1Session session;
-            m_sessions.TryGetValue(userID, out session);
+            m_sessions.TryGetValue(userID, out SMB1Session session);
             if (session != null)
             {
                 session.Close();
@@ -116,7 +111,7 @@ namespace SMBLibrary.Server
             {
                 foreach (SMB1Session session in m_sessions.Values)
                 {
-                    result.Add(new SessionInformation(this.ClientEndPoint, this.Dialect, session.UserName, session.MachineName, session.GetOpenFilesInformation(), session.CreationDT));
+                    result.Add(new SessionInformation(ClientEndPoint, Dialect, session.UserName, session.MachineName, session.GetOpenFilesInformation(), session.CreationDT));
                 }
             }
             return result;
@@ -128,7 +123,7 @@ namespace SMBLibrary.Server
         /// </summary>
         public ushort? AllocateTreeID()
         {
-            for (ushort offset = 0; offset < UInt16.MaxValue; offset++)
+            for (ushort offset = 0; offset < ushort.MaxValue; offset++)
             {
                 ushort treeID = (ushort)(m_nextTID + offset);
                 if (treeID == 0 || treeID == 0xFFFF)
@@ -163,7 +158,7 @@ namespace SMBLibrary.Server
         /// <returns></returns>
         public ushort? AllocateFileID()
         {
-            for (ushort offset = 0; offset < UInt16.MaxValue; offset++)
+            for (ushort offset = 0; offset < ushort.MaxValue; offset++)
             {
                 ushort fileID = (ushort)(m_nextFID + offset);
                 if (fileID == 0 || fileID == 0xFFFF)
@@ -204,10 +199,8 @@ namespace SMBLibrary.Server
             {
                 return m_processStateList[processID];
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         public void RemoveProcessState(uint processID)
@@ -217,13 +210,15 @@ namespace SMBLibrary.Server
 
         public SMB1AsyncContext CreateAsyncContext(ushort userID, ushort treeID, uint processID, ushort multiplexID, ushort fileID, SMB1ConnectionState connection)
         {
-            SMB1AsyncContext context = new SMB1AsyncContext();
-            context.UID = userID;
-            context.TID = treeID;
-            context.MID = multiplexID;
-            context.PID = processID;
-            context.FileID = fileID;
-            context.Connection = connection;
+            SMB1AsyncContext context = new SMB1AsyncContext
+            {
+                UID = userID,
+                TID = treeID,
+                MID = multiplexID,
+                PID = processID,
+                FileID = fileID,
+                Connection = connection
+            };
             lock (m_pendingRequests)
             {
                 m_pendingRequests.Add(context);

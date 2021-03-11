@@ -1,11 +1,10 @@
 /* Copyright (C) 2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -17,17 +16,20 @@ namespace SMBLibrary.SMB1
     {
         private const ushort SMB_INFO_PASSTHROUGH = 0x03E8;
         public const int ParametersLength = 4;
+
         // Parameters:
         public ushort FID;
+
         public ushort InformationLevel; // This field MUST be a pass-through Information Level.
+
         // Data:
         public byte[] InformationBytes;
 
-        public Transaction2SetFSInformationRequest() : base()
+        public Transaction2SetFSInformationRequest()
         {
         }
 
-        public Transaction2SetFSInformationRequest(byte[] parameters, byte[] data, bool isUnicode) : base()
+        public Transaction2SetFSInformationRequest(byte[] parameters, byte[] data)
         {
             FID = LittleEndianConverter.ToUInt16(parameters, 0);
             InformationLevel = LittleEndianConverter.ToUInt16(parameters, 2);
@@ -53,24 +55,12 @@ namespace SMBLibrary.SMB1
             return InformationBytes;
         }
 
-        public bool IsPassthroughInformationLevel
-        {
-            get
-            {
-                return (InformationLevel >= SMB_INFO_PASSTHROUGH);
-            }
-        }
+        public bool IsPassthroughInformationLevel => (InformationLevel >= SMB_INFO_PASSTHROUGH);
 
         public FileSystemInformationClass FileSystemInformationClass
         {
-            get
-            {
-                return (FileSystemInformationClass)(InformationLevel - SMB_INFO_PASSTHROUGH);
-            }
-            set
-            {
-                InformationLevel = (ushort)((ushort)value + SMB_INFO_PASSTHROUGH);
-            }
+            get => (FileSystemInformationClass)(InformationLevel - SMB_INFO_PASSTHROUGH);
+            set => InformationLevel = (ushort)((ushort)value + SMB_INFO_PASSTHROUGH);
         }
 
         /// <remarks>
@@ -82,12 +72,6 @@ namespace SMBLibrary.SMB1
             InformationBytes = information.GetBytes();
         }
 
-        public override Transaction2SubcommandName SubcommandName
-        {
-            get
-            {
-                return Transaction2SubcommandName.TRANS2_SET_FS_INFORMATION;
-            }
-        }
+        public override Transaction2SubcommandName SubcommandName => Transaction2SubcommandName.TRANS2_SET_FS_INFORMATION;
     }
 }

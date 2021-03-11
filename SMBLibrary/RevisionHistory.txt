@@ -415,6 +415,7 @@ Revision History:
         Moved Win32 specific functionality to separate project.
         Moved tests to separate project.
 
+
 1.3.9 - Server: SMB1: Improved handling of transaction subcommand failures.
         NTDirectoryFileSystem: Bugfix: buffer size was reduced before subsequent calls to NtQueryDirectoryFile.
 
@@ -437,6 +438,8 @@ Revision History:
 1.4.2 - Server: Bugfix: Buffer was not set to the correct size for SMB2 Large MTU.
         Client: Client: SMB1FileStore: Implemented SetFileInformation with FileInformation parameter.
 
+---- Deviation
+
 1.4.3 - Client: Bugfix: Reading FindInformationList may have caused infinite loop.
         Added SMB2TransformHeader implementation.
         Added logic to calculate SMB 3.x encryption / decryption keys.
@@ -444,6 +447,15 @@ Revision History:
         SMB2Cryptography: Added logic for SMB 3.0 encryption.
         Client: Added SMB 3.0 support.
         Server: Added option to enable SMB 3.0 dialect.
+
+1.4.3.0 - SMB2Client: Ignore STATUS_PENDING in WaitForCommand
+          SMB2Client: Band-aid for off by one in TrySendCommand when CreditsCharged == 0
+          SMB2Client: Add WaitForCommand that accepts tree identifier (TID) as a parameter
+          SMB2FileStore: Call SMB2Client.WaitForCommand with TID of FileStore
+
+1.4.3.1 - SMB2Client: Merge [Check and set SMB2Client m_isConnected status for m_clientSocket status by wgv-jxiao](https://github.com/jordanlytle/SMBLibrary/pull/6) which checks if m_clientSocket is still valid when reusing a valid connection.
+
+1.4.3.2 - SMB2Client: Merge [Remove treeId dependency from WaitFoCommand by wgv-jxiao](https://github.com/jordanlytle/SMBLibrary/pull/7) which reverts the TreeId parameter in SMB2Client WaitForCommand
         
 1.4.4 - SocketUtils.SetKeepAlive: Added support for Linux.
         Moved NTFileSystemAdapter to SMBLibrary.Adapters.
@@ -459,3 +471,5 @@ Revision History:
         NTLM: Bugfix: IndependentNTLMAuthenticationProvider login failed to to modification of message byte arrays.
 
 1.4.6 - SMB2Client: Fixed InvalidCastException on failed login to SMB 3.0 server.
+
+1.4.7 - Added IsConnected and IsLoggedIn to ISMBClient

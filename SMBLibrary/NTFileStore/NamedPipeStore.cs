@@ -1,13 +1,13 @@
 /* Copyright (C) 2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Collections.Generic;
 using System.IO;
-using SMBLibrary.RPC;
 using SMBLibrary.Services;
 using Utilities;
 
@@ -15,7 +15,7 @@ namespace SMBLibrary
 {
     public class NamedPipeStore : INTFileStore
     {
-        private List<RemoteService> m_services;
+        private readonly List<RemoteService> m_services;
 
         public NamedPipeStore(List<RemoteService> services)
         {
@@ -32,7 +32,7 @@ namespace SMBLibrary
             {
                 // All instances of a named pipe share the same pipe name, but each instance has its own buffers and handles,
                 // and provides a separate conduit for client/server communication.
-                RPCPipeStream stream = new RPCPipeStream(service);
+                using RPCPipeStream stream = new RPCPipeStream(service);
                 handle = new FileHandle(path, false, stream, false);
                 fileStatus = FileStatus.FILE_OPENED;
                 return NTStatus.STATUS_SUCCESS;
@@ -44,10 +44,7 @@ namespace SMBLibrary
         public NTStatus CloseFile(object handle)
         {
             FileHandle fileHandle = (FileHandle)handle;
-            if (fileHandle.Stream != null)
-            {
-                fileHandle.Stream.Close();
-            }
+            fileHandle.Stream?.Close();
             return NTStatus.STATUS_SUCCESS;
         }
 
@@ -55,12 +52,12 @@ namespace SMBLibrary
         {
             if (path.StartsWith(@"\"))
             {
-                path = path.Substring(1);
+                path = path[1..];
             }
 
             foreach (RemoteService service in m_services)
             {
-                if (String.Equals(path, service.PipeName, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(path, service.PipeName, StringComparison.OrdinalIgnoreCase))
                 {
                     return service;
                 }
@@ -92,10 +89,7 @@ namespace SMBLibrary
         public NTStatus FlushFileBuffers(object handle)
         {
             FileHandle fileHandle = (FileHandle)handle;
-            if (fileHandle.Stream != null)
-            {
-                fileHandle.Stream.Flush();
-            }
+            fileHandle.Stream?.Flush();
             return NTStatus.STATUS_SUCCESS;
         }
 
@@ -133,10 +127,10 @@ namespace SMBLibrary
                 output = new byte[0];
                 return NTStatus.STATUS_SUCCESS;
             }
-            else if (ctlCode == (uint)IoControlCode.FSCTL_PIPE_TRANSCEIVE)
+
+            if (ctlCode == (uint)IoControlCode.FSCTL_PIPE_TRANSCEIVE)
             {
-                int numberOfBytesWritten;
-                NTStatus writeStatus = WriteFile(out numberOfBytesWritten, handle, 0, input);
+                NTStatus writeStatus = WriteFile(out _, handle, 0, input);
                 if (writeStatus != NTStatus.STATUS_SUCCESS)
                 {
                     return writeStatus;
@@ -152,10 +146,8 @@ namespace SMBLibrary
                 {
                     return NTStatus.STATUS_BUFFER_OVERFLOW;
                 }
-                else
-                {
-                    return NTStatus.STATUS_SUCCESS;
-                }
+
+                return NTStatus.STATUS_SUCCESS;
             }
 
             return NTStatus.STATUS_NOT_SUPPORTED;
@@ -173,22 +165,28 @@ namespace SMBLibrary
             {
                 case FileInformationClass.FileBasicInformation:
                     {
-                        FileBasicInformation information = new FileBasicInformation();
-                        information.FileAttributes = FileAttributes.Temporary;
+                        FileBasicInformation information = new FileBasicInformation
+                        {
+                            FileAttributes = FileAttributes.Temporary
+                        };
                         result = information;
                         return NTStatus.STATUS_SUCCESS;
                     }
                 case FileInformationClass.FileStandardInformation:
                     {
-                        FileStandardInformation information = new FileStandardInformation();
-                        information.DeletePending = false;
+                        FileStandardInformation information = new FileStandardInformation
+                        {
+                            DeletePending = false
+                        };
                         result = information;
                         return NTStatus.STATUS_SUCCESS;
                     }
                 case FileInformationClass.FileNetworkOpenInformation:
                     {
-                        FileNetworkOpenInformation information = new FileNetworkOpenInformation();
-                        information.FileAttributes = FileAttributes.Temporary;
+                        FileNetworkOpenInformation information = new FileNetworkOpenInformation
+                        {
+                            FileAttributes = FileAttributes.Temporary
+                        };
                         result = information;
                         return NTStatus.STATUS_SUCCESS;
                     }

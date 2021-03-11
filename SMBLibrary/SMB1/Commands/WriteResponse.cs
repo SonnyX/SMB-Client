@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -16,29 +13,23 @@ namespace SMBLibrary.SMB1
         // Parameters:
         public ushort CountOfBytesWritten;
 
-        public WriteResponse() : base()
+        public WriteResponse()
         {
         }
 
-        public WriteResponse(byte[] buffer, int offset) : base(buffer, offset, false)
+        public WriteResponse(byte[] buffer, int offset) : base(buffer, offset)
         {
-            CountOfBytesWritten = LittleEndianConverter.ToUInt16(this.SMBParameters, 0);
+            CountOfBytesWritten = LittleEndianConverter.ToUInt16(SMBParameters, 0);
         }
 
         public override byte[] GetBytes(bool isUnicode)
         {
-            this.SMBParameters = new byte[ParametersLength];
-            LittleEndianWriter.WriteUInt16(this.SMBParameters, 0, CountOfBytesWritten);
+            SMBParameters = new byte[ParametersLength];
+            LittleEndianWriter.WriteUInt16(SMBParameters, 0, CountOfBytesWritten);
 
             return base.GetBytes(isUnicode);
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_WRITE;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_WRITE;
     }
 }

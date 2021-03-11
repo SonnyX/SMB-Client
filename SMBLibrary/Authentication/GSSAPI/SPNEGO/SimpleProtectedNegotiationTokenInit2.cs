@@ -1,11 +1,11 @@
 /* Copyright (C) 2018 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Utilities;
 
@@ -31,10 +31,10 @@ namespace SMBLibrary.Authentication.GSSAPI
         }
 
         /// <param name="offset">The offset following the NegTokenInit2 tag</param>
-        /// <exception cref="System.IO.InvalidDataException"></exception>
+        /// <exception cref="InvalidDataException"></exception>
         public SimpleProtectedNegotiationTokenInit2(byte[] buffer, int offset)
         {
-            int constructionLength = DerEncodingHelper.ReadLength(buffer, ref offset);
+            _ = DerEncodingHelper.ReadLength(buffer, ref offset);
             byte tag = ByteReader.ReadByte(buffer, ref offset);
             if (tag != (byte)DerEncodingTag.Sequence)
             {
@@ -106,7 +106,7 @@ namespace SMBLibrary.Authentication.GSSAPI
 
         protected override int GetTokenFieldsLength()
         {
-            int result = base.GetTokenFieldsLength();;
+            int result = base.GetTokenFieldsLength(); ;
             if (HintName != null || HintAddress != null)
             {
                 int hintsSequenceLength = GetHintsSequenceLength(HintName, HintAddress);
@@ -123,7 +123,7 @@ namespace SMBLibrary.Authentication.GSSAPI
         {
             string hintName = null;
             hintAddress = null;
-            int constructionLength = DerEncodingHelper.ReadLength(buffer, ref offset);
+            _ = DerEncodingHelper.ReadLength(buffer, ref offset);
             byte tag = ByteReader.ReadByte(buffer, ref offset);
             if (tag != (byte)DerEncodingTag.Sequence)
             {
@@ -152,7 +152,7 @@ namespace SMBLibrary.Authentication.GSSAPI
 
         protected static string ReadHintName(byte[] buffer, ref int offset)
         {
-            int constructionLength = DerEncodingHelper.ReadLength(buffer, ref offset);
+            _ = DerEncodingHelper.ReadLength(buffer, ref offset);
             byte tag = ByteReader.ReadByte(buffer, ref offset);
             if (tag != (byte)DerEncodingTag.GeneralString)
             {
@@ -165,7 +165,7 @@ namespace SMBLibrary.Authentication.GSSAPI
 
         protected static byte[] ReadHintAddress(byte[] buffer, ref int offset)
         {
-            int constructionLength = DerEncodingHelper.ReadLength(buffer, ref offset);
+            _ = DerEncodingHelper.ReadLength(buffer, ref offset);
             byte tag = ByteReader.ReadByte(buffer, ref offset);
             if (tag != (byte)DerEncodingTag.ByteArray)
             {

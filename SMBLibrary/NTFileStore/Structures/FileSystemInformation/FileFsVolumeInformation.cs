@@ -5,7 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
 using Utilities;
 
 namespace SMBLibrary
@@ -22,7 +21,7 @@ namespace SMBLibrary
         private uint VolumeLabelLength;
         public bool SupportsObjects;
         public byte Reserved;
-        public string VolumeLabel = String.Empty;
+        public string VolumeLabel = string.Empty;
 
         public FileFsVolumeInformation()
         {
@@ -52,20 +51,8 @@ namespace SMBLibrary
             ByteWriter.WriteUTF16String(buffer, offset + 18, VolumeLabel);
         }
 
-        public override FileSystemInformationClass FileSystemInformationClass
-        {
-            get
-            {
-                return FileSystemInformationClass.FileFsVolumeInformation;
-            }
-        }
+        public override FileSystemInformationClass FileSystemInformationClass => FileSystemInformationClass.FileFsVolumeInformation;
 
-        public override int Length
-        {
-            get
-            {
-                return FixedLength + VolumeLabel.Length * 2;
-            }
-        }
+        public override int Length => FixedLength + VolumeLabel.Length * 2;
     }
 }

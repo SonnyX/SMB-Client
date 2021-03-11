@@ -1,13 +1,13 @@
 /* Copyright (C) 2014-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.RPC
@@ -16,12 +16,12 @@ namespace SMBLibrary.RPC
     /// NDR - Native Data Representation
     /// See DCE 1.1: Remote Procedure Call, Chapter 14 - Transfer Syntax NDR
     /// </summary>
-    public class NDRWriter
+    public sealed class NDRWriter : IDisposable
     {
-        private MemoryStream m_stream = new MemoryStream();
+        private readonly MemoryStream m_stream = new MemoryStream();
         private int m_depth;
-        private List<INDRStructure> m_deferredStructures = new List<INDRStructure>();
-        private Dictionary<uint, INDRStructure> m_referentToInstance = new Dictionary<uint, INDRStructure>();
+        private readonly List<INDRStructure> m_deferredStructures = new List<INDRStructure>();
+        private readonly Dictionary<uint, INDRStructure> m_referentToInstance = new Dictionary<uint, INDRStructure>();
         private uint m_nextReferentID = 0x00020000;
 
         public void BeginStructure()
@@ -95,14 +95,12 @@ namespace SMBLibrary.RPC
                 WriteUInt32(0); // null
                 return;
             }
-            else
-            {
-                // Note: We do not bother searching for existing values
-                uint referentID = GetNextReferentID();
-                WriteUInt32(referentID);
-                AddDeferredStructure(structure);
-                m_referentToInstance.Add(referentID, structure);
-            }
+
+            // Note: We do not bother searching for existing values
+            uint referentID = GetNextReferentID();
+            WriteUInt32(referentID);
+            AddDeferredStructure(structure);
+            m_referentToInstance.Add(referentID, structure);
         }
 
         // 14.2.2 - Alignment of Primitive Types
@@ -139,6 +137,11 @@ namespace SMBLibrary.RPC
             uint result = m_nextReferentID;
             m_nextReferentID++;
             return result;
+        }
+
+        public void Dispose()
+        {
+            m_stream?.Dispose();
         }
     }
 }

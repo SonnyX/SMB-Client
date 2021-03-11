@@ -4,10 +4,8 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
+
 using System.Collections.Generic;
-using System.Text;
-using Utilities;
 
 namespace SMBLibrary.SMB1
 {
@@ -23,7 +21,7 @@ namespace SMBLibrary.SMB1
             while (offset < buffer.Length)
             {
                 FindInformation entry = FindInformation.ReadEntry(buffer, offset, informationLevel, isUnicode);
-                this.Add(entry);
+                Add(entry);
                 if (entry.NextEntryOffset == 0)
                 {
                     break;
@@ -34,7 +32,7 @@ namespace SMBLibrary.SMB1
 
         public byte[] GetBytes(bool isUnicode)
         {
-            for(int index = 0; index < this.Count - 1; index++)
+            for(int index = 0; index < Count - 1; index++)
             {
                 FindInformation entry = this[index];
                 int entryLength = entry.GetLength(isUnicode);
@@ -54,7 +52,7 @@ namespace SMBLibrary.SMB1
         public int GetLength(bool isUnicode)
         {
             int length = 0;
-            for (int index = 0; index < this.Count; index++)
+            for (int index = 0; index < Count; index++)
             {
                 FindInformation entry = this[index];
                 int entryLength = entry.GetLength(isUnicode);

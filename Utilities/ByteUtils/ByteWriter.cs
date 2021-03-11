@@ -1,9 +1,10 @@
 /* Copyright (C) 2012-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.IO;
 using System.Text;
@@ -57,7 +58,7 @@ namespace Utilities
 
         public static void WriteAnsiString(byte[] buffer, int offset, string value, int maximumLength)
         {
-            byte[] bytes = ASCIIEncoding.GetEncoding(28591).GetBytes(value);
+            byte[] bytes = Encoding.GetEncoding(28591).GetBytes(value);
             Array.Copy(bytes, 0, buffer, offset, Math.Min(value.Length, maximumLength));
         }
 
@@ -79,7 +80,7 @@ namespace Utilities
 
         public static void WriteUTF16String(byte[] buffer, int offset, string value, int maximumNumberOfCharacters)
         {
-            byte[] bytes = UnicodeEncoding.Unicode.GetBytes(value);
+            byte[] bytes = Encoding.Unicode.GetBytes(value);
             int maximumNumberOfBytes = Math.Min(value.Length, maximumNumberOfCharacters) * 2;
             Array.Copy(bytes, 0, buffer, offset, maximumNumberOfBytes);
         }
@@ -131,10 +132,10 @@ namespace Utilities
 
         public static void WriteAnsiString(Stream stream, string value, int fieldLength)
         {
-            byte[] bytes = ASCIIEncoding.GetEncoding(28591).GetBytes(value);
+            byte[] bytes = Encoding.GetEncoding(28591).GetBytes(value);
             stream.Write(bytes, 0, Math.Min(bytes.Length, fieldLength));
             if (bytes.Length < fieldLength)
-            { 
+            {
                 byte[] zeroFill = new byte[fieldLength - bytes.Length];
                 stream.Write(zeroFill, 0, zeroFill.Length);
             }
@@ -142,19 +143,19 @@ namespace Utilities
 
         public static void WriteUTF8String(Stream stream, string value)
         {
-            byte[] bytes = UnicodeEncoding.UTF8.GetBytes(value);
+            byte[] bytes = Encoding.UTF8.GetBytes(value);
             stream.Write(bytes, 0, bytes.Length);
         }
 
         public static void WriteUTF16String(Stream stream, string value)
         {
-            byte[] bytes = UnicodeEncoding.Unicode.GetBytes(value);
+            byte[] bytes = Encoding.Unicode.GetBytes(value);
             stream.Write(bytes, 0, bytes.Length);
         }
 
         public static void WriteUTF16BEString(Stream stream, string value)
         {
-            byte[] bytes = UnicodeEncoding.BigEndianUnicode.GetBytes(value);
+            byte[] bytes = Encoding.BigEndianUnicode.GetBytes(value);
             stream.Write(bytes, 0, bytes.Length);
         }
     }

@@ -4,9 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -19,11 +17,11 @@ namespace SMBLibrary.SMB1
         // Setup:
         public ushort Priority;
 
-        public TransactionWaitNamedPipeRequest() : base()
+        public TransactionWaitNamedPipeRequest()
         {
         }
 
-        public TransactionWaitNamedPipeRequest(byte[] setup) : base()
+        public TransactionWaitNamedPipeRequest(byte[] setup)
         {
             Priority = LittleEndianConverter.ToUInt16(setup, 2);
         }
@@ -31,17 +29,11 @@ namespace SMBLibrary.SMB1
         public override byte[] GetSetup()
         {
             byte[] setup = new byte[4];
-            LittleEndianWriter.WriteUInt16(setup, 0, (ushort)this.SubcommandName);
+            LittleEndianWriter.WriteUInt16(setup, 0, (ushort)SubcommandName);
             LittleEndianWriter.WriteUInt16(setup, 2, Priority);
             return setup;
         }
 
-        public override TransactionSubcommandName SubcommandName
-        {
-            get
-            {
-                return TransactionSubcommandName.TRANS_WAIT_NMPIPE;
-            }
-        }
+        public override TransactionSubcommandName SubcommandName => TransactionSubcommandName.TRANS_WAIT_NMPIPE;
     }
 }

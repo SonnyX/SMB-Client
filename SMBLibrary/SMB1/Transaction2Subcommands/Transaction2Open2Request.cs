@@ -5,8 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -29,12 +27,12 @@ namespace SMBLibrary.SMB1
         // Data:
         public FullExtendedAttributeList ExtendedAttributeList;
 
-        public Transaction2Open2Request() : base()
+        public Transaction2Open2Request()
         {
             Reserved = new byte[10];
         }
 
-        public Transaction2Open2Request(byte[] parameters, byte[] data, bool isUnicode) : base()
+        public Transaction2Open2Request(byte[] parameters, byte[] data, bool isUnicode)
         {
             Flags = (Open2Flags)LittleEndianConverter.ToUInt16(parameters, 0);
             AccessMode = new AccessModeOptions(parameters, 2);
@@ -84,12 +82,6 @@ namespace SMBLibrary.SMB1
             return ExtendedAttributeList.GetBytes();
         }
 
-        public override Transaction2SubcommandName SubcommandName
-        {
-            get
-            {
-                return Transaction2SubcommandName.TRANS2_OPEN2;
-            }
-        }
+        public override Transaction2SubcommandName SubcommandName => Transaction2SubcommandName.TRANS2_OPEN2;
     }
 }

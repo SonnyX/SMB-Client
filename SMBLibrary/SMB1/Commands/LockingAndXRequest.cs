@@ -4,9 +4,8 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
+
 using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -27,32 +26,36 @@ namespace SMBLibrary.SMB1
 
         public void Write32(byte[] buffer, ref int offset)
         {
-            LittleEndianWriter.WriteUInt16(buffer, ref offset, this.PID);
-            LittleEndianWriter.WriteUInt32(buffer, ref offset, (uint)this.ByteOffset);
-            LittleEndianWriter.WriteUInt32(buffer, ref offset, (uint)this.LengthInBytes);
+            LittleEndianWriter.WriteUInt16(buffer, ref offset, PID);
+            LittleEndianWriter.WriteUInt32(buffer, ref offset, (uint)ByteOffset);
+            LittleEndianWriter.WriteUInt32(buffer, ref offset, (uint)LengthInBytes);
         }
 
         public void Write64(byte[] buffer, ref int offset)
         {
-            LittleEndianWriter.WriteUInt16(buffer, ref offset, this.PID);
+            LittleEndianWriter.WriteUInt16(buffer, ref offset, PID);
             offset += 2; // padding
-            LittleEndianWriter.WriteUInt64(buffer, ref offset, this.ByteOffset);
-            LittleEndianWriter.WriteUInt64(buffer, ref offset, this.LengthInBytes);
+            LittleEndianWriter.WriteUInt64(buffer, ref offset, ByteOffset);
+            LittleEndianWriter.WriteUInt64(buffer, ref offset, LengthInBytes);
         }
 
         public static LockingRange Read32(byte[] buffer, ref int offset)
         {
-            LockingRange entry = new LockingRange();
-            entry.PID = LittleEndianReader.ReadUInt16(buffer, ref offset);
-            entry.ByteOffset = LittleEndianReader.ReadUInt32(buffer, ref offset);
-            entry.LengthInBytes = LittleEndianReader.ReadUInt32(buffer, ref offset);
+            LockingRange entry = new LockingRange
+            {
+                PID = LittleEndianReader.ReadUInt16(buffer, ref offset),
+                ByteOffset = LittleEndianReader.ReadUInt32(buffer, ref offset),
+                LengthInBytes = LittleEndianReader.ReadUInt32(buffer, ref offset)
+            };
             return entry;
         }
 
         public static LockingRange Read64(byte[] buffer, ref int offset)
         {
-            LockingRange entry = new LockingRange();
-            entry.PID = LittleEndianReader.ReadUInt16(buffer, ref offset);
+            LockingRange entry = new LockingRange
+            {
+                PID = LittleEndianReader.ReadUInt16(buffer, ref offset)
+            };
             offset += 2; // padding
             entry.ByteOffset = LittleEndianReader.ReadUInt64(buffer, ref offset);
             entry.LengthInBytes = LittleEndianReader.ReadUInt64(buffer, ref offset);
@@ -77,31 +80,31 @@ namespace SMBLibrary.SMB1
         public List<LockingRange> Unlocks = new List<LockingRange>();
         public List<LockingRange> Locks = new List<LockingRange>();
 
-        public LockingAndXRequest() : base()
+        public LockingAndXRequest()
         {
         }
 
-        public LockingAndXRequest(byte[] buffer, int offset) : base(buffer, offset, false)
+        public LockingAndXRequest(byte[] buffer, int offset) : base(buffer, offset)
         {
-            FID = LittleEndianConverter.ToUInt16(this.SMBParameters, 4);
-            TypeOfLock = (LockType)ByteReader.ReadByte(this.SMBParameters, 6);
-            NewOpLockLevel = ByteReader.ReadByte(this.SMBParameters, 7);
-            Timeout = LittleEndianConverter.ToUInt32(this.SMBParameters, 8);
-            ushort numberOfRequestedUnlocks = LittleEndianConverter.ToUInt16(this.SMBParameters, 12);
-            ushort numberOfRequestedLocks = LittleEndianConverter.ToUInt16(this.SMBParameters, 14);
+            FID = LittleEndianConverter.ToUInt16(SMBParameters, 4);
+            TypeOfLock = (LockType)ByteReader.ReadByte(SMBParameters, 6);
+            NewOpLockLevel = ByteReader.ReadByte(SMBParameters, 7);
+            Timeout = LittleEndianConverter.ToUInt32(SMBParameters, 8);
+            ushort numberOfRequestedUnlocks = LittleEndianConverter.ToUInt16(SMBParameters, 12);
+            ushort numberOfRequestedLocks = LittleEndianConverter.ToUInt16(SMBParameters, 14);
 
             int dataOffset = 0;
             if ((TypeOfLock & LockType.LARGE_FILES) > 0)
             {
                 for (int index = 0; index < numberOfRequestedUnlocks; index++)
                 {
-                    LockingRange entry = LockingRange.Read64(this.SMBData, ref dataOffset);
+                    LockingRange entry = LockingRange.Read64(SMBData, ref dataOffset);
                     Unlocks.Add(entry);
                 }
 
                 for (int index = 0; index < numberOfRequestedLocks; index++)
                 {
-                    LockingRange entry = LockingRange.Read64(this.SMBData, ref dataOffset);
+                    LockingRange entry = LockingRange.Read64(SMBData, ref dataOffset);
                     Locks.Add(entry);
                 }
             }
@@ -109,13 +112,13 @@ namespace SMBLibrary.SMB1
             {
                 for (int index = 0; index < numberOfRequestedUnlocks; index++)
                 {
-                    LockingRange entry = LockingRange.Read32(this.SMBData, ref dataOffset);
+                    LockingRange entry = LockingRange.Read32(SMBData, ref dataOffset);
                     Unlocks.Add(entry);
                 }
 
                 for (int index = 0; index < numberOfRequestedLocks; index++)
                 {
-                    LockingRange entry = LockingRange.Read32(this.SMBData, ref dataOffset);
+                    LockingRange entry = LockingRange.Read32(SMBData, ref dataOffset);
                     Locks.Add(entry);
                 }
             }
@@ -123,13 +126,13 @@ namespace SMBLibrary.SMB1
 
         public override byte[] GetBytes(bool isUnicode)
         {
-            this.SMBParameters = new byte[ParametersLength];
-            LittleEndianWriter.WriteUInt16(this.SMBParameters, 4, FID);
-            ByteWriter.WriteByte(this.SMBParameters, 6, (byte)TypeOfLock);
-            ByteWriter.WriteByte(this.SMBParameters, 7, NewOpLockLevel);
-            LittleEndianWriter.WriteUInt32(this.SMBParameters, 8, Timeout);
-            LittleEndianWriter.WriteUInt16(this.SMBParameters, 12, (ushort)Unlocks.Count);
-            LittleEndianWriter.WriteUInt16(this.SMBParameters, 14, (ushort)Locks.Count);
+            SMBParameters = new byte[ParametersLength];
+            LittleEndianWriter.WriteUInt16(SMBParameters, 4, FID);
+            ByteWriter.WriteByte(SMBParameters, 6, (byte)TypeOfLock);
+            ByteWriter.WriteByte(SMBParameters, 7, NewOpLockLevel);
+            LittleEndianWriter.WriteUInt32(SMBParameters, 8, Timeout);
+            LittleEndianWriter.WriteUInt16(SMBParameters, 12, (ushort)Unlocks.Count);
+            LittleEndianWriter.WriteUInt16(SMBParameters, 14, (ushort)Locks.Count);
 
             int dataLength;
             bool isLargeFile = (TypeOfLock & LockType.LARGE_FILES) > 0;
@@ -142,16 +145,16 @@ namespace SMBLibrary.SMB1
                 dataLength = (Unlocks.Count + Locks.Count) * LockingRange.Length32;
             }
             int dataOffset = 0;
-            this.SMBData = new byte[dataLength];
+            SMBData = new byte[dataLength];
             for (int index = 0; index < Unlocks.Count; index++)
             {
                 if (isLargeFile)
                 {
-                    Unlocks[index].Write64(this.SMBData, ref dataOffset);
+                    Unlocks[index].Write64(SMBData, ref dataOffset);
                 }
                 else
                 {
-                    Unlocks[index].Write32(this.SMBData, ref dataOffset);
+                    Unlocks[index].Write32(SMBData, ref dataOffset);
                 }
             }
 
@@ -159,22 +162,16 @@ namespace SMBLibrary.SMB1
             {
                 if (isLargeFile)
                 {
-                    Locks[index].Write64(this.SMBData, ref dataOffset);
+                    Locks[index].Write64(SMBData, ref dataOffset);
                 }
                 else
                 {
-                    Locks[index].Write32(this.SMBData, ref dataOffset);
+                    Locks[index].Write32(SMBData, ref dataOffset);
                 }
             }
             return base.GetBytes(isUnicode);
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_LOCKING_ANDX;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_LOCKING_ANDX;
     }
 }

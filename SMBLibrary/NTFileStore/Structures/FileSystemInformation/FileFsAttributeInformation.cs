@@ -4,8 +4,6 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
 using Utilities;
 
 namespace SMBLibrary
@@ -24,7 +22,7 @@ namespace SMBLibrary
         /// </summary>
         public uint MaximumComponentNameLength;
         private uint FileSystemNameLength;
-        public string FileSystemName = String.Empty;
+        public string FileSystemName = string.Empty;
 
         public FileFsAttributeInformation()
         {
@@ -47,20 +45,8 @@ namespace SMBLibrary
             ByteWriter.WriteUTF16String(buffer, offset + 12, FileSystemName);
         }
 
-        public override FileSystemInformationClass FileSystemInformationClass
-        {
-            get
-            {
-                return FileSystemInformationClass.FileFsAttributeInformation;
-            }
-        }
+        public override FileSystemInformationClass FileSystemInformationClass => FileSystemInformationClass.FileFsAttributeInformation;
 
-        public override int Length
-        {
-            get
-            {
-                return FixedLength + FileSystemName.Length * 2;
-            }
-        }
+        public override int Length => FixedLength + FileSystemName.Length * 2;
     }
 }

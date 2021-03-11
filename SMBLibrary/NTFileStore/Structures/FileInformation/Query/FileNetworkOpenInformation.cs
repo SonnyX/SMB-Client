@@ -5,7 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
 using Utilities;
 
 namespace SMBLibrary
@@ -56,10 +55,7 @@ namespace SMBLibrary
 
         public bool IsDirectory
         {
-            get
-            {
-                return ((FileAttributes & FileAttributes.Directory) > 0);
-            }
+            get => ((FileAttributes & FileAttributes.Directory) > 0);
             set
             {
                 if (value)
@@ -73,20 +69,8 @@ namespace SMBLibrary
             }
         }
 
-        public override FileInformationClass FileInformationClass
-        {
-            get
-            {
-                return FileInformationClass.FileNetworkOpenInformation;
-            }
-        }
+        public override FileInformationClass FileInformationClass => FileInformationClass.FileNetworkOpenInformation;
 
-        public override int Length
-        {
-            get
-            {
-                return FixedLength;
-            }
-        }
+        public override int Length => FixedLength;
     }
 }

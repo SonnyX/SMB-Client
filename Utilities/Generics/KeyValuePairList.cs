@@ -1,9 +1,10 @@
 /* Copyright (C) 2012-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System.Collections.Generic;
 
 namespace Utilities
@@ -20,12 +21,12 @@ namespace Utilities
 
         public bool ContainsKey(TKey key)
         {
-            return (this.IndexOfKey(key) != -1);
+            return (IndexOfKey(key) != -1);
         }
 
         public int IndexOfKey(TKey key)
         {
-            for (int index = 0; index < this.Count; index++)
+            for (int index = 0; index < Count; index++)
             {
                 if (this[index].Key.Equals(key))
                 {
@@ -38,7 +39,7 @@ namespace Utilities
 
         public TValue ValueOf(TKey key)
         {
-            for (int index = 0; index < this.Count; index++)
+            for (int index = 0; index < Count; index++)
             {
                 if (this[index].Key.Equals(key))
                 {
@@ -46,12 +47,12 @@ namespace Utilities
                 }
             }
 
-            return default(TValue);
+            return default;
         }
 
         public void Add(TKey key, TValue value)
         {
-            this.Add(new KeyValuePair<TKey, TValue>(key, value));
+            Add(new KeyValuePair<TKey, TValue>(key, value));
         }
 
         public List<TKey> Keys

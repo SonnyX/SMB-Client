@@ -1,12 +1,12 @@
 /* Copyright (C) 2011-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Utilities
 {
@@ -14,7 +14,7 @@ namespace Utilities
     {
         public static string Quote(string str)
         {
-            return String.Format("\"{0}\"", str);
+            return $"\"{str}\"";
         }
 
         public static string Unquote(string str)
@@ -22,12 +22,10 @@ namespace Utilities
             string quote = '"'.ToString();
             if (str.Length >= 2 && str.StartsWith(quote) && str.EndsWith(quote))
             {
-                return str.Substring(1, str.Length - 2);
+                return str[1..^1];
             }
-            else
-            {
-                return str;
-            }
+
+            return str;
         }
 
         public static bool IsQuoted(string str)
@@ -37,10 +35,8 @@ namespace Utilities
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
         public static int IndexOfUnquotedChar(string str, char charToFind)
@@ -92,7 +88,7 @@ namespace Utilities
                 {
                     inQuote = !inQuote;
                 }
-                else if (!inQuote && str.Substring(index).StartsWith(stringToFind))
+                else if (!inQuote && str[index..].StartsWith(stringToFind))
                 {
                     return index;
                 }
@@ -113,16 +109,16 @@ namespace Utilities
             int separatorIndex = IndexOfUnquotedChar(str, separator);
             while (separatorIndex >= nextEntryIndex)
             {
-                string entry = str.Substring(nextEntryIndex, separatorIndex - nextEntryIndex);
-                if (options != StringSplitOptions.RemoveEmptyEntries || entry != String.Empty)
+                string entry = str[nextEntryIndex..separatorIndex];
+                if (options != StringSplitOptions.RemoveEmptyEntries || entry != string.Empty)
                 {
                     result.Add(entry);
                 }
                 nextEntryIndex = separatorIndex + 1;
                 separatorIndex = IndexOfUnquotedChar(str, separator, nextEntryIndex);
             }
-            string lastEntry = str.Substring(nextEntryIndex);
-            if (options != StringSplitOptions.RemoveEmptyEntries || lastEntry != String.Empty)
+            string lastEntry = str[nextEntryIndex..];
+            if (options != StringSplitOptions.RemoveEmptyEntries || lastEntry != string.Empty)
             {
                 result.Add(lastEntry);
             }

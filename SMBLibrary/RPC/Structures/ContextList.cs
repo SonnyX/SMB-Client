@@ -4,9 +4,8 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
+
 using System.Collections.Generic;
-using System.Text;
 using Utilities;
 
 namespace SMBLibrary.RPC
@@ -21,11 +20,11 @@ namespace SMBLibrary.RPC
         public byte Reserved1;
         public ushort Reserved2;
 
-        public ContextList() : base()
+        public ContextList()
         {
         }
 
-        public ContextList(byte[] buffer, int offset) : base()
+        public ContextList(byte[] buffer, int offset)
         {
             byte numberOfContextElements = ByteReader.ReadByte(buffer, offset + 0);
             Reserved1 = ByteReader.ReadByte(buffer, offset + 1);
@@ -34,14 +33,14 @@ namespace SMBLibrary.RPC
             for (int index = 0; index < numberOfContextElements; index++)
             {
                 ContextElement element = new ContextElement(buffer, offset);
-                this.Add(element);
+                Add(element);
                 offset += element.Length;
             }
         }
 
         public void WriteBytes(byte[] buffer, int offset)
         {
-            byte numberOfContextElements = (byte)this.Count;
+            byte numberOfContextElements = (byte)Count;
 
             ByteWriter.WriteByte(buffer, offset + 0, numberOfContextElements);
             ByteWriter.WriteByte(buffer, offset + 1, Reserved1);
@@ -57,7 +56,7 @@ namespace SMBLibrary.RPC
         public void WriteBytes(byte[] buffer, ref int offset)
         {
             WriteBytes(buffer, offset);
-            offset += this.Length;
+            offset += Length;
         }
 
         public int Length
@@ -65,7 +64,7 @@ namespace SMBLibrary.RPC
             get
             {
                 int length = 4;
-                for (int index = 0; index < this.Count; index++)
+                for (int index = 0; index < Count; index++)
                 {
                     length += this[index].Length;
                 }

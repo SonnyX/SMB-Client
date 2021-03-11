@@ -43,10 +43,8 @@ namespace Utilities
             {
                 return XOR(array1, 0, array2, 0, array1.Length);
             }
-            else
-            {
-                throw new ArgumentException("Arrays must be of equal length");
-            }
+
+            throw new ArgumentException("Arrays must be of equal length");
         }
 
         public static byte[] XOR(byte[] array1, int offset1, byte[] array2, int offset2, int length)
@@ -60,16 +58,14 @@ namespace Utilities
                 }
                 return result;
             }
-            else
-            {
-                throw new ArgumentOutOfRangeException();
-            }
+
+            throw new ArgumentOutOfRangeException();
         }
 
         public static long CopyStream(Stream input, Stream output)
         {
             // input may not support seeking, so don't use input.Position
-            return CopyStream(input, output, Int64.MaxValue);
+            return CopyStream(input, output, long.MaxValue);
         }
 
         public static long CopyStream(Stream input, Stream output, long count)

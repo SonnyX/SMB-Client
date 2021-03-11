@@ -5,7 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
 using Utilities;
 
 namespace SMBLibrary.SMB2
@@ -18,7 +17,7 @@ namespace SMBLibrary.SMB2
         public const int FixedLength = 48;
         public const int DeclaredSize = 49;
 
-        private ushort StructureSize;
+        private readonly ushort StructureSize;
         public ushort Reserved;
         public uint CtlCode;
         public FileID FileId;

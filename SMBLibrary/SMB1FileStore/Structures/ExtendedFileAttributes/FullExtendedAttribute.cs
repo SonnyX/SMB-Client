@@ -4,9 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -46,12 +44,6 @@ namespace SMBLibrary.SMB1
             ByteWriter.WriteAnsiString(buffer, offset + 4 + AttributeNameLengthInBytes + 1, AttributeValue, AttributeValue.Length);
         }
 
-        public int Length
-        {
-            get
-            {
-                return 4 + AttributeName.Length + 1 + AttributeValue.Length;
-            }
-        }
+        public int Length => 4 + AttributeName.Length + 1 + AttributeValue.Length;
     }
 }

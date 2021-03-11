@@ -1,15 +1,14 @@
 /* Copyright (C) 2014-2019 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using SMBLibrary.SMB1;
-using SMBLibrary.RPC;
-using SMBLibrary.Services;
 using Utilities;
 
 namespace SMBLibrary.Server.SMB1
@@ -42,23 +41,17 @@ namespace SMBLibrary.Server.SMB1
                 {
                     return new Transaction2InterimResponse();
                 }
-                else
-                {
-                    return new TransactionInterimResponse();
-                }
+
+                return new TransactionInterimResponse();
             }
-            else
+
+            // We have a complete command
+            if (request is Transaction2Request)
             {
-                // We have a complete command
-                if (request is Transaction2Request)
-                {
-                    return GetCompleteTransaction2Response(header, request.MaxDataCount, request.Setup, request.TransParameters, request.TransData, share, state);
-                }
-                else
-                {
-                    return GetCompleteTransactionResponse(header, request.MaxDataCount, request.Timeout, request.Name, request.Setup, request.TransParameters, request.TransData, share, state);
-                }
+                return GetCompleteTransaction2Response(header, request.MaxDataCount, request.Setup, request.TransParameters, request.TransData, share, state);
             }
+
+            return GetCompleteTransactionResponse(header, request.MaxDataCount, request.Timeout, request.Name, request.Setup, request.TransParameters, request.TransData, share, state);
         }
 
         /// <summary>
@@ -83,24 +76,20 @@ namespace SMBLibrary.Server.SMB1
             {
                 return new List<SMB1Command>();
             }
-            else
+
+            // We have a complete command
+            state.RemoveProcessState(header.PID);
+            if (request is Transaction2SecondaryRequest)
             {
-                // We have a complete command
-                state.RemoveProcessState(header.PID);
-                if (request is Transaction2SecondaryRequest)
-                {
-                    return GetCompleteTransaction2Response(header, processState.MaxDataCount, processState.TransactionSetup, processState.TransactionParameters, processState.TransactionData, share, state);
-                }
-                else
-                {
-                    return GetCompleteTransactionResponse(header, processState.MaxDataCount, processState.Timeout, processState.Name, processState.TransactionSetup, processState.TransactionParameters, processState.TransactionData, share, state);
-                }
+                return GetCompleteTransaction2Response(header, processState.MaxDataCount, processState.TransactionSetup, processState.TransactionParameters, processState.TransactionData, share, state);
             }
+
+            return GetCompleteTransactionResponse(header, processState.MaxDataCount, processState.Timeout, processState.Name, processState.TransactionSetup, processState.TransactionParameters, processState.TransactionData, share, state);
         }
 
         internal static List<SMB1Command> GetCompleteTransactionResponse(SMB1Header header, uint maxDataCount, uint timeout, string name, byte[] requestSetup, byte[] requestParameters, byte[] requestData, ISMBShare share, SMB1ConnectionState state)
         {
-            if (String.Equals(name, @"\PIPE\lanman", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(name, @"\PIPE\lanman", StringComparison.OrdinalIgnoreCase))
             {
                 // [MS-RAP] Remote Administration Protocol request
                 state.LogToServer(Severity.Debug, "Remote Administration Protocol requests are not implemented");
@@ -111,7 +100,7 @@ namespace SMBLibrary.Server.SMB1
             TransactionSubcommand subcommand;
             try
             {
-                subcommand = TransactionSubcommand.GetSubcommandRequest(requestSetup, requestParameters, requestData, header.UnicodeFlag);
+                subcommand = TransactionSubcommand.GetSubcommandRequest(requestSetup, requestParameters, requestData);
             }
             catch
             {
@@ -121,53 +110,37 @@ namespace SMBLibrary.Server.SMB1
             state.LogToServer(Severity.Verbose, "Received complete SMB_COM_TRANSACTION subcommand: {0}", subcommand.SubcommandName);
             TransactionSubcommand subcommandResponse = null;
 
-            if (subcommand is TransactionSetNamedPipeStateRequest)
+            switch (subcommand)
             {
-                header.Status = NTStatus.STATUS_NOT_IMPLEMENTED;
-            }
-            else if (subcommand is TransactionRawReadNamedPipeRequest)
-            {
-                header.Status = NTStatus.STATUS_NOT_IMPLEMENTED;
-            }
-            else if (subcommand is TransactionQueryNamedPipeStateRequest)
-            {
-                header.Status = NTStatus.STATUS_NOT_IMPLEMENTED;
-            }
-            else if (subcommand is TransactionQueryNamedPipeInfoRequest)
-            {
-                header.Status = NTStatus.STATUS_NOT_IMPLEMENTED;
-            }
-            else if (subcommand is TransactionPeekNamedPipeRequest)
-            {
-                header.Status = NTStatus.STATUS_NOT_IMPLEMENTED;
-            }
-            else if (subcommand is TransactionTransactNamedPipeRequest)
-            {
-                subcommandResponse = TransactionSubcommandHelper.GetSubcommandResponse(header, maxDataCount, (TransactionTransactNamedPipeRequest)subcommand, share, state);
-            }
-            else if (subcommand is TransactionRawWriteNamedPipeRequest)
-            {
-                header.Status = NTStatus.STATUS_NOT_IMPLEMENTED;
-            }
-            else if (subcommand is TransactionReadNamedPipeRequest)
-            {
-                header.Status = NTStatus.STATUS_NOT_IMPLEMENTED;
-            }
-            else if (subcommand is TransactionWriteNamedPipeRequest)
-            {
-                header.Status = NTStatus.STATUS_NOT_IMPLEMENTED;
-            }
-            else if (subcommand is TransactionWaitNamedPipeRequest)
-            {
-                TransactionSubcommandHelper.ProcessSubcommand(header, timeout, name, (TransactionWaitNamedPipeRequest)subcommand, share, state);
-            }
-            else if (subcommand is TransactionCallNamedPipeRequest)
-            {
-                header.Status = NTStatus.STATUS_NOT_IMPLEMENTED;
-            }
-            else
-            {
-                header.Status = NTStatus.STATUS_SMB_BAD_COMMAND;
+                case TransactionSetNamedPipeStateRequest _:
+                case TransactionRawReadNamedPipeRequest _:
+                case TransactionQueryNamedPipeStateRequest _:
+                case TransactionQueryNamedPipeInfoRequest _:
+                case TransactionPeekNamedPipeRequest _:
+                    header.Status = NTStatus.STATUS_NOT_IMPLEMENTED;
+                    break;
+
+                case TransactionTransactNamedPipeRequest request:
+                    subcommandResponse = TransactionSubcommandHelper.GetSubcommandResponse(header, maxDataCount, request, share, state);
+                    break;
+
+                case TransactionRawWriteNamedPipeRequest _:
+                case TransactionReadNamedPipeRequest _:
+                case TransactionWriteNamedPipeRequest _:
+                    header.Status = NTStatus.STATUS_NOT_IMPLEMENTED;
+                    break;
+
+                case TransactionWaitNamedPipeRequest request:
+                    TransactionSubcommandHelper.ProcessSubcommand(header, timeout, name, request, share, state);
+                    break;
+
+                case TransactionCallNamedPipeRequest _:
+                    header.Status = NTStatus.STATUS_NOT_IMPLEMENTED;
+                    break;
+
+                default:
+                    header.Status = NTStatus.STATUS_SMB_BAD_COMMAND;
+                    break;
             }
 
             if (header.Status != NTStatus.STATUS_SUCCESS && (header.Status != NTStatus.STATUS_BUFFER_OVERFLOW || subcommandResponse == null))
@@ -196,49 +169,51 @@ namespace SMBLibrary.Server.SMB1
             state.LogToServer(Severity.Verbose, "Received complete SMB_COM_TRANSACTION2 subcommand: {0}", subcommand.SubcommandName);
             Transaction2Subcommand subcommandResponse = null;
 
-            if (subcommand is Transaction2FindFirst2Request)
+            switch (subcommand)
             {
-                subcommandResponse = Transaction2SubcommandHelper.GetSubcommandResponse(header, maxDataCount, (Transaction2FindFirst2Request)subcommand, share, state);
-            }
-            else if (subcommand is Transaction2FindNext2Request)
-            {
-                subcommandResponse = Transaction2SubcommandHelper.GetSubcommandResponse(header, maxDataCount, (Transaction2FindNext2Request)subcommand, share, state);
-            }
-            else if (subcommand is Transaction2QueryFSInformationRequest)
-            {
-                subcommandResponse = Transaction2SubcommandHelper.GetSubcommandResponse(header, maxDataCount, (Transaction2QueryFSInformationRequest)subcommand, share, state);
-            }
-            else if (subcommand is Transaction2SetFSInformationRequest)
-            {
-                subcommandResponse = Transaction2SubcommandHelper.GetSubcommandResponse(header, (Transaction2SetFSInformationRequest)subcommand, share, state);
-            }
-            else if (subcommand is Transaction2QueryPathInformationRequest)
-            {
-                subcommandResponse = Transaction2SubcommandHelper.GetSubcommandResponse(header, maxDataCount, (Transaction2QueryPathInformationRequest)subcommand, share, state);
-            }
-            else if (subcommand is Transaction2SetPathInformationRequest)
-            {
-                header.Status = NTStatus.STATUS_NOT_IMPLEMENTED;
-            }
-            else if (subcommand is Transaction2QueryFileInformationRequest)
-            {
-                subcommandResponse = Transaction2SubcommandHelper.GetSubcommandResponse(header, maxDataCount, (Transaction2QueryFileInformationRequest)subcommand, share, state);
-            }
-            else if (subcommand is Transaction2SetFileInformationRequest)
-            {
-                subcommandResponse = Transaction2SubcommandHelper.GetSubcommandResponse(header, (Transaction2SetFileInformationRequest)subcommand, share, state);
-            }
-            else if (subcommand is Transaction2CreateDirectoryRequest)
-            {
-                header.Status = NTStatus.STATUS_NOT_IMPLEMENTED;
-            }
-            else if (subcommand is Transaction2GetDfsReferralRequest)
-            {
-                header.Status = NTStatus.STATUS_NO_SUCH_DEVICE;
-            }
-            else
-            {
-                header.Status = NTStatus.STATUS_SMB_BAD_COMMAND;
+                case Transaction2FindFirst2Request request:
+                    subcommandResponse = Transaction2SubcommandHelper.GetSubcommandResponse(header, maxDataCount, request, share, state);
+                    break;
+
+                case Transaction2FindNext2Request request:
+                    subcommandResponse = Transaction2SubcommandHelper.GetSubcommandResponse(header, maxDataCount, request, state);
+                    break;
+
+                case Transaction2QueryFSInformationRequest request:
+                    subcommandResponse = Transaction2SubcommandHelper.GetSubcommandResponse(header, maxDataCount, request, share, state);
+                    break;
+
+                case Transaction2SetFSInformationRequest request:
+                    subcommandResponse = Transaction2SubcommandHelper.GetSubcommandResponse(header, request, share, state);
+                    break;
+
+                case Transaction2QueryPathInformationRequest request:
+                    subcommandResponse = Transaction2SubcommandHelper.GetSubcommandResponse(header, maxDataCount, request, share, state);
+                    break;
+
+                case Transaction2SetPathInformationRequest _:
+                    header.Status = NTStatus.STATUS_NOT_IMPLEMENTED;
+                    break;
+
+                case Transaction2QueryFileInformationRequest request:
+                    subcommandResponse = Transaction2SubcommandHelper.GetSubcommandResponse(header, maxDataCount, request, share, state);
+                    break;
+
+                case Transaction2SetFileInformationRequest request:
+                    subcommandResponse = Transaction2SubcommandHelper.GetSubcommandResponse(header, request, share, state);
+                    break;
+
+                case Transaction2CreateDirectoryRequest _:
+                    header.Status = NTStatus.STATUS_NOT_IMPLEMENTED;
+                    break;
+
+                case Transaction2GetDfsReferralRequest _:
+                    header.Status = NTStatus.STATUS_NO_SUCH_DEVICE;
+                    break;
+
+                default:
+                    header.Status = NTStatus.STATUS_SMB_BAD_COMMAND;
+                    break;
             }
 
             if (header.Status != NTStatus.STATUS_SUCCESS && (header.Status != NTStatus.STATUS_BUFFER_OVERFLOW || subcommandResponse == null))

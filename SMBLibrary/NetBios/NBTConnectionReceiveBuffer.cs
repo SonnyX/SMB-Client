@@ -5,7 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Utilities;
 
@@ -64,7 +63,7 @@ namespace SMBLibrary.NetBios
         /// <summary>
         /// HasCompletePacket must be called and return true before calling DequeuePacket
         /// </summary>
-        /// <exception cref="System.IO.InvalidDataException"></exception>
+        /// <exception cref="InvalidDataException"></exception>
         public SessionPacket DequeuePacket()
         {
             SessionPacket packet;
@@ -110,36 +109,12 @@ namespace SMBLibrary.NetBios
             }
         }
 
-        public byte[] Buffer
-        {
-            get
-            {
-                return m_buffer;
-            }
-        }
+        public byte[] Buffer => m_buffer;
 
-        public int WriteOffset
-        {
-            get
-            {
-                return m_readOffset + m_bytesInBuffer;
-            }
-        }
+        public int WriteOffset => m_readOffset + m_bytesInBuffer;
 
-        public int BytesInBuffer
-        {
-            get
-            {
-                return m_bytesInBuffer;
-            }
-        }
+        public int BytesInBuffer => m_bytesInBuffer;
 
-        public int AvailableLength
-        {
-            get
-            {
-                return m_buffer.Length - (m_readOffset + m_bytesInBuffer);
-            }
-        }
+        public int AvailableLength => m_buffer.Length - (m_readOffset + m_bytesInBuffer);
     }
 }

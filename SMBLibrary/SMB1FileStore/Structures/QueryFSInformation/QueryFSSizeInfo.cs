@@ -1,12 +1,10 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -27,7 +25,7 @@ namespace SMBLibrary.SMB1
         {
         }
 
-        public QueryFSSizeInfo(byte[] buffer, int offset)
+        public QueryFSSizeInfo(byte[] buffer)
         {
             TotalAllocationUnits = LittleEndianConverter.ToInt64(buffer, 0);
             TotalFreeAllocationUnits = LittleEndianConverter.ToInt64(buffer, 8);
@@ -45,20 +43,8 @@ namespace SMBLibrary.SMB1
             return buffer;
         }
 
-        public override int Length
-        {
-            get
-            {
-                return FixedLength;
-            }
-        }
+        public override int Length => FixedLength;
 
-        public override QueryFSInformationLevel InformationLevel
-        {
-            get
-            {
-                return QueryFSInformationLevel.SMB_QUERY_FS_SIZE_INFO;
-            }
-        }
+        public override QueryFSInformationLevel InformationLevel => QueryFSInformationLevel.SMB_QUERY_FS_SIZE_INFO;
     }
 }

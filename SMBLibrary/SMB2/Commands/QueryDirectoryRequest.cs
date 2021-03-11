@@ -4,8 +4,6 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
 using Utilities;
 
 namespace SMBLibrary.SMB2
@@ -18,7 +16,7 @@ namespace SMBLibrary.SMB2
         public const int FixedLength = 32;
         public const int DeclaredSize = 33;
 
-        private ushort StructureSize;
+        private readonly ushort StructureSize;
         public FileInformationClass FileInformationClass;
         public QueryDirectoryFlags Flags;
         public uint FileIndex;
@@ -26,7 +24,7 @@ namespace SMBLibrary.SMB2
         private ushort FileNameOffset;
         private ushort FileNameLength;
         public uint OutputBufferLength;
-        public string FileName = String.Empty;
+        public string FileName = string.Empty;
 
         public QueryDirectoryRequest() : base(SMB2CommandName.QueryDirectory)
         {
@@ -67,10 +65,7 @@ namespace SMBLibrary.SMB2
 
         public bool Restart
         {
-            get
-            {
-                return ((this.Flags & QueryDirectoryFlags.SMB2_RESTART_SCANS) > 0);
-            }
+            get => ((Flags & QueryDirectoryFlags.SMB2_RESTART_SCANS) > 0);
             set
             {
                 if (value)
@@ -86,10 +81,7 @@ namespace SMBLibrary.SMB2
 
         public bool ReturnSingleEntry
         {
-            get
-            {
-                return ((this.Flags & QueryDirectoryFlags.SMB2_RETURN_SINGLE_ENTRY) > 0);
-            }
+            get => ((Flags & QueryDirectoryFlags.SMB2_RETURN_SINGLE_ENTRY) > 0);
             set
             {
                 if (value)
@@ -105,10 +97,7 @@ namespace SMBLibrary.SMB2
 
         public bool Reopen
         {
-            get
-            {
-                return ((this.Flags & QueryDirectoryFlags.SMB2_REOPEN) > 0);
-            }
+            get => ((Flags & QueryDirectoryFlags.SMB2_REOPEN) > 0);
             set
             {
                 if (value)
@@ -122,12 +111,6 @@ namespace SMBLibrary.SMB2
             }
         }
 
-        public override int CommandLength
-        {
-            get
-            {
-                return FixedLength + FileName.Length * 2;
-            }
-        }
+        public override int CommandLength => FixedLength + FileName.Length * 2;
     }
 }

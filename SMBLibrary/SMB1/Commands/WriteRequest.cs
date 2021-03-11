@@ -5,7 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Utilities;
 
@@ -30,54 +29,48 @@ namespace SMBLibrary.SMB1
         // ushort DataLength;
         public byte[] Data;
 
-        public WriteRequest() : base()
+        public WriteRequest()
         {
             BufferFormat = SupportedBufferFormat;
             Data = new byte[0];
         }
 
-        public WriteRequest(byte[] buffer, int offset) : base(buffer, offset, false)
+        public WriteRequest(byte[] buffer, int offset) : base(buffer, offset)
         {
-            FID = LittleEndianConverter.ToUInt16(this.SMBParameters, 0);
-            CountOfBytesToWrite = LittleEndianConverter.ToUInt16(this.SMBParameters, 2);
-            WriteOffsetInBytes = LittleEndianConverter.ToUInt16(this.SMBParameters, 4);
-            EstimateOfRemainingBytesToBeWritten = LittleEndianConverter.ToUInt16(this.SMBParameters, 6);
+            FID = LittleEndianConverter.ToUInt16(SMBParameters, 0);
+            CountOfBytesToWrite = LittleEndianConverter.ToUInt16(SMBParameters, 2);
+            WriteOffsetInBytes = LittleEndianConverter.ToUInt16(SMBParameters, 4);
+            EstimateOfRemainingBytesToBeWritten = LittleEndianConverter.ToUInt16(SMBParameters, 6);
 
-            BufferFormat = ByteReader.ReadByte(this.SMBData, 0);
+            BufferFormat = ByteReader.ReadByte(SMBData, 0);
             if (BufferFormat != SupportedBufferFormat)
             {
                 throw new InvalidDataException("Unsupported Buffer Format");
             }
-            ushort dataLength = LittleEndianConverter.ToUInt16(this.SMBData, 1);
-            Data = ByteReader.ReadBytes(this.SMBData, 3, dataLength);
+            ushort dataLength = LittleEndianConverter.ToUInt16(SMBData, 1);
+            Data = ByteReader.ReadBytes(SMBData, 3, dataLength);
         }
 
         public override byte[] GetBytes(bool isUnicode)
         {
-            if (Data.Length > UInt16.MaxValue)
+            if (Data.Length > ushort.MaxValue)
             {
                 throw new ArgumentException("Invalid Data length");
             }
-            this.SMBParameters = new byte[ParametersLength];
-            LittleEndianWriter.WriteUInt16(this.SMBParameters, 0, FID);
-            LittleEndianWriter.WriteUInt16(this.SMBParameters, 2, CountOfBytesToWrite);
-            LittleEndianWriter.WriteUInt16(this.SMBParameters, 4, WriteOffsetInBytes);
-            LittleEndianWriter.WriteUInt16(this.SMBParameters, 6, EstimateOfRemainingBytesToBeWritten);
+            SMBParameters = new byte[ParametersLength];
+            LittleEndianWriter.WriteUInt16(SMBParameters, 0, FID);
+            LittleEndianWriter.WriteUInt16(SMBParameters, 2, CountOfBytesToWrite);
+            LittleEndianWriter.WriteUInt16(SMBParameters, 4, WriteOffsetInBytes);
+            LittleEndianWriter.WriteUInt16(SMBParameters, 6, EstimateOfRemainingBytesToBeWritten);
 
-            this.SMBData = new byte[3 + Data.Length];
-            ByteWriter.WriteByte(this.SMBData, 0, BufferFormat);
-            LittleEndianWriter.WriteUInt16(this.SMBData, 1, (ushort)Data.Length);
-            ByteWriter.WriteBytes(this.SMBData, 3, Data);
+            SMBData = new byte[3 + Data.Length];
+            ByteWriter.WriteByte(SMBData, 0, BufferFormat);
+            LittleEndianWriter.WriteUInt16(SMBData, 1, (ushort)Data.Length);
+            ByteWriter.WriteBytes(SMBData, 3, Data);
 
             return base.GetBytes(isUnicode);
         }
 
-        public override CommandName CommandName
-        {
-            get
-            {
-                return CommandName.SMB_COM_WRITE;
-            }
-        }
+        public override CommandName CommandName => CommandName.SMB_COM_WRITE;
     }
 }

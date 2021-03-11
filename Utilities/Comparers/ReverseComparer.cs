@@ -4,14 +4,14 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
+
 using System.Collections.Generic;
 
 namespace Utilities
 {
     public class ReverseComparer<T> : IComparer<T>
     {
-        private IComparer<T> m_comparer;
+        private readonly IComparer<T> m_comparer;
 
         public ReverseComparer(IComparer<T> comparer)
         {

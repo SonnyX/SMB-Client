@@ -1,9 +1,10 @@
 /* Copyright (C) 2017-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Collections.Generic;
 using SMBLibrary.NetBios;
@@ -91,17 +92,16 @@ namespace SMBLibrary.Server
                     }
                     return response;
                 }
-                else
-                {
-                    // [MS-SMB2] If the request being received is not an SMB2 NEGOTIATE Request [..]
-                    // and Connection.NegotiateDialect is 0xFFFF or 0x02FF, the server MUST
-                    // disconnect the connection.
-                    state.LogToServer(Severity.Debug, "Invalid Connection State for command {0}", command.CommandName.ToString());
-                    state.ClientSocket.Close();
-                    return null;
-                }
+
+                // [MS-SMB2] If the request being received is not an SMB2 NEGOTIATE Request [..]
+                // and Connection.NegotiateDialect is 0xFFFF or 0x02FF, the server MUST
+                // disconnect the connection.
+                state.LogToServer(Severity.Debug, "Invalid Connection State for command {0}", command.CommandName.ToString());
+                state.ClientSocket.Close();
+                return null;
             }
-            else if (command is NegotiateRequest)
+
+            if (command is NegotiateRequest)
             {
                 // [MS-SMB2] If Connection.NegotiateDialect is 0x0202, 0x0210, 0x0300, 0x0302, or 0x0311,
                 // the server MUST disconnect the connection.
@@ -109,10 +109,7 @@ namespace SMBLibrary.Server
                 state.ClientSocket.Close();
                 return null;
             }
-            else
-            {
-                return ProcessSMB2Command(command, (SMB2ConnectionState)state);
-            }
+            return ProcessSMB2Command(command, (SMB2ConnectionState)state);
         }
 
         private SMB2Command ProcessSMB2Command(SMB2Command command, SMB2ConnectionState state)
@@ -121,98 +118,98 @@ namespace SMBLibrary.Server
             {
                 return SessionSetupHelper.GetSessionSetupResponse((SessionSetupRequest)command, m_securityProvider, state);
             }
-            else if (command is EchoRequest)
+
+            if (command is EchoRequest)
             {
                 return new EchoResponse();
             }
+            SMB2Session session = state.GetSession(command.Header.SessionID);
+            if (session == null)
+            {
+                return new ErrorResponse(command.CommandName, NTStatus.STATUS_USER_SESSION_DELETED);
+            }
+
+            if (command is TreeConnectRequest)
+            {
+                return TreeConnectHelper.GetTreeConnectResponse((TreeConnectRequest)command, state, m_services, m_shares);
+            }
+
+            if (command is LogoffRequest)
+            {
+                state.LogToServer(Severity.Information, "Logoff: User '{0}' logged off. (SessionID: {1})", session.UserName, command.Header.SessionID);
+                m_securityProvider.DeleteSecurityContext(ref session.SecurityContext.AuthenticationContext);
+                state.RemoveSession(command.Header.SessionID);
+                return new LogoffResponse();
+            }
+            if (command.Header.IsAsync)
+            {
+                // TreeID will not be present in an ASYNC header
+                if (command is CancelRequest)
+                {
+                    return CancelHelper.GetCancelResponse((CancelRequest)command, state);
+                }
+            }
             else
             {
-                SMB2Session session = state.GetSession(command.Header.SessionID);
-                if (session == null)
+                ISMBShare share = session.GetConnectedTree(command.Header.TreeID);
+                if (share == null)
                 {
-                    return new ErrorResponse(command.CommandName, NTStatus.STATUS_USER_SESSION_DELETED);
+                    state.LogToServer(Severity.Verbose, "{0} failed. Invalid TreeID (SessionID: {1}, TreeID: {2}).", command.CommandName, command.Header.SessionID, command.Header.TreeID);
+                    return new ErrorResponse(command.CommandName, NTStatus.STATUS_NETWORK_NAME_DELETED);
                 }
 
-                if (command is TreeConnectRequest)
+                if (command is TreeDisconnectRequest)
                 {
-                    return TreeConnectHelper.GetTreeConnectResponse((TreeConnectRequest)command, state, m_services, m_shares);
+                    return TreeConnectHelper.GetTreeDisconnectResponse((TreeDisconnectRequest)command, share, state);
                 }
-                else if (command is LogoffRequest)
-                {
-                    state.LogToServer(Severity.Information, "Logoff: User '{0}' logged off. (SessionID: {1})", session.UserName, command.Header.SessionID);
-                    m_securityProvider.DeleteSecurityContext(ref session.SecurityContext.AuthenticationContext);
-                    state.RemoveSession(command.Header.SessionID);
-                    return new LogoffResponse();
-                }
-                else if (command.Header.IsAsync)
-                {
-                    // TreeID will not be present in an ASYNC header
-                    if (command is CancelRequest)
-                    {
-                        return CancelHelper.GetCancelResponse((CancelRequest)command, state);
-                    }
-                }
-                else
-                {
-                    ISMBShare share = session.GetConnectedTree(command.Header.TreeID);
-                    if (share == null)
-                    {
-                        state.LogToServer(Severity.Verbose, "{0} failed. Invalid TreeID (SessionID: {1}, TreeID: {2}).", command.CommandName, command.Header.SessionID, command.Header.TreeID);
-                        return new ErrorResponse(command.CommandName, NTStatus.STATUS_NETWORK_NAME_DELETED);
-                    }
 
-                    if (command is TreeDisconnectRequest)
-                    {
-                        return TreeConnectHelper.GetTreeDisconnectResponse((TreeDisconnectRequest)command, share, state);
-                    }
-                    else if (command is CreateRequest)
-                    {
-                        return CreateHelper.GetCreateResponse((CreateRequest)command, share, state);
-                    }
-                    else if (command is QueryInfoRequest)
-                    {
-                        return QueryInfoHelper.GetQueryInfoResponse((QueryInfoRequest)command, share, state);
-                    }
-                    else if (command is SetInfoRequest)
-                    {
-                        return SetInfoHelper.GetSetInfoResponse((SetInfoRequest)command, share, state);
-                    }
-                    else if (command is QueryDirectoryRequest)
-                    {
-                        return QueryDirectoryHelper.GetQueryDirectoryResponse((QueryDirectoryRequest)command, share, state);
-                    }
-                    else if (command is ReadRequest)
-                    {
-                        return ReadWriteResponseHelper.GetReadResponse((ReadRequest)command, share, state);
-                    }
-                    else if (command is WriteRequest)
-                    {
-                        return ReadWriteResponseHelper.GetWriteResponse((WriteRequest)command, share, state);
-                    }
-                    else if (command is LockRequest)
-                    {
-                        return LockHelper.GetLockResponse((LockRequest)command, share, state);
-                    }
-                    else if (command is FlushRequest)
-                    {
-                        return ReadWriteResponseHelper.GetFlushResponse((FlushRequest)command, share, state);
-                    }
-                    else if (command is CloseRequest)
-                    {
-                        return CloseHelper.GetCloseResponse((CloseRequest)command, share, state);
-                    }
-                    else if (command is IOCtlRequest)
-                    {
-                        return IOCtlHelper.GetIOCtlResponse((IOCtlRequest)command, share, state);
-                    }
-                    else if (command is CancelRequest)
-                    {
-                        return CancelHelper.GetCancelResponse((CancelRequest)command, state);
-                    }
-                    else if (command is ChangeNotifyRequest)
-                    {
-                        return ChangeNotifyHelper.GetChangeNotifyInterimResponse((ChangeNotifyRequest)command, share, state);
-                    }
+                if (command is CreateRequest)
+                {
+                    return CreateHelper.GetCreateResponse((CreateRequest)command, share, state);
+                }
+                if (command is QueryInfoRequest)
+                {
+                    return QueryInfoHelper.GetQueryInfoResponse((QueryInfoRequest)command, share, state);
+                }
+                if (command is SetInfoRequest)
+                {
+                    return SetInfoHelper.GetSetInfoResponse((SetInfoRequest)command, share, state);
+                }
+                if (command is QueryDirectoryRequest)
+                {
+                    return QueryDirectoryHelper.GetQueryDirectoryResponse((QueryDirectoryRequest)command, share, state);
+                }
+                if (command is ReadRequest)
+                {
+                    return ReadWriteResponseHelper.GetReadResponse((ReadRequest)command, share, state);
+                }
+                if (command is WriteRequest)
+                {
+                    return ReadWriteResponseHelper.GetWriteResponse((WriteRequest)command, share, state);
+                }
+                if (command is LockRequest)
+                {
+                    return LockHelper.GetLockResponse((LockRequest)command, share, state);
+                }
+                if (command is FlushRequest)
+                {
+                    return ReadWriteResponseHelper.GetFlushResponse((FlushRequest)command, share, state);
+                }
+                if (command is CloseRequest)
+                {
+                    return CloseHelper.GetCloseResponse((CloseRequest)command, share, state);
+                }
+                if (command is IOCtlRequest)
+                {
+                    return IOCtlHelper.GetIOCtlResponse((IOCtlRequest)command, share, state);
+                }
+                if (command is CancelRequest)
+                {
+                    return CancelHelper.GetCancelResponse((CancelRequest)command, state);
+                }
+                if (command is ChangeNotifyRequest)
+                {
+                    return ChangeNotifyHelper.GetChangeNotifyInterimResponse((ChangeNotifyRequest)command, share, state);
                 }
             }
 
@@ -221,8 +218,10 @@ namespace SMBLibrary.Server
 
         internal static void EnqueueResponse(ConnectionState state, SMB2Command response)
         {
-            List<SMB2Command> responseChain = new List<SMB2Command>();
-            responseChain.Add(response);
+            List<SMB2Command> responseChain = new List<SMB2Command>
+            {
+                response
+            };
             EnqueueResponseChain(state, responseChain);
         }
 
@@ -254,17 +253,13 @@ namespace SMBLibrary.Server
 
         internal static SMB2Dialect ToSMB2Dialect(SMBDialect smbDialect)
         {
-            switch (smbDialect)
+            return smbDialect switch
             {
-                case SMBDialect.SMB202:
-                    return SMB2Dialect.SMB202;
-                case SMBDialect.SMB210:
-                    return SMB2Dialect.SMB210;
-                case SMBDialect.SMB300:
-                    return SMB2Dialect.SMB300;
-                default:
-                    throw new ArgumentException("Unsupported SMB2 Dialect: " + smbDialect.ToString());
-            }
+                SMBDialect.SMB202 => SMB2Dialect.SMB202,
+                SMBDialect.SMB210 => SMB2Dialect.SMB210,
+                SMBDialect.SMB300 => SMB2Dialect.SMB300,
+                _ => throw new ArgumentException("Unsupported SMB2 Dialect: " + smbDialect)
+            };
         }
 
         private static void UpdateSMB2Header(SMB2Command response, SMB2Command request, ConnectionState state)
@@ -283,13 +278,10 @@ namespace SMBLibrary.Server
                 response.Header.TreeID = request.Header.TreeID;
             }
             bool signingRequired = false;
-            if (state is SMB2ConnectionState)
+            SMB2Session session = (state as SMB2ConnectionState)?.GetSession(response.Header.SessionID);
+            if (session != null && session.SigningRequired)
             {
-                SMB2Session session = ((SMB2ConnectionState)state).GetSession(response.Header.SessionID);
-                if (session != null && session.SigningRequired)
-                {
-                    signingRequired = true;
-                }
+                signingRequired = true;
             }
             // [MS-SMB2] The server SHOULD sign the message [..] if the request was signed by the client,
             // and the response is not an interim response to an asynchronously processed request.
@@ -317,43 +309,41 @@ namespace SMBLibrary.Server
             {
                 return ((ChangeNotifyRequest)command).FileId;
             }
-            else if (command is CloseRequest)
+
+            if (command is CloseRequest)
             {
                 return ((CloseRequest)command).FileId;
             }
-            else if (command is FlushRequest)
+            if (command is FlushRequest)
             {
                 return ((FlushRequest)command).FileId;
             }
-            else if (command is IOCtlRequest)
+            if (command is IOCtlRequest)
             {
                 return ((IOCtlRequest)command).FileId;
             }
-            else if (command is LockRequest)
+            if (command is LockRequest)
             {
                 return ((LockRequest)command).FileId;
             }
-            else if (command is QueryDirectoryRequest)
+            if (command is QueryDirectoryRequest)
             {
                 return ((QueryDirectoryRequest)command).FileId;
             }
-            else if (command is QueryInfoRequest)
+            if (command is QueryInfoRequest)
             {
                 return ((QueryInfoRequest)command).FileId;
             }
-            else if (command is ReadRequest)
+            if (command is ReadRequest)
             {
                 return ((ReadRequest)command).FileId;
             }
-            else if (command is SetInfoRequest)
+            if (command is SetInfoRequest)
             {
                 return ((SetInfoRequest)command).FileId;
             }
-            else if (command is WriteRequest)
-            {
-                return ((WriteRequest)command).FileId;
-            }
-            return null;
+
+            return (command as WriteRequest)?.FileId;
         }
 
         private static void SetRequestFileID(SMB2Command command, FileID fileID)
@@ -412,11 +402,8 @@ namespace SMBLibrary.Server
             {
                 return ((CreateResponse)command).FileId;
             }
-            else if (command is IOCtlResponse)
-            {
-                return ((IOCtlResponse)command).FileId;
-            }
-            return null;
+
+            return (command as IOCtlResponse)?.FileId;
         }
     }
 }

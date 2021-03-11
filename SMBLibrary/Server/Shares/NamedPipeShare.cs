@@ -6,8 +6,6 @@
  */
 using System;
 using System.Collections.Generic;
-using System.IO;
-using SMBLibrary.RPC;
 using SMBLibrary.Services;
 
 namespace SMBLibrary.Server
@@ -17,30 +15,20 @@ namespace SMBLibrary.Server
         // A pipe share, as defined by the SMB Protocol, MUST always have the name "IPC$".
         public const string NamedPipeShareName = "IPC$";
 
-        private NamedPipeStore m_store;
+        private readonly NamedPipeStore m_store;
 
         public NamedPipeShare(List<string> shareList)
         {
-            List<RemoteService> services = new List<RemoteService>();
-            services.Add(new ServerService(Environment.MachineName, shareList));
-            services.Add(new WorkstationService(Environment.MachineName, Environment.MachineName));
+            List<RemoteService> services = new List<RemoteService>
+            {
+                new ServerService(Environment.MachineName, shareList),
+                new WorkstationService(Environment.MachineName, Environment.MachineName)
+            };
             m_store = new NamedPipeStore(services);
         }
 
-        public string Name
-        {
-            get
-            {
-                return NamedPipeShareName;
-            }
-        }
+        public string Name => NamedPipeShareName;
 
-        public INTFileStore FileStore
-        {
-            get
-            {
-                return m_store;
-            }
-        }
+        public INTFileStore FileStore => m_store;
     }
 }

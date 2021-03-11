@@ -1,11 +1,11 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Security.Cryptography;
@@ -31,7 +31,8 @@ namespace SMBLibrary.Authentication.NTLM
         public static byte[] ComputeNTLMv1ExtendedSessionSecurityResponse(byte[] serverChallenge, byte[] clientChallenge, string password)
         {
             byte[] passwordHash = NTOWFv1(password);
-            byte[] challengeHash = MD5.Create().ComputeHash(ByteUtils.Concatenate(serverChallenge, clientChallenge));
+            using MD5 md5 = MD5.Create();
+            byte[] challengeHash = md5.ComputeHash(ByteUtils.Concatenate(serverChallenge, clientChallenge));
             byte[] challengeHashShort = new byte[8];
             Array.Copy(challengeHash, 0, challengeHashShort, 0, 8);
             return DesLongEncrypt(passwordHash, challengeHashShort);
@@ -41,7 +42,7 @@ namespace SMBLibrary.Authentication.NTLM
         {
             byte[] key = LMOWFv2(password, user, domain);
             byte[] bytes = ByteUtils.Concatenate(serverChallenge, clientChallenge);
-            HMACMD5 hmac = new HMACMD5(key);
+            using HMACMD5 hmac = new HMACMD5(key);
             byte[] hash = hmac.ComputeHash(bytes, 0, bytes.Length);
 
             return ByteUtils.Concatenate(hash, clientChallenge);
@@ -56,7 +57,7 @@ namespace SMBLibrary.Authentication.NTLM
             byte[] key = NTOWFv2(password, user, domain);
             byte[] temp = clientChallengeStructurePadded;
 
-            HMACMD5 hmac = new HMACMD5(key);
+            using HMACMD5 hmac = new HMACMD5(key);
             byte[] _NTProof = hmac.ComputeHash(ByteUtils.Concatenate(serverChallenge, temp), 0, serverChallenge.Length + temp.Length);
             return _NTProof;
         }
@@ -76,9 +77,9 @@ namespace SMBLibrary.Authentication.NTLM
 
         public static ICryptoTransform CreateWeakDesEncryptor(CipherMode mode, byte[] rgbKey, byte[] rgbIV)
         {
-            DES des = DES.Create();
+            using DES des = DES.Create();
             des.Mode = mode;
-            DESCryptoServiceProvider sm = des as DESCryptoServiceProvider;
+            using DESCryptoServiceProvider sm = des as DESCryptoServiceProvider;
             MethodInfo mi = sm.GetType().GetMethod("_NewEncryptor", BindingFlags.NonPublic | BindingFlags.Instance);
             object[] Par = { rgbKey, mode, rgbIV, sm.FeedbackSize, 0 };
             ICryptoTransform trans = mi.Invoke(sm, Par) as ICryptoTransform;
@@ -131,7 +132,7 @@ namespace SMBLibrary.Authentication.NTLM
         /// </summary>
         public static byte[] LMOWFv1(string password)
         {
-            byte[] plainText = ASCIIEncoding.ASCII.GetBytes("KGS!@#$%");
+            byte[] plainText = Encoding.ASCII.GetBytes("KGS!@#$%");
             byte[] passwordBytes = GetOEMEncoding().GetBytes(password.ToUpper());
             byte[] key = new byte[14];
             Array.Copy(passwordBytes, key, Math.Min(passwordBytes.Length, 14));
@@ -152,7 +153,7 @@ namespace SMBLibrary.Authentication.NTLM
         /// </summary>
         public static byte[] NTOWFv1(string password)
         {
-            byte[] passwordBytes = UnicodeEncoding.Unicode.GetBytes(password);
+            byte[] passwordBytes = Encoding.Unicode.GetBytes(password);
             return new MD4().GetByteHashFromBytes(passwordBytes);
         }
 
@@ -166,11 +167,11 @@ namespace SMBLibrary.Authentication.NTLM
 
         public static byte[] NTOWFv2(string password, string user, string domain)
         {
-            byte[] passwordBytes = UnicodeEncoding.Unicode.GetBytes(password);
+            byte[] passwordBytes = Encoding.Unicode.GetBytes(password);
             byte[] key = new MD4().GetByteHashFromBytes(passwordBytes);
             string text = user.ToUpper() + domain;
-            byte[] bytes = UnicodeEncoding.Unicode.GetBytes(text);
-            HMACMD5 hmac = new HMACMD5(key);
+            byte[] bytes = Encoding.Unicode.GetBytes(text);
+            using HMACMD5 hmac = new HMACMD5(key);
             return hmac.ComputeHash(bytes, 0, bytes.Length);
         }
 
@@ -219,23 +220,20 @@ namespace SMBLibrary.Authentication.NTLM
                     byte[] keyExchangeKey = ByteUtils.Concatenate(temp1, temp2);
                     return keyExchangeKey;
                 }
-                else
+
+                if ((negotiateFlags & NegotiateFlags.RequestLMSessionKey) > 0)
                 {
-                    if ((negotiateFlags & NegotiateFlags.RequestLMSessionKey) > 0)
-                    {
-                        byte[] keyExchangeKey = ByteUtils.Concatenate(ByteReader.ReadBytes(lmowf, 0, 8), new byte[8]);
-                        return keyExchangeKey;
-                    }
-                    else
-                    {
-                        return sessionBaseKey;
-                    }
+                    byte[] keyExchangeKey = ByteUtils.Concatenate(ByteReader.ReadBytes(lmowf, 0, 8), new byte[8]);
+                    return keyExchangeKey;
                 }
+
+                return sessionBaseKey;
             }
-            else
+
             {
                 byte[] buffer = ByteUtils.Concatenate(serverChallenge, ByteReader.ReadBytes(lmChallengeResponse, 0, 8));
-                byte[] keyExchangeKey = new HMACMD5(sessionBaseKey).ComputeHash(buffer);
+                using HMACMD5 md5 = new HMACMD5(sessionBaseKey);
+                byte[] keyExchangeKey = md5.ComputeHash(buffer);
                 return keyExchangeKey;
             }
         }

@@ -5,7 +5,6 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 using System;
-using System.Collections.Generic;
 using Utilities;
 
 namespace SMBLibrary
@@ -48,20 +47,8 @@ namespace SMBLibrary
             LittleEndianWriter.WriteUInt16(buffer, offset + 22, Reserved);
         }
 
-        public override FileInformationClass FileInformationClass
-        {
-            get
-            {
-                return FileInformationClass.FileStandardInformation;
-            }
-        }
+        public override FileInformationClass FileInformationClass => FileInformationClass.FileStandardInformation;
 
-        public override int Length
-        {
-            get
-            {
-                return FixedLength;
-            }
-        }
+        public override int Length => FixedLength;
     }
 }

@@ -1,11 +1,10 @@
 /* Copyright (C) 2017-2018 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
-using System.Collections.Generic;
+
 using Utilities;
 
 namespace SMBLibrary.Authentication.GSSAPI
@@ -14,14 +13,14 @@ namespace SMBLibrary.Authentication.GSSAPI
     {
         public const byte ApplicationTag = 0x60;
 
-        public static readonly byte[] SPNEGOIdentifier = new byte[] { 0x2b, 0x06, 0x01, 0x05, 0x05, 0x02 };
+        public static readonly byte[] SPNEGOIdentifier = { 0x2b, 0x06, 0x01, 0x05, 0x05, 0x02 };
 
         public abstract byte[] GetBytes();
 
         /// <param name="includeHeader">Prepend the generic GSSAPI header. Required for negTokenInit, optional for negTokenResp.</param>
         public byte[] GetBytes(bool includeHeader)
         {
-            byte[] tokenBytes = this.GetBytes();
+            byte[] tokenBytes = GetBytes();
             if (includeHeader)
             {
                 int objectIdentifierFieldSize = DerEncodingHelper.GetLengthFieldSize(SPNEGOIdentifier.Length);
@@ -38,10 +37,8 @@ namespace SMBLibrary.Authentication.GSSAPI
                 ByteWriter.WriteBytes(buffer, ref offset, tokenBytes);
                 return buffer;
             }
-            else
-            {
-                return tokenBytes;
-            }
+
+            return tokenBytes;
         }
 
         /// <summary>
@@ -59,7 +56,7 @@ namespace SMBLibrary.Authentication.GSSAPI
 
                 // [RFC 2743] The use of the Mechanism-Independent Token Format is required for initial context
                 // establishment tokens, use in non-initial tokens is optional.
-                int tokenLength = DerEncodingHelper.ReadLength(tokenBytes, ref offset);
+                _ = DerEncodingHelper.ReadLength(tokenBytes, ref offset);
                 tag = ByteReader.ReadByte(tokenBytes, ref offset);
                 if (tag == (byte)DerEncodingTag.ObjectIdentifier)
                 {
@@ -77,12 +74,11 @@ namespace SMBLibrary.Authentication.GSSAPI
                                 // The [NegTokenInit2] SPNEGO extension allows the server to generate a context establishment token message [..] and send it to the client.
                                 return new SimpleProtectedNegotiationTokenInit2(tokenBytes, offset);
                             }
-                            else
-                            {
-                                return new SimpleProtectedNegotiationTokenInit(tokenBytes, offset);
-                            }
+
+                            return new SimpleProtectedNegotiationTokenInit(tokenBytes, offset);
                         }
-                        else if (tag == SimpleProtectedNegotiationTokenResponse.NegTokenRespTag)
+
+                        if (tag == SimpleProtectedNegotiationTokenResponse.NegTokenRespTag)
                         {
                             return new SimpleProtectedNegotiationTokenResponse(tokenBytes, offset);
                         }

@@ -1,10 +1,10 @@
 /* Copyright (C) 2017-2018 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
-using System;
+
 using System.Collections.Generic;
 using SMBLibrary.Authentication.NTLM;
 using Utilities;
@@ -25,14 +25,13 @@ namespace SMBLibrary.Authentication.GSSAPI
 
     public class GSSProvider
     {
-        public static readonly byte[] NTLMSSPIdentifier = new byte[] { 0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0x37, 0x02, 0x02, 0x0a };
+        public static readonly byte[] NTLMSSPIdentifier = { 0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0x37, 0x02, 0x02, 0x0a };
 
-        private List<IGSSMechanism> m_mechanisms;
+        private readonly List<IGSSMechanism> m_mechanisms;
 
         public GSSProvider(IGSSMechanism mechanism)
         {
-            m_mechanisms = new List<IGSSMechanism>();
-            m_mechanisms.Add(mechanism);
+            m_mechanisms = new List<IGSSMechanism> { mechanism };
         }
 
         public GSSProvider(List<IGSSMechanism> mechanisms)
@@ -42,8 +41,10 @@ namespace SMBLibrary.Authentication.GSSAPI
 
         public byte[] GetSPNEGOTokenInitBytes()
         {
-            SimpleProtectedNegotiationTokenInit token = new SimpleProtectedNegotiationTokenInit();
-            token.MechanismTypeList = new List<byte[]>();
+            SimpleProtectedNegotiationTokenInit token = new SimpleProtectedNegotiationTokenInit
+            {
+                MechanismTypeList = new List<byte[]>()
+            };
             foreach (IGSSMechanism mechanism in m_mechanisms)
             {
                 token.MechanismTypeList.Add(mechanism.Identifier);
@@ -65,9 +66,8 @@ namespace SMBLibrary.Authentication.GSSAPI
 
             if (spnegoToken != null)
             {
-                if (spnegoToken is SimpleProtectedNegotiationTokenInit)
+                if (spnegoToken is SimpleProtectedNegotiationTokenInit tokenInit)
                 {
-                    SimpleProtectedNegotiationTokenInit tokenInit = (SimpleProtectedNegotiationTokenInit)spnegoToken;
                     if (tokenInit.MechanismTypeList.Count == 0)
                     {
                         return NTStatus.SEC_E_INVALID_TOKEN;
@@ -89,8 +89,7 @@ namespace SMBLibrary.Authentication.GSSAPI
                         context = new GSSContext(mechanism, null);
                         if (isPreferredMechanism)
                         {
-                            byte[] mechanismOutput;
-                            status = mechanism.AcceptSecurityContext(ref context.MechanismContext, tokenInit.MechanismToken, out mechanismOutput);
+                            status = mechanism.AcceptSecurityContext(ref context.MechanismContext, tokenInit.MechanismToken, out byte[] mechanismOutput);
                             outputToken = GetSPNEGOTokenResponseBytes(mechanismOutput, status, mechanism.Identifier);
                         }
                         else
@@ -110,52 +109,43 @@ namespace SMBLibrary.Authentication.GSSAPI
                     }
                     IGSSMechanism mechanism = context.Mechanism;
                     SimpleProtectedNegotiationTokenResponse tokenResponse = (SimpleProtectedNegotiationTokenResponse)spnegoToken;
-                    byte[] mechanismOutput;
-                    NTStatus status = mechanism.AcceptSecurityContext(ref context.MechanismContext, tokenResponse.ResponseToken, out mechanismOutput);
+                    NTStatus status = mechanism.AcceptSecurityContext(ref context.MechanismContext, tokenResponse.ResponseToken, out byte[] mechanismOutput);
                     outputToken = GetSPNEGOTokenResponseBytes(mechanismOutput, status, null);
                     return status;
                 }
             }
-            else
+
+            // [MS-SMB] The Windows GSS implementation supports raw Kerberos / NTLM messages in the SecurityBlob.
+            // [MS-SMB2] Windows [..] will also accept raw Kerberos messages and implicit NTLM messages as part of GSS authentication.
+            if (AuthenticationMessageUtils.IsSignatureValid(inputToken))
             {
-                // [MS-SMB] The Windows GSS implementation supports raw Kerberos / NTLM messages in the SecurityBlob.
-                // [MS-SMB2] Windows [..] will also accept raw Kerberos messages and implicit NTLM messages as part of GSS authentication.
-                if (AuthenticationMessageUtils.IsSignatureValid(inputToken))
+                MessageTypeName messageType = AuthenticationMessageUtils.GetMessageType(inputToken);
+                IGSSMechanism ntlmAuthenticationProvider = FindMechanism(NTLMSSPIdentifier);
+                if (ntlmAuthenticationProvider != null)
                 {
-                    MessageTypeName messageType = AuthenticationMessageUtils.GetMessageType(inputToken);
-                    IGSSMechanism ntlmAuthenticationProvider = FindMechanism(NTLMSSPIdentifier);
-                    if (ntlmAuthenticationProvider != null)
+                    if (messageType == MessageTypeName.Negotiate)
                     {
-                        if (messageType == MessageTypeName.Negotiate)
-                        {
-                            context = new GSSContext(ntlmAuthenticationProvider, null);
-                        }
-
-                        if (context == null)
-                        {
-                            return NTStatus.SEC_E_INVALID_TOKEN;
-                        }
-
-                        NTStatus status = ntlmAuthenticationProvider.AcceptSecurityContext(ref context.MechanismContext, inputToken, out outputToken);
-                        return status;
+                        context = new GSSContext(ntlmAuthenticationProvider, null);
                     }
-                    else
+
+                    if (context == null)
                     {
-                        return NTStatus.SEC_E_SECPKG_NOT_FOUND;
+                        return NTStatus.SEC_E_INVALID_TOKEN;
                     }
+
+                    NTStatus status = ntlmAuthenticationProvider.AcceptSecurityContext(ref context.MechanismContext, inputToken, out outputToken);
+                    return status;
                 }
+
+                return NTStatus.SEC_E_SECPKG_NOT_FOUND;
             }
             return NTStatus.SEC_E_INVALID_TOKEN;
         }
 
         public virtual object GetContextAttribute(GSSContext context, GSSAttributeName attributeName)
         {
-            if (context == null)
-            {
-                return null;
-            }
-            IGSSMechanism mechanism = context.Mechanism;
-            return mechanism.GetContextAttribute(context.MechanismContext, attributeName);
+            IGSSMechanism mechanism = context?.Mechanism;
+            return mechanism?.GetContextAttribute(context.MechanismContext, attributeName);
         }
 
         public virtual bool DeleteSecurityContext(ref GSSContext context)
@@ -177,17 +167,14 @@ namespace SMBLibrary.Authentication.GSSAPI
             if (ntlmAuthenticationProvider != null)
             {
                 context = new GSSContext(ntlmAuthenticationProvider, null);
-                byte[] outputToken;
-                NTStatus result = ntlmAuthenticationProvider.AcceptSecurityContext(ref context.MechanismContext, negotiateMessage.GetBytes(), out outputToken);
+                NTStatus result = ntlmAuthenticationProvider.AcceptSecurityContext(ref context.MechanismContext, negotiateMessage.GetBytes(), out byte[] outputToken);
                 challengeMessage = new ChallengeMessage(outputToken);
                 return result;
             }
-            else
-            {
-                context = null;
-                challengeMessage = null;
-                return NTStatus.SEC_E_SECPKG_NOT_FOUND;
-            }
+
+            context = null;
+            challengeMessage = null;
+            return NTStatus.SEC_E_SECPKG_NOT_FOUND;
         }
 
         /// <summary>
@@ -198,14 +185,11 @@ namespace SMBLibrary.Authentication.GSSAPI
             if (context != null && ByteUtils.AreByteArraysEqual(context.Mechanism.Identifier, NTLMSSPIdentifier))
             {
                 IGSSMechanism mechanism = context.Mechanism;
-                byte[] outputToken;
-                NTStatus result = mechanism.AcceptSecurityContext(ref context.MechanismContext, authenticateMessage.GetBytes(), out outputToken);
+                NTStatus result = mechanism.AcceptSecurityContext(ref context.MechanismContext, authenticateMessage.GetBytes(), out _);
                 return result;
             }
-            else
-            {
-                return NTStatus.SEC_E_SECPKG_NOT_FOUND;
-            }
+
+            return NTStatus.SEC_E_SECPKG_NOT_FOUND;
         }
 
         public IGSSMechanism FindMechanism(List<byte[]> mechanismIdentifiers)
