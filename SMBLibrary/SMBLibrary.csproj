@@ -12,7 +12,7 @@
 
     <RepositoryUrl>https://github.com/SonnyX/SMB-Client</RepositoryUrl>
     <PackageTags>smb smb-client</PackageTags>
-    <Version>1.4.7</Version>
+    <Version>1.4.7.1</Version>
 
     <Description>Free, Open Source, User-Mode SMB 1.0/CIFS, SMB 2.0, SMB 2.1 and SMB 3.0 Client Library</Description>
   </PropertyGroup>
@@ -20,27 +20,18 @@
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <IncludeSymbols>true</IncludeSymbols>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ILRepack.MSBuild.Task" Version="2.0.13" PrivateAssets="All" />
+    <PackageReference Include="ilmerge" Version="3.0.41" PrivateAssets="All" />
     <ProjectReference Include="..\Utilities\Utilities.csproj" PrivateAssets="All" />
   </ItemGroup>
 
-  <Target Name="ILRepack" Condition="'$(Configuration)' == 'Release'" AfterTargets="AfterBuild">
-    <PropertyGroup>
-      <WorkingDirectory>$(MSBuildThisFileDirectory)bin\$(Configuration)\$(TargetFramework)</WorkingDirectory>
-    </PropertyGroup>
-    <ItemGroup>
-      <InputAssemblies Include="Utilities.dll" />
-    </ItemGroup>
-
-    <Message Text="MERGING: @(InputAssemblies->'%(Filename)') into $(OutputAssembly)" Importance="High" />
-    <ILRepack
-      OutputType="$(OutputType)"
-      MainAssembly="$(AssemblyName).dll"
-      OutputAssembly="$(AssemblyName).dll"
-      InputAssemblies="@(InputAssemblies)"
-      WorkingDirectory="$(WorkingDirectory)" />
+  <Target Name="ILMerge" Condition="'$(Configuration)' == 'Release'" AfterTargets="AfterBuild">
+    <Message Text="MERGING: into $(OutputAssembly)" Importance="High" />
+    <Exec Command="$(ILMergeConsolePath) /out:$(OutputPath)\\$(AssemblyName).dll $(OutputPath)\\$(AssemblyName).dll $(OutputPath)\\Utilities.dll" />
   </Target>
 </Project>
