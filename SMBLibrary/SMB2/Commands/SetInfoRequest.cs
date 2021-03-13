@@ -24,7 +24,7 @@ namespace SMBLibrary.SMB2
         private ushort BufferOffset;
         public ushort Reserved;
         public uint AdditionalInformation;
-        public FileID FileId;
+        public FileID? FileId;
         public byte[] Buffer = new byte[0];
 
         public SetInfoRequest() : base(SMB2CommandName.SetInfo)

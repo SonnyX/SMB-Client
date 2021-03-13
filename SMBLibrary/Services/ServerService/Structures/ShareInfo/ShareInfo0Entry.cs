@@ -14,7 +14,7 @@ namespace SMBLibrary.Services
     /// </summary>
     public class ShareInfo0Entry : IShareInfoEntry
     {
-        public NDRUnicodeString NetName;
+        public NDRUnicodeString? NetName;
 
         public ShareInfo0Entry()
         {

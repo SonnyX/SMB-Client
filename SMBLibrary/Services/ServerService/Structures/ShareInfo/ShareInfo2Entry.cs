@@ -15,14 +15,14 @@ namespace SMBLibrary.Services
     {
         public const uint UnlimitedConnections = 0xFFFFFFFF;
 
-        public NDRUnicodeString NetName;
+        public NDRUnicodeString? NetName;
         public ShareTypeExtended ShareType;
-        public NDRUnicodeString Remark;
+        public NDRUnicodeString? Remark;
         public Permissions Permissions; // Windows will leave this field empty (0)
         public uint MaxUses; // Maximum number of concurrent connections that the shared resource can accommodate.
         public uint CurrentUses; // Number of current connections to the resource.
-        public NDRUnicodeString Path; // Windows will set this field to the on-disk path (.e.g 'D:\Shared')
-        public NDRUnicodeString Password; // Windows will set it to null
+        public NDRUnicodeString? Path; // Windows will set this field to the on-disk path (.e.g 'D:\Shared')
+        public NDRUnicodeString? Password; // Windows will set it to null
 
         public ShareInfo2Entry()
         {

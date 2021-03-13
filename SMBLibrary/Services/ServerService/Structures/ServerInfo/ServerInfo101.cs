@@ -15,11 +15,11 @@ namespace SMBLibrary.Services
     public class ServerInfo101 : ServerInfoLevel
     {
         public PlatformName PlatformID;
-        public NDRUnicodeString ServerName;
+        public NDRUnicodeString? ServerName;
         public uint VerMajor;
         public uint VerMinor;
         public ServerType Type;
-        public NDRUnicodeString Comment;
+        public NDRUnicodeString? Comment;
 
         public ServerInfo101()
         {

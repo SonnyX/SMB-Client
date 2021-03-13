@@ -21,7 +21,7 @@ namespace SMBLibrary.SMB1
         public byte MaximumInstances;
         public byte CurrentInstances;
         public byte PipeNameLength;
-        public string PipeName; // SMB_STRING (this field WILL be aligned to start on a 2-byte boundary from the start of the SMB header)
+        public string? PipeName; // SMB_STRING (this field WILL be aligned to start on a 2-byte boundary from the start of the SMB header)
 
         public TransactionQueryNamedPipeInfoResponse()
         {}
@@ -39,6 +39,9 @@ namespace SMBLibrary.SMB1
 
         public override byte[] GetData(bool isUnicode)
         {
+            if (PipeName == null)
+                return new byte[0];
+
             int length = 8;
             if (isUnicode)
             {

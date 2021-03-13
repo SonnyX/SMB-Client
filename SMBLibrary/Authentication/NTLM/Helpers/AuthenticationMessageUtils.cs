@@ -78,7 +78,7 @@ namespace SMBLibrary.Authentication.NTLM
         /// <remarks>
         /// NTLM v1 / NTLM v1 Extended Session Security NTResponse is 24 bytes.
         /// </remarks>
-        public static bool IsNTLMv2NTResponse(byte[] ntResponse)
+        public static bool IsNTLMv2NTResponse(byte[]? ntResponse)
         {
             return (ntResponse.Length >= 16 + NTLMv2ClientChallenge.MinimumLength &&
                     ntResponse[16] == NTLMv2ClientChallenge.StructureVersion &&

@@ -15,7 +15,7 @@ namespace SMBLibrary.SMB1
         public const int ParametersLength = 0;
 
         // Data:
-        public byte[] InformationBytes;
+        public byte[]? InformationBytes;
 
         public Transaction2QueryFSInformationResponse()
         {

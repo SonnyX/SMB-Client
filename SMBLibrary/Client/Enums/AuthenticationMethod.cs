@@ -3,8 +3,8 @@ namespace SMBLibrary.Client
 {
     public enum AuthenticationMethod
     {
-        NTLMv1,
-        NTLMv1ExtendedSessionSecurity,
-        NTLMv2,
+        NtlmV1,
+        NtlmV1ExtendedSessionSecurity,
+        NtlmV2,
     }
 }

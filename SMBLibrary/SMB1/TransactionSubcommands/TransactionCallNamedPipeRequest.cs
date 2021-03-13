@@ -17,7 +17,7 @@ namespace SMBLibrary.SMB1
         // Setup:
         public ushort Priority;
         // Data:
-        public byte[] WriteData;
+        public byte[]? WriteData;
 
         public TransactionCallNamedPipeRequest()
         {

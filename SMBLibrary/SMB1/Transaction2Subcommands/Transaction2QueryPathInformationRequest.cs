@@ -19,7 +19,7 @@ namespace SMBLibrary.SMB1
         // Parameters:
         public ushort InformationLevel;
         public uint Reserved;
-        public string FileName; // SMB_STRING
+        public string? FileName; // SMB_STRING
         // Data:
         public FullExtendedAttributeList GetExtendedAttributeList; // Used with QueryInformationLevel.SMB_INFO_QUERY_EAS_FROM_LIST
 

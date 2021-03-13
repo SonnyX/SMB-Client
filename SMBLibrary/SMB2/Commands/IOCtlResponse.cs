@@ -20,7 +20,7 @@ namespace SMBLibrary.SMB2
         private readonly ushort StructureSize;
         public ushort Reserved;
         public uint CtlCode;
-        public FileID FileId;
+        public FileID? FileId;
         private uint InputOffset;
         private uint InputCount;
         private uint OutputOffset;

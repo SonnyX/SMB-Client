@@ -17,8 +17,8 @@ namespace SMBLibrary.SMB1
         public ExtendedAttributeFlags ExtendedAttributeFlag;
         private byte AttributeNameLengthInBytes;
         private ushort AttributeValueLengthInBytes;
-        public string AttributeName; // ANSI, AttributeNameLengthInBytes + 1 byte null termination
-        public string AttributeValue; // ANSI
+        public string? AttributeName; // ANSI, AttributeNameLengthInBytes + 1 byte null termination
+        public string? AttributeValue; // ANSI
 
         public FullExtendedAttribute()
         {

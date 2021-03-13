@@ -20,7 +20,7 @@ namespace SMBLibrary.SMB2
         public FileInformationClass FileInformationClass;
         public QueryDirectoryFlags Flags;
         public uint FileIndex;
-        public FileID FileId;
+        public FileID? FileId;
         private ushort FileNameOffset;
         private ushort FileNameLength;
         public uint OutputBufferLength;

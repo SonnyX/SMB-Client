@@ -15,7 +15,7 @@ namespace SMBLibrary.Services
     public class ShareInfo : INDRStructure
     {
         public uint Level;
-        public IShareInfoEntry Info;
+        public IShareInfoEntry? Info;
 
         public ShareInfo()
         {
@@ -44,12 +44,12 @@ namespace SMBLibrary.Services
             switch (Level)
             {
                 case 100:
-                    ShareInfo0Entry info0 = null;
+                    ShareInfo0Entry? info0 = null;
                     parser.ReadEmbeddedStructureFullPointer(ref info0);
                     Info = info0;
                     break;
                 case 101:
-                    ShareInfo1Entry info1 = null;
+                    ShareInfo1Entry? info1 = null;
                     parser.ReadEmbeddedStructureFullPointer(ref info1);
                     Info = info1;
                     break;

@@ -5,14 +5,14 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 
-namespace SMBLibrary.Authentication.GSSAPI
+namespace SMBLibrary.Authentication.GssApi
 {
-    public interface IGSSMechanism
+    public interface IGssMechanism
     {
         /// <summary>
         /// Equivalent to GSS_Accept_sec_context
         /// </summary>
-        NTStatus AcceptSecurityContext(ref object context, byte[] inputToken, out byte[] outputToken);
+        NTStatus AcceptSecurityContext(ref object context, byte[] inputToken, out byte[]? outputToken);
 
         /// <summary>
         /// Equivalent to GSS_Delete_sec_context
@@ -23,7 +23,7 @@ namespace SMBLibrary.Authentication.GSSAPI
         /// Equivalent to GSS_Inquire_context
         /// Obtains information about a given security context (even an incomplete one)
         /// </summary>
-        object GetContextAttribute(object context, GSSAttributeName attributeName);
+        object GetContextAttribute(object context, GssAttributeName attributeName);
 
         byte[] Identifier
         {

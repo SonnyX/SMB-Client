@@ -26,7 +26,7 @@ namespace SMBLibrary.SMB2
         private uint InputBufferLength;
         public uint AdditionalInformation;
         public uint Flags;
-        public FileID FileId;
+        public FileID? FileId;
         public byte[] InputBuffer = new byte[0];
 
         public QueryInfoRequest() : base(SMB2CommandName.QueryInfo)

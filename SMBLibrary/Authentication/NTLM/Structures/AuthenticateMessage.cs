@@ -18,15 +18,15 @@ namespace SMBLibrary.Authentication.NTLM
 
         public string Signature; // 8 bytes
         public MessageTypeName MessageType;
-        public byte[] LmChallengeResponse; // 1 byte for anonymous authentication, 24 bytes for NTLM v1, NTLM v1 Extended Session Security and NTLM v2.
-        public byte[] NtChallengeResponse; // 0 bytes for anonymous authentication, 24 bytes for NTLM v1 and NTLM v1 Extended Session Security, >= 48 bytes for NTLM v2.
+        public byte[]? LmChallengeResponse; // 1 byte for anonymous authentication, 24 bytes for NTLM v1, NTLM v1 Extended Session Security and NTLM v2.
+        public byte[]? NtChallengeResponse; // 0 bytes for anonymous authentication, 24 bytes for NTLM v1 and NTLM v1 Extended Session Security, >= 48 bytes for NTLM v2.
         public string DomainName;
         public string UserName;
         public string WorkStation;
         public byte[] EncryptedRandomSessionKey;
         public NegotiateFlags NegotiateFlags;
-        public NTLMVersion Version;
-        public byte[] MIC; // 16-byte MIC field is omitted for Windows NT / 2000 / XP / Server 2003
+        public NtlmVersion? Version;
+        public byte[]? MIC; // 16-byte MIC field is omitted for Windows NT / 2000 / XP / Server 2003
 
         public AuthenticateMessage()
         {
@@ -52,8 +52,8 @@ namespace SMBLibrary.Authentication.NTLM
             int offset = 64;
             if ((NegotiateFlags & NegotiateFlags.Version) > 0)
             {
-                Version = new NTLMVersion(buffer, offset);
-                offset += NTLMVersion.Length;
+                Version = new NtlmVersion(buffer, offset);
+                offset += NtlmVersion.Length;
             }
             if (HasMicField())
             {
@@ -102,7 +102,7 @@ namespace SMBLibrary.Authentication.NTLM
             int fixedLength = 64;
             if ((NegotiateFlags & NegotiateFlags.Version) > 0)
             {
-                fixedLength += NTLMVersion.Length;
+                fixedLength += NtlmVersion.Length;
             }
             if (MIC != null)
             {
@@ -117,7 +117,7 @@ namespace SMBLibrary.Authentication.NTLM
             if ((NegotiateFlags & NegotiateFlags.Version) > 0)
             {
                 Version.WriteBytes(buffer, offset);
-                offset += NTLMVersion.Length;
+                offset += NtlmVersion.Length;
             }
             if (MIC != null)
             {

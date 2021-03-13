@@ -12,17 +12,14 @@ namespace SMBLibrary.Client
 {
     public class ConnectionState
     {
-        private readonly Socket m_clientSocket;
-        private readonly NBTConnectionReceiveBuffer m_receiveBuffer;
-
         public ConnectionState(Socket clientSocket)
         {
-            m_clientSocket = clientSocket;
-            m_receiveBuffer = new NBTConnectionReceiveBuffer();
+            ClientSocket = clientSocket;
+            ReceiveBuffer = new NBTConnectionReceiveBuffer();
         }
 
-        public Socket ClientSocket => m_clientSocket;
+        public Socket ClientSocket { get; }
 
-        public NBTConnectionReceiveBuffer ReceiveBuffer => m_receiveBuffer;
+        public NBTConnectionReceiveBuffer ReceiveBuffer { get; }
     }
 }

@@ -17,12 +17,12 @@ namespace SMBLibrary.RPC
     {
         public const int Length = 20;
 
-        public Guid InterfaceUUID; // if_uuid
-        public uint InterfaceVersion; // if_version
+        public readonly Guid InterfaceUUID; // if_uuid
+        public readonly uint InterfaceVersion; // if_version
 
-        public SyntaxID(Guid interfaceUUID, uint interfaceVersion)
+        public SyntaxID(Guid interfaceUuid, uint interfaceVersion)
         {
-            InterfaceUUID = interfaceUUID;
+            InterfaceUUID = interfaceUuid;
             InterfaceVersion = interfaceVersion;
         }
 

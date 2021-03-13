@@ -29,7 +29,7 @@ namespace SMBLibrary.SMB2
         public uint TreeID;   // Sync
         public ulong AsyncID; // Async
         public ulong SessionID;
-        public byte[] Signature; // 16 bytes (present if SMB2_FLAGS_SIGNED is set)
+        public byte[]? Signature; // 16 bytes (present if SMB2_FLAGS_SIGNED is set)
 
         public SMB2Header(SMB2CommandName commandName)
         {
@@ -159,12 +159,10 @@ namespace SMBLibrary.SMB2
 
         public static bool IsValidSMB2Header(byte[] buffer)
         {
-            if (buffer.Length >= 4)
-            {
-                byte[] protocol = ByteReader.ReadBytes(buffer, 0, 4);
-                return ByteUtils.AreByteArraysEqual(protocol, ProtocolSignature);
-            }
-            return false;
+            if (buffer.Length < 4)
+                return false;
+            byte[] protocol = ByteReader.ReadBytes(buffer, 0, 4);
+            return ByteUtils.AreByteArraysEqual(protocol, ProtocolSignature);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace SMBLibrary.Client
 {
     public class NamedPipeHelper
     {
-        public static NTStatus BindPipe(INTFileStore namedPipeShare, string pipeName, Guid interfaceGuid, uint interfaceVersion, out object pipeHandle, out int maxTransmitFragmentSize)
+        public static NTStatus BindPipe(INtFileStore namedPipeShare, string pipeName, Guid interfaceGuid, uint interfaceVersion, out NtHandle? pipeHandle, out int maxTransmitFragmentSize)
         {
             maxTransmitFragmentSize = 0;
             NTStatus status = namedPipeShare.CreateFile(out pipeHandle, out _, pipeName, (AccessMask)(FileAccessMask.FILE_READ_DATA | FileAccessMask.FILE_WRITE_DATA), 0, ShareAccess.Read | ShareAccess.Write, CreateDisposition.FILE_OPEN, 0, null);
@@ -21,15 +21,19 @@ namespace SMBLibrary.Client
             {
                 return status;
             }
-            BindPDU bindPDU = new BindPDU
+
+            BindPDU bindPdu = new BindPDU
             {
-                Flags = PacketFlags.FirstFragment | PacketFlags.LastFragment
+                Flags = PacketFlags.FirstFragment | PacketFlags.LastFragment,
+                DataRepresentation =
+                {
+                    CharacterFormat = CharacterFormat.ASCII,
+                    ByteOrder = ByteOrder.LittleEndian,
+                    FloatingPointRepresentation = FloatingPointRepresentation.IEEE
+                },
+                MaxTransmitFragmentSize = 5680,
+                MaxReceiveFragmentSize = 5680
             };
-            bindPDU.DataRepresentation.CharacterFormat = CharacterFormat.ASCII;
-            bindPDU.DataRepresentation.ByteOrder = ByteOrder.LittleEndian;
-            bindPDU.DataRepresentation.FloatingPointRepresentation = FloatingPointRepresentation.IEEE;
-            bindPDU.MaxTransmitFragmentSize = 5680;
-            bindPDU.MaxReceiveFragmentSize = 5680;
 
             ContextElement serviceContext = new ContextElement
             {
@@ -37,10 +41,10 @@ namespace SMBLibrary.Client
             };
             serviceContext.TransferSyntaxList.Add(new SyntaxID(RemoteServiceHelper.NDRTransferSyntaxIdentifier, RemoteServiceHelper.NDRTransferSyntaxVersion));
 
-            bindPDU.ContextList.Add(serviceContext);
+            bindPdu.ContextList.Add(serviceContext);
 
-            byte[] input = bindPDU.GetBytes();
-            status = namedPipeShare.DeviceIOControl(pipeHandle, (uint)IoControlCode.FSCTL_PIPE_TRANSCEIVE, input, out byte[] output, 4096);
+            byte[] input = bindPdu.GetBytes();
+            status = namedPipeShare.DeviceIOControl(pipeHandle, (uint)IoControlCode.FSCTL_PIPE_TRANSCEIVE, input, out byte[]? output, 4096);
             if (status != NTStatus.STATUS_SUCCESS)
             {
                 return status;

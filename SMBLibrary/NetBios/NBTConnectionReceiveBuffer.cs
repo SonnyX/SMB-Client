@@ -13,8 +13,8 @@ namespace SMBLibrary.NetBios
     public class NBTConnectionReceiveBuffer
     {
         private byte[] m_buffer;
-        private int m_readOffset = 0;
-        private int m_bytesInBuffer = 0;
+        private int m_readOffset;
+        private int m_bytesInBuffer;
         private int? m_packetLength;
 
         public NBTConnectionReceiveBuffer() : this(SessionPacket.MaxSessionPacketLength)
@@ -49,15 +49,11 @@ namespace SMBLibrary.NetBios
 
         public bool HasCompletePacket()
         {
-            if (m_bytesInBuffer >= 4)
-            {
-                if (!m_packetLength.HasValue)
-                {
-                    m_packetLength = SessionPacket.GetSessionPacketLength(m_buffer, m_readOffset);
-                }
-                return m_bytesInBuffer >= m_packetLength.Value;
-            }
-            return false;
+            if (m_bytesInBuffer < 4)
+                return false;
+
+            m_packetLength ??= SessionPacket.GetSessionPacketLength(m_buffer, m_readOffset);
+            return m_bytesInBuffer >= m_packetLength.Value;
         }
 
         /// <summary>
@@ -84,14 +80,14 @@ namespace SMBLibrary.NetBios
         /// </summary>
         public byte[] DequeuePacketBytes()
         {
-            byte[] packetBytes = ByteReader.ReadBytes(m_buffer, m_readOffset, m_packetLength.Value);
+            byte[] packetBytes = ByteReader.ReadBytes(m_buffer, m_readOffset, m_packetLength ?? 0);
             RemovePacketBytes();
             return packetBytes;
         }
 
         private void RemovePacketBytes()
         {
-            m_bytesInBuffer -= m_packetLength.Value;
+            m_bytesInBuffer -= m_packetLength ?? 0;
             if (m_bytesInBuffer == 0)
             {
                 m_readOffset = 0;
@@ -99,13 +95,12 @@ namespace SMBLibrary.NetBios
             }
             else
             {
-                m_readOffset += m_packetLength.Value;
+                m_readOffset += m_packetLength ?? 0;
                 m_packetLength = null;
-                if (!HasCompletePacket())
-                {
-                    Array.Copy(m_buffer, m_readOffset, m_buffer, 0, m_bytesInBuffer);
-                    m_readOffset = 0;
-                }
+                if (HasCompletePacket())
+                    return;
+                Array.Copy(m_buffer, m_readOffset, m_buffer, 0, m_bytesInBuffer);
+                m_readOffset = 0;
             }
         }
 

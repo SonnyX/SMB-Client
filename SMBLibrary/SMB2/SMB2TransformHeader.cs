@@ -23,8 +23,8 @@ namespace SMBLibrary.SMB2
         public static readonly byte[] ProtocolSignature = { 0xFD, 0x53, 0x4D, 0x42 };
 
         private readonly byte[] ProtocolId; // 4 bytes, 0xFD followed by "SMB"
-        public byte[] Signature; // 16 bytes
-        public byte[] Nonce; // 16 bytes
+        public byte[]? Signature; // 16 bytes
+        public byte[]? Nonce; // 16 bytes
         public uint OriginalMessageSize;
         public ushort Reserved;
         public SMB2TransformHeaderFlags Flags; // EncryptionAlgorithm in SMB 3.0 / 3.0.2 where the only possible value is SMB2_ENCRYPTION_AES128_CCM = 0x0001

@@ -20,7 +20,7 @@ namespace SMBLibrary.SMB1
         public FindInformationLevel InformationLevel;
         public uint ResumeKey;
         public FindFlags Flags;
-        public string FileName; // SMB_STRING
+        public string? FileName; // SMB_STRING
         // Data:
         public ExtendedAttributeNameList GetExtendedAttributeList; // Used with FindInformationLevel.SMB_INFO_QUERY_EAS_FROM_LIST
 
@@ -54,11 +54,11 @@ namespace SMBLibrary.SMB1
             int length = 12;
             if (isUnicode)
             {
-                length += FileName.Length * 2 + 2;
+                length += FileName?.Length * 2 + 2 ?? 0;
             }
             else
             {
-                length += FileName.Length + 1;
+                length += FileName?.Length + 1 ?? 0;
             }
 
             byte[] parameters = new byte[length];
@@ -67,7 +67,7 @@ namespace SMBLibrary.SMB1
             LittleEndianWriter.WriteUInt16(parameters, 4, (ushort)InformationLevel);
             LittleEndianWriter.WriteUInt32(parameters, 6, ResumeKey);
             LittleEndianWriter.WriteUInt16(parameters, 10, (ushort)Flags);
-            SMB1Helper.WriteSMBString(parameters, 12, isUnicode, FileName);
+            SMB1Helper.WriteSMBString(parameters, 12, isUnicode, FileName!);
 
             return parameters;
         }

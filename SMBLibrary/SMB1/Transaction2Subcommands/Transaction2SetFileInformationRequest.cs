@@ -24,7 +24,7 @@ namespace SMBLibrary.SMB1
         public ushort Reserved;
 
         // Data:
-        public byte[] InformationBytes;
+        public byte[]? InformationBytes;
 
         public Transaction2SetFileInformationRequest()
         {
@@ -55,7 +55,7 @@ namespace SMBLibrary.SMB1
 
         public override byte[] GetData(bool isUnicode)
         {
-            return InformationBytes;
+            return InformationBytes ?? new byte[0];
         }
 
         public bool IsPassthroughInformationLevel => (InformationLevel >= SMB_INFO_PASSTHROUGH);

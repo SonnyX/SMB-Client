@@ -88,7 +88,7 @@ namespace SMBLibrary.RPC
         }
 
         // 14.3.12.1 Embedded Full Pointers
-        public void WriteEmbeddedStructureFullPointer(INDRStructure structure)
+        public void WriteEmbeddedStructureFullPointer(INDRStructure? structure)
         {
             if (structure == null)
             {

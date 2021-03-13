@@ -12,10 +12,6 @@ namespace SMBLibrary.SMB1
 {
     public abstract class TransactionSubcommand
     {
-        public TransactionSubcommand()
-        {
-        }
-
         public virtual byte[] GetSetup()
         {
             return new byte[0];

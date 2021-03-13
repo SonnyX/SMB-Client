@@ -29,6 +29,8 @@ namespace Utilities
             SetKeepAlive(socket, true, timeout, TimeSpan.FromSeconds(1));
         }
 
+        /// <param name="socket"></param>
+        /// <param name="enable"></param>
         /// <param name="timeout">the timeout, in milliseconds, with no activity until the first keep-alive packet is sent</param>
         /// <param name="interval">the interval, in milliseconds, between when successive keep-alive packets are sent if no acknowledgement is received</param>
         public static void SetKeepAlive(Socket socket, bool enable, TimeSpan timeout, TimeSpan interval)
@@ -69,28 +71,27 @@ namespace Utilities
         /// <summary>
         /// Socket will be forcefully closed and all pending data will be ignored.
         /// </summary>
-        public static void ReleaseSocket(Socket socket)
+        public static void ReleaseSocket(Socket? socket)
         {
-            if (socket != null)
+            if (socket == null)
+                return;
+            if (socket.Connected)
             {
-                if (socket.Connected)
+                try
                 {
-                    try
-                    {
-                        socket.Shutdown(SocketShutdown.Both);
-                        socket.Disconnect(false);
-                    }
-                    catch (ObjectDisposedException)
-                    {
-                        return;
-                    }
-                    catch (SocketException)
-                    {
-                    }
+                    socket.Shutdown(SocketShutdown.Both);
+                    socket.Disconnect(false);
                 }
-                // Closing socket closes the connection, and Close is a wrapper-method around Dispose.
-                socket.Close();
+                catch (ObjectDisposedException)
+                {
+                    return;
+                }
+                catch (SocketException)
+                {
+                }
             }
+            // Closing socket closes the connection, and Close is a wrapper-method around Dispose.
+            socket.Close();
         }
     }
 }

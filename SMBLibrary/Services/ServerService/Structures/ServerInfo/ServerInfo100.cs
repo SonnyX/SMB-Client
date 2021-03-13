@@ -15,7 +15,7 @@ namespace SMBLibrary.Services
     public class ServerInfo100 : ServerInfoLevel
     {
         public PlatformName PlatformID;
-        public NDRUnicodeString ServerName;
+        public NDRUnicodeString? ServerName;
 
         public ServerInfo100()
         {

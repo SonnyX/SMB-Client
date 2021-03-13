@@ -5,6 +5,8 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 
+using System;
+
 namespace SMBLibrary.SMB1
 {
     public abstract class QueryInformation
@@ -16,8 +18,11 @@ namespace SMBLibrary.SMB1
             get;
         }
 
-        public static QueryInformation GetQueryInformation(byte[] buffer, QueryInformationLevel informationLevel)
+        public static QueryInformation GetQueryInformation(byte[]? buffer, QueryInformationLevel informationLevel)
         {
+            if (buffer == null)
+                throw new ArgumentNullException(nameof(buffer));
+
             return informationLevel switch
             {
                 QueryInformationLevel.SMB_QUERY_FILE_BASIC_INFO => new QueryFileBasicInfo(buffer, 0),

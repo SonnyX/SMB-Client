@@ -13,8 +13,8 @@ namespace SMBLibrary.NetBios
     /// </summary>
     public class SessionRequestPacket : SessionPacket
     {
-        public string CalledName;
-        public string CallingName;
+        public string? CalledName;
+        public string? CallingName;
 
         public SessionRequestPacket()
         {

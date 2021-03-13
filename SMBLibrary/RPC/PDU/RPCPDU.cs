@@ -68,7 +68,7 @@ namespace SMBLibrary.RPC
             get;
         }
 
-        public static RPCPDU GetPDU(byte[] buffer, int offset)
+        public static RPCPDU GetPDU(byte[]? buffer, int offset)
         {
             PacketTypeName packetType = (PacketTypeName)ByteReader.ReadByte(buffer, 2);
             return packetType switch

@@ -115,32 +115,32 @@ namespace SMBLibrary
             return result;
         }
 
-        public static FileNetworkOpenInformation GetNetworkOpenInformation(INTFileStore fileStore, string path, SecurityContext securityContext)
+        public static FileNetworkOpenInformation? GetNetworkOpenInformation(INtFileStore fileStore, string path, SecurityContext securityContext)
         {
-            NTStatus openStatus = fileStore.CreateFile(out object handle, out _, path, (AccessMask)FileAccessMask.FILE_READ_ATTRIBUTES, 0, ShareAccess.Read | ShareAccess.Write, CreateDisposition.FILE_OPEN, 0, securityContext);
+            NTStatus openStatus = fileStore.CreateFile(out NtHandle? handle, out _, path, (AccessMask)FileAccessMask.FILE_READ_ATTRIBUTES, 0, ShareAccess.Read | ShareAccess.Write, CreateDisposition.FILE_OPEN, 0, securityContext);
             if (openStatus != NTStatus.STATUS_SUCCESS)
             {
                 return null;
             }
 
-            NTStatus queryStatus = fileStore.GetFileInformation(out FileInformation fileInfo, handle, FileInformationClass.FileNetworkOpenInformation);
+            NTStatus queryStatus = fileStore.GetFileInformation(out FileInformation? fileInfo, handle, FileInformationClass.FileNetworkOpenInformation);
             fileStore.CloseFile(handle);
             if (queryStatus != NTStatus.STATUS_SUCCESS)
             {
                 return null;
             }
-            return (FileNetworkOpenInformation)fileInfo;
+            return (FileNetworkOpenInformation?) fileInfo;
         }
 
-        public static FileNetworkOpenInformation GetNetworkOpenInformation(INTFileStore fileStore, object handle)
+        public static FileNetworkOpenInformation? GetNetworkOpenInformation(INtFileStore fileStore, NtHandle handle)
         {
-            NTStatus status = fileStore.GetFileInformation(out FileInformation fileInfo, handle, FileInformationClass.FileNetworkOpenInformation);
+            NTStatus status = fileStore.GetFileInformation(out FileInformation? fileInfo, handle, FileInformationClass.FileNetworkOpenInformation);
             if (status != NTStatus.STATUS_SUCCESS)
             {
                 return null;
             }
 
-            return (FileNetworkOpenInformation)fileInfo;
+            return (FileNetworkOpenInformation?) fileInfo;
         }
     }
 }

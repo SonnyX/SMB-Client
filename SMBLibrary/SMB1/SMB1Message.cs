@@ -31,14 +31,13 @@ namespace SMBLibrary.SMB1
             Header = new SMB1Header(buffer);
             SMB1Command command = SMB1Command.ReadCommand(buffer, SMB1Header.Length, Header.Command, Header);
             Commands.Add(command);
-            while (command is SMBAndXCommand)
+            while (command is SMBAndXCommand smbAndXCommand)
             {
-                SMBAndXCommand andXCommand = (SMBAndXCommand)command;
-                if (andXCommand.AndXCommand == CommandName.SMB_COM_NO_ANDX_COMMAND)
+                if (smbAndXCommand.AndXCommand == CommandName.SMB_COM_NO_ANDX_COMMAND)
                 {
                     break;
                 }
-                command = SMB1Command.ReadCommand(buffer, andXCommand.AndXOffset, andXCommand.AndXCommand, Header);
+                command = SMB1Command.ReadCommand(buffer, smbAndXCommand.AndXOffset, smbAndXCommand.AndXCommand, Header);
                 Commands.Add(command);
             }
         }
@@ -59,9 +58,9 @@ namespace SMBLibrary.SMB1
             }
 
             SMB1Command lastCommand = Commands[^1];
-            if (lastCommand is SMBAndXCommand)
+            if (lastCommand is SMBAndXCommand smbAndXCommand)
             {
-                ((SMBAndXCommand)lastCommand).AndXCommand = CommandName.SMB_COM_NO_ANDX_COMMAND;
+                smbAndXCommand.AndXCommand = CommandName.SMB_COM_NO_ANDX_COMMAND;
             }
 
             List<byte[]> sequence = new List<byte[]>();

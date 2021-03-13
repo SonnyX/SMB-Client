@@ -6,7 +6,7 @@
  */
 
 using System.Net;
-using SMBLibrary.Authentication.GSSAPI;
+using SMBLibrary.Authentication.GssApi;
 
 namespace SMBLibrary
 {
@@ -15,10 +15,10 @@ namespace SMBLibrary
         private readonly string m_userName;
         private readonly string m_machineName;
         private readonly IPEndPoint m_clientEndPoint;
-        public GSSContext AuthenticationContext;
+        public GssContext AuthenticationContext;
         public object AccessToken;
 
-        public SecurityContext(string userName, string machineName, IPEndPoint clientEndPoint, GSSContext authenticationContext, object accessToken)
+        public SecurityContext(string userName, string machineName, IPEndPoint clientEndPoint, GssContext authenticationContext, object accessToken)
         {
             m_userName = userName;
             m_machineName = machineName;

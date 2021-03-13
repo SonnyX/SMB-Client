@@ -21,7 +21,7 @@ namespace SMBLibrary.SMB2
         private ushort DataOffset;
         private uint DataLength;
         public ulong Offset;
-        public FileID FileId;
+        public FileID? FileId;
         public uint Channel;
         public uint RemainingBytes;
         private ushort WriteChannelInfoOffset;

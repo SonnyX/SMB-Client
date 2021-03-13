@@ -14,7 +14,7 @@ namespace SMBLibrary.SMB1
     {
         public const int ParametersLength = 0;
         // Data:
-        public byte[] ReadData;
+        public byte[]? ReadData;
 
         public TransactionCallNamedPipeResponse()
         {}

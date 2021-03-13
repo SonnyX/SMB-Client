@@ -18,7 +18,7 @@ namespace SMBLibrary.NetBios
         public string Name;
         public NameRecordType Type;
         public ResourceRecordClass Class;
-        public uint TTL;
+        public uint Ttl;
         // ushort DataLength
         public byte[] Data;
 
@@ -27,7 +27,7 @@ namespace SMBLibrary.NetBios
             Name = string.Empty;
             Type = type;
             Class = ResourceRecordClass.In;
-            TTL = (uint)new TimeSpan(7, 0, 0, 0).TotalSeconds;
+            Ttl = (uint)new TimeSpan(7, 0, 0, 0).TotalSeconds;
             Data = new byte[0];
         }
 
@@ -36,7 +36,7 @@ namespace SMBLibrary.NetBios
             Name = NetBiosUtils.DecodeName(buffer, ref offset);
             Type = (NameRecordType)BigEndianReader.ReadUInt16(buffer, ref offset);
             Class = (ResourceRecordClass)BigEndianReader.ReadUInt16(buffer, ref offset);
-            TTL = BigEndianReader.ReadUInt32(buffer, ref offset);
+            Ttl = BigEndianReader.ReadUInt32(buffer, ref offset);
             ushort dataLength = BigEndianReader.ReadUInt16(buffer, ref offset);
             Data = ByteReader.ReadBytes(buffer, ref offset, dataLength);
         }
@@ -59,7 +59,7 @@ namespace SMBLibrary.NetBios
             }
             BigEndianWriter.WriteUInt16(stream, (ushort)Type);
             BigEndianWriter.WriteUInt16(stream, (ushort)Class);
-            BigEndianWriter.WriteUInt32(stream, TTL);
+            BigEndianWriter.WriteUInt32(stream, Ttl);
             BigEndianWriter.WriteUInt16(stream, (ushort)Data.Length);
             ByteWriter.WriteBytes(stream, Data);
         }

@@ -15,7 +15,7 @@ namespace SMBLibrary.SMB1
         public const int ParametersLength = 0;
 
         // Data:
-        public ResponseGetDfsReferral ReferralResponse;
+        public ResponseGetDfsReferral? ReferralResponse;
 
         public Transaction2GetDfsReferralResponse()
         {
@@ -28,7 +28,7 @@ namespace SMBLibrary.SMB1
 
         public override byte[] GetData(bool isUnicode)
         {
-            return ReferralResponse.GetBytes();
+            return ReferralResponse?.GetBytes() ?? new byte[0];
         }
 
         public override Transaction2SubcommandName SubcommandName => Transaction2SubcommandName.TRANS2_GET_DFS_REFERRAL;

@@ -9,7 +9,7 @@ using System;
 using System.IO;
 using Utilities;
 
-namespace SMBLibrary.Authentication.GSSAPI
+namespace SMBLibrary.Authentication.GssApi
 {
     /// <summary>
     /// [MS-SPNG] - NegTokenInit2
@@ -17,19 +17,21 @@ namespace SMBLibrary.Authentication.GSSAPI
     public class SimpleProtectedNegotiationTokenInit2 : SimpleProtectedNegotiationTokenInit
     {
         public const byte NegHintsTag = 0xA3;
-        new public const byte MechanismListMICTag = 0xA4;
+        public new const byte MechanismListMICTag = 0xA4;
 
         public const byte HintNameTag = 0xA0;
         public const byte HintAddressTag = 0xA1;
 
         public string HintName;
-        public byte[] HintAddress;
+        public byte[]? HintAddress;
 
         public SimpleProtectedNegotiationTokenInit2()
         {
             HintName = "not_defined_in_RFC4178@please_ignore";
         }
 
+        /// <summary></summary>
+        /// <param name="buffer">A buffer object to write to</param>
         /// <param name="offset">The offset following the NegTokenInit2 tag</param>
         /// <exception cref="InvalidDataException"></exception>
         public SimpleProtectedNegotiationTokenInit2(byte[] buffer, int offset)
@@ -85,43 +87,34 @@ namespace SMBLibrary.Authentication.GSSAPI
             DerEncodingHelper.WriteLength(buffer, ref offset, constructionLength);
             ByteWriter.WriteByte(buffer, ref offset, (byte)DerEncodingTag.Sequence);
             DerEncodingHelper.WriteLength(buffer, ref offset, sequenceLength);
-            if (MechanismTypeList != null)
-            {
-                WriteMechanismTypeList(buffer, ref offset, MechanismTypeList);
-            }
-            if (MechanismToken != null)
-            {
-                WriteMechanismToken(buffer, ref offset, MechanismToken);
-            }
-            if (HintName != null || HintAddress != null)
+            WriteMechanismTypeList(buffer, ref offset, MechanismTypeList);
+            WriteMechanismToken(buffer, ref offset, MechanismToken);
+            if (HintAddress != null)
             {
                 WriteHints(buffer, ref offset, HintName, HintAddress);
             }
-            if (MechanismListMIC != null)
-            {
-                WriteMechanismListMIC(buffer, ref offset, MechanismListMIC);
-            }
+
+            WriteMechanismListMIC(buffer, ref offset, MechanismListMIC);
             return buffer;
         }
 
         protected override int GetTokenFieldsLength()
         {
             int result = base.GetTokenFieldsLength(); ;
-            if (HintName != null || HintAddress != null)
-            {
-                int hintsSequenceLength = GetHintsSequenceLength(HintName, HintAddress);
-                int hintsSequenceLengthFieldSize = DerEncodingHelper.GetLengthFieldSize(hintsSequenceLength);
-                int hintsSequenceConstructionLength = 1 + hintsSequenceLengthFieldSize + hintsSequenceLength;
-                int hintsSequenceConstructionLengthFieldSize = DerEncodingHelper.GetLengthFieldSize(hintsSequenceConstructionLength);
-                int entryLength = 1 + hintsSequenceConstructionLengthFieldSize + 1 + hintsSequenceLengthFieldSize + hintsSequenceLength;
-                result += entryLength;
-            }
+            if (HintAddress == null)
+                return result;
+            int hintsSequenceLength = GetHintsSequenceLength(HintName, HintAddress);
+            int hintsSequenceLengthFieldSize = DerEncodingHelper.GetLengthFieldSize(hintsSequenceLength);
+            int hintsSequenceConstructionLength = 1 + hintsSequenceLengthFieldSize + hintsSequenceLength;
+            int hintsSequenceConstructionLengthFieldSize = DerEncodingHelper.GetLengthFieldSize(hintsSequenceConstructionLength);
+            int entryLength = 1 + hintsSequenceConstructionLengthFieldSize + 1 + hintsSequenceLengthFieldSize + hintsSequenceLength;
+            result += entryLength;
             return result;
         }
 
-        protected static string ReadHints(byte[] buffer, ref int offset, out byte[] hintAddress)
+        protected static string? ReadHints(byte[] buffer, ref int offset, out byte[]? hintAddress)
         {
-            string hintName = null;
+            string? hintName = null;
             hintAddress = null;
             _ = DerEncodingHelper.ReadLength(buffer, ref offset);
             byte tag = ByteReader.ReadByte(buffer, ref offset);
@@ -134,17 +127,16 @@ namespace SMBLibrary.Authentication.GSSAPI
             while (offset < sequenceEndOffset)
             {
                 tag = ByteReader.ReadByte(buffer, ref offset);
-                if (tag == HintNameTag)
+                switch (tag)
                 {
-                    hintName = ReadHintName(buffer, ref offset);
-                }
-                else if (tag == HintAddressTag)
-                {
-                    hintAddress = ReadHintAddress(buffer, ref offset);
-                }
-                else
-                {
-                    throw new InvalidDataException();
+                    case HintNameTag:
+                        hintName = ReadHintName(buffer, ref offset);
+                        break;
+                    case HintAddressTag:
+                        hintAddress = ReadHintAddress(buffer, ref offset);
+                        break;
+                    default:
+                        throw new InvalidDataException();
                 }
             }
             return hintName;

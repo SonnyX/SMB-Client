@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Text;
 using Utilities;
 
-namespace SMBLibrary.Authentication.GSSAPI
+namespace SMBLibrary.Authentication.GssApi
 {
     public enum DerEncodingTag : byte
     {

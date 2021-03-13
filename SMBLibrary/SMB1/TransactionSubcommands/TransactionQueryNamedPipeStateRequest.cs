@@ -17,10 +17,6 @@ namespace SMBLibrary.SMB1
         // Setup:
         public ushort FID;
 
-        public TransactionQueryNamedPipeStateRequest()
-        {
-        }
-
         public TransactionQueryNamedPipeStateRequest(byte[] setup)
         {
             FID = LittleEndianConverter.ToUInt16(setup, 2);

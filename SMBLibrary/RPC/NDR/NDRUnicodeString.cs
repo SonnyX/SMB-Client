@@ -12,7 +12,7 @@ namespace SMBLibrary.RPC
     {
         private readonly bool m_writeNullTerminationCharacter;
 
-        public string Value;
+        public string? Value;
 
         public NDRUnicodeString() : this(string.Empty, true)
         {
@@ -69,9 +69,9 @@ namespace SMBLibrary.RPC
             writer.WriteUInt32(index);
             uint actualCount = (uint)valueToWrite.Length;
             writer.WriteUInt32(actualCount);
-            for (int position = 0; position < valueToWrite.Length; position++)
+            foreach (char value in valueToWrite)
             {
-                writer.WriteUInt16((ushort)valueToWrite[position]);
+                writer.WriteUInt16(value);
             }
         }
     }

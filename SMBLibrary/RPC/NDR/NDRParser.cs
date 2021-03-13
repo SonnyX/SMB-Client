@@ -98,20 +98,17 @@ namespace SMBLibrary.RPC
             }
         }
 
-        public void ReadEmbeddedStructureFullPointer(ref NDRUnicodeString structure)
+        public void ReadEmbeddedStructureFullPointer(ref NDRUnicodeString? structure)
         {
             ReadEmbeddedStructureFullPointer<NDRUnicodeString>(ref structure);
         }
 
-        public void ReadEmbeddedStructureFullPointer<T>(ref T structure) where T : INDRStructure, new()
+        public void ReadEmbeddedStructureFullPointer<T>(ref T structure) where T : INDRStructure?, new()
         {
             uint referentID = ReadUInt32();
             if (referentID != 0) // not null
             {
-                if (structure == null)
-                {
-                    structure = new T();
-                }
+                structure ??= new T();
                 AddDeferredStructure(structure);
             }
             else

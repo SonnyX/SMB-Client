@@ -27,52 +27,51 @@ namespace SMBLibrary.SMB1
 
         public static QueryFSInformation FromFileSystemInformation(FileSystemInformation fsInfo)
         {
-            if (fsInfo is FileFsVolumeInformation)
+            switch (fsInfo)
             {
-                FileFsVolumeInformation volumeInfo = (FileFsVolumeInformation)fsInfo;
-                QueryFSVolumeInfo result = new QueryFSVolumeInfo
+                case FileFsVolumeInformation volumeInfo:
                 {
-                    VolumeCreationTime = volumeInfo.VolumeCreationTime,
-                    SerialNumber = volumeInfo.VolumeSerialNumber,
-                    VolumeLabel = volumeInfo.VolumeLabel
-                };
-                return result;
-            }
-
-            if (fsInfo is FileFsSizeInformation)
-            {
-                FileFsSizeInformation fsSizeInfo = (FileFsSizeInformation)fsInfo;
-                QueryFSSizeInfo result = new QueryFSSizeInfo
+                    QueryFSVolumeInfo result = new QueryFSVolumeInfo
+                    {
+                        VolumeCreationTime = volumeInfo.VolumeCreationTime,
+                        SerialNumber = volumeInfo.VolumeSerialNumber,
+                        VolumeLabel = volumeInfo.VolumeLabel
+                    };
+                    return result;
+                }
+                case FileFsSizeInformation fsSizeInfo:
                 {
-                    TotalAllocationUnits = fsSizeInfo.TotalAllocationUnits,
-                    TotalFreeAllocationUnits = fsSizeInfo.AvailableAllocationUnits,
-                    BytesPerSector = fsSizeInfo.BytesPerSector,
-                    SectorsPerAllocationUnit = fsSizeInfo.SectorsPerAllocationUnit
-                };
-                return result;
-            }
-            if (fsInfo is FileFsDeviceInformation)
-            {
-                FileFsDeviceInformation fsDeviceInfo = (FileFsDeviceInformation)fsInfo;
-                QueryFSDeviceInfo result = new QueryFSDeviceInfo
+                    QueryFSSizeInfo result = new QueryFSSizeInfo
+                    {
+                        TotalAllocationUnits = fsSizeInfo.TotalAllocationUnits,
+                        TotalFreeAllocationUnits = fsSizeInfo.AvailableAllocationUnits,
+                        BytesPerSector = fsSizeInfo.BytesPerSector,
+                        SectorsPerAllocationUnit = fsSizeInfo.SectorsPerAllocationUnit
+                    };
+                    return result;
+                }
+                case FileFsDeviceInformation fsDeviceInfo:
                 {
-                    DeviceType = fsDeviceInfo.DeviceType,
-                    DeviceCharacteristics = fsDeviceInfo.Characteristics
-                };
-                return result;
-            }
-            if (fsInfo is FileFsAttributeInformation)
-            {
-                FileFsAttributeInformation fsAttributeInfo = (FileFsAttributeInformation)fsInfo;
-                QueryFSAttibuteInfo result = new QueryFSAttibuteInfo
+                    QueryFSDeviceInfo result = new QueryFSDeviceInfo
+                    {
+                        DeviceType = fsDeviceInfo.DeviceType,
+                        DeviceCharacteristics = fsDeviceInfo.Characteristics
+                    };
+                    return result;
+                }
+                case FileFsAttributeInformation fsAttributeInfo:
                 {
-                    FileSystemAttributes = fsAttributeInfo.FileSystemAttributes,
-                    MaxFileNameLengthInBytes = fsAttributeInfo.MaximumComponentNameLength,
-                    FileSystemName = fsAttributeInfo.FileSystemName
-                };
-                return result;
+                    QueryFSAttibuteInfo result = new QueryFSAttibuteInfo
+                    {
+                        FileSystemAttributes = fsAttributeInfo.FileSystemAttributes,
+                        MaxFileNameLengthInBytes = fsAttributeInfo.MaximumComponentNameLength,
+                        FileSystemName = fsAttributeInfo.FileSystemName
+                    };
+                    return result;
+                }
+                default:
+                    throw new NotImplementedException();
             }
-            throw new NotImplementedException();
         }
     }
 }

@@ -17,7 +17,7 @@ namespace SMBLibrary.RPC
         public const int BindNakFieldsFixedLength = 2;
 
         public RejectionReason RejectReason; // provider_reject_reason
-        public VersionsSupported Versions; // versions
+        public VersionsSupported? Versions; // versions
 
         public BindNakPDU()
         {

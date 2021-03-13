@@ -12,7 +12,7 @@ namespace SMBLibrary.Authentication.NTLM
     /// <summary>
     /// [MS-NLMP] 2.2.2.10 - VERSION
     /// </summary>
-    public class NTLMVersion
+    public class NtlmVersion
     {
         public const int Length = 8;
         public const byte NTLMSSP_REVISION_W2K3 = 0x0F;
@@ -24,7 +24,7 @@ namespace SMBLibrary.Authentication.NTLM
         // Reserved - 3 bytes
         public byte NTLMRevisionCurrent;
 
-        public NTLMVersion(byte majorVersion, byte minorVersion, ushort build, byte ntlmRevisionCurrent)
+        public NtlmVersion(byte majorVersion, byte minorVersion, ushort build, byte ntlmRevisionCurrent)
         {
             ProductMajorVersion = majorVersion;
             ProductMinorVersion = minorVersion;
@@ -32,7 +32,7 @@ namespace SMBLibrary.Authentication.NTLM
             NTLMRevisionCurrent = ntlmRevisionCurrent;
         }
 
-        public NTLMVersion(byte[] buffer, int offset)
+        public NtlmVersion(byte[] buffer, int offset)
         {
             ProductMajorVersion = ByteReader.ReadByte(buffer, offset + 0);
             ProductMinorVersion = ByteReader.ReadByte(buffer, offset + 1);
@@ -53,8 +53,8 @@ namespace SMBLibrary.Authentication.NTLM
             return $"{ProductMajorVersion}.{ProductMinorVersion}.{ProductBuild}";
         }
 
-        public static NTLMVersion WindowsXP => new NTLMVersion(5, 1, 2600, NTLMSSP_REVISION_W2K3);
+        public static NtlmVersion WindowsXP => new NtlmVersion(5, 1, 2600, NTLMSSP_REVISION_W2K3);
 
-        public static NTLMVersion Server2003 => new NTLMVersion(5, 2, 3790, NTLMSSP_REVISION_W2K3);
+        public static NtlmVersion Server2003 => new NtlmVersion(5, 2, 3790, NTLMSSP_REVISION_W2K3);
     }
 }

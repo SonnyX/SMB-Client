@@ -26,7 +26,7 @@ namespace SMBLibrary.NetBios
 
         public SessionPacketTypeName Type;
         private int TrailerLength; // Session packet: 17 bits, Direct TCP transport packet: 3 bytes
-        public byte[] Trailer;
+        public byte[]? Trailer;
 
         public SessionPacket()
         {

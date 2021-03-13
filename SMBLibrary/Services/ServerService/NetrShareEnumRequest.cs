@@ -14,8 +14,8 @@ namespace SMBLibrary.Services
     /// </summary>
     public class NetrShareEnumRequest
     {
-        public string ServerName;
-        public ShareEnum InfoStruct;
+        public string? ServerName;
+        public ShareEnum? InfoStruct;
         public uint PreferedMaximumLength; // Preferred maximum length, in bytes, of the returned data
         public uint ResumeHandle;
 

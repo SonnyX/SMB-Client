@@ -16,14 +16,14 @@ namespace SMBLibrary.Authentication.NTLM
     {
         public string Signature; // 8 bytes
         public MessageTypeName MessageType;
-        public string TargetName;
+        public string? TargetName;
         public NegotiateFlags NegotiateFlags;
-        public byte[] ServerChallenge; // 8 bytes
+        public byte[]? ServerChallenge; // 8 bytes
 
         // Reserved - 8 bytes
         public KeyValuePairList<AVPairKey, byte[]> TargetInfo = new KeyValuePairList<AVPairKey, byte[]>();
 
-        public NTLMVersion Version;
+        public NtlmVersion? Version;
 
         public ChallengeMessage()
         {
@@ -46,7 +46,7 @@ namespace SMBLibrary.Authentication.NTLM
             }
             if ((NegotiateFlags & NegotiateFlags.Version) > 0)
             {
-                Version = new NTLMVersion(buffer, 48);
+                Version = new NtlmVersion(buffer, 48);
             }
         }
 

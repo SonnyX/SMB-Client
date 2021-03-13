@@ -14,10 +14,6 @@ namespace SMBLibrary.SMB1
     {
         public const int ParametersLength = 0;
 
-        public Transaction2SetFSInformationResponse()
-        {
-        }
-
         public override Transaction2SubcommandName SubcommandName => Transaction2SubcommandName.TRANS2_SET_FS_INFORMATION;
     }
 }

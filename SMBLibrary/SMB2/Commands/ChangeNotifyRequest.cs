@@ -19,7 +19,7 @@ namespace SMBLibrary.SMB2
         private readonly ushort StructureSize;
         public ChangeNotifyFlags Flags;
         public uint OutputBufferLength;
-        public FileID FileId;
+        public FileID? FileId;
         public NotifyChangeFilter CompletionFilter;
         public uint Reserved;
 
@@ -43,7 +43,7 @@ namespace SMBLibrary.SMB2
             LittleEndianWriter.WriteUInt16(buffer, offset + 0, StructureSize);
             LittleEndianWriter.WriteUInt16(buffer, offset + 2, (ushort)Flags);
             LittleEndianWriter.WriteUInt32(buffer, offset + 4, OutputBufferLength);
-            FileId.WriteBytes(buffer, offset + 8);
+            FileId?.WriteBytes(buffer, offset + 8);
             LittleEndianWriter.WriteUInt32(buffer, offset + 24, (uint)CompletionFilter);
             LittleEndianWriter.WriteUInt32(buffer, offset + 28, Reserved);
         }

@@ -25,7 +25,7 @@ namespace SMBLibrary.SMB2
             return sha256.ComputeHash(buffer, offset, paddedLength);
         }
 
-        public static byte[] GenerateSigningKey(byte[] sessionKey, SMB2Dialect dialect, byte[] preauthIntegrityHashValue)
+        public static byte[] GenerateSigningKey(byte[] sessionKey, SMB2Dialect dialect, byte[]? preauthIntegrityHashValue)
         {
             if (dialect == SMB2Dialect.SMB202 || dialect == SMB2Dialect.SMB210)
             {
@@ -34,12 +34,12 @@ namespace SMBLibrary.SMB2
 
             if (dialect == SMB2Dialect.SMB311 && preauthIntegrityHashValue == null)
             {
-                throw new ArgumentNullException("preauthIntegrityHashValue");
+                throw new ArgumentNullException(nameof(preauthIntegrityHashValue));
             }
 
             string labelString = (dialect == SMB2Dialect.SMB311) ? "SMBSigningKey" : "SMB2AESCMAC";
             byte[] label = GetNullTerminatedAnsiString(labelString);
-            byte[] context = (dialect == SMB2Dialect.SMB311) ? preauthIntegrityHashValue : GetNullTerminatedAnsiString("SmbSign");
+            byte[] context = (dialect == SMB2Dialect.SMB311) ? preauthIntegrityHashValue! : GetNullTerminatedAnsiString("SmbSign");
 
             using HMACSHA256 hmac = new HMACSHA256(sessionKey);
             return SP800_1008.DeriveKey(hmac, label, context, 128);
@@ -49,7 +49,7 @@ namespace SMBLibrary.SMB2
         {
             if (dialect == SMB2Dialect.SMB311 && preauthIntegrityHashValue == null)
             {
-                throw new ArgumentNullException("preauthIntegrityHashValue");
+                throw new ArgumentNullException(nameof(preauthIntegrityHashValue));
             }
 
             string labelString = (dialect == SMB2Dialect.SMB311) ? "SMBC2SCipherKey" : "SMB2AESCCM";
@@ -64,7 +64,7 @@ namespace SMBLibrary.SMB2
         {
             if (dialect == SMB2Dialect.SMB311 && preauthIntegrityHashValue == null)
             {
-                throw new ArgumentNullException("preauthIntegrityHashValue");
+                throw new ArgumentNullException(nameof(preauthIntegrityHashValue));
             }
 
             string labelString = (dialect == SMB2Dialect.SMB311) ? "SMBS2CCipherKey" : "SMB2AESCCM";

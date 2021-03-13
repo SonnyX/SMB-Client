@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using Utilities;
 
-namespace SMBLibrary.Authentication.GSSAPI
+namespace SMBLibrary.Authentication.GssApi
 {
     /// <summary>
     /// RFC 4178 - negTokenInit
@@ -34,6 +34,7 @@ namespace SMBLibrary.Authentication.GSSAPI
         {
         }
 
+        /// <param name="buffer"></param>
         /// <param name="offset">The offset following the NegTokenInit tag</param>
         /// <exception cref="InvalidDataException"></exception>
         public SimpleProtectedNegotiationTokenInit(byte[] buffer, int offset)

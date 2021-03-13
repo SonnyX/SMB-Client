@@ -5,15 +5,15 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 
-using SMBLibrary.Authentication.GSSAPI;
+using SMBLibrary.Authentication.GssApi;
 
 namespace SMBLibrary.Authentication.NTLM
 {
-    public abstract class NTLMAuthenticationProviderBase : IGSSMechanism
+    public abstract class NtlmAuthenticationProviderBase : IGssMechanism
     {
-        public static readonly byte[] NTLMSSPIdentifier = { 0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0x37, 0x02, 0x02, 0x0a };
+        public static readonly byte[] NtlmsspIdentifier = { 0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0x37, 0x02, 0x02, 0x0a };
 
-        public NTStatus AcceptSecurityContext(ref object context, byte[] inputToken, out byte[] outputToken)
+        public NTStatus AcceptSecurityContext(ref object context, byte[] inputToken, out byte[]? outputToken)
         {
             outputToken = null;
             if (!AuthenticationMessageUtils.IsSignatureValid(inputToken))
@@ -22,17 +22,11 @@ namespace SMBLibrary.Authentication.NTLM
             }
 
             MessageTypeName messageType = AuthenticationMessageUtils.GetMessageType(inputToken);
-            if (messageType == MessageTypeName.Negotiate)
-            {
-                NTStatus status = GetChallengeMessage(out context, inputToken, out outputToken);
-                return status;
-            }
+            if (messageType != MessageTypeName.Negotiate)
+                return messageType == MessageTypeName.Authenticate ? Authenticate(context, inputToken) : NTStatus.SEC_E_INVALID_TOKEN;
 
-            if (messageType == MessageTypeName.Authenticate)
-            {
-                return Authenticate(context, inputToken);
-            }
-            return NTStatus.SEC_E_INVALID_TOKEN;
+            NTStatus status = GetChallengeMessage(out context, inputToken, out outputToken);
+            return status;
         }
 
         public abstract NTStatus GetChallengeMessage(out object context, byte[] negotiateMessageBytes, out byte[] challengeMessageBytes);
@@ -41,8 +35,8 @@ namespace SMBLibrary.Authentication.NTLM
 
         public abstract bool DeleteSecurityContext(ref object context);
 
-        public abstract object GetContextAttribute(object context, GSSAttributeName attributeName);
+        public abstract object GetContextAttribute(object context, GssAttributeName attributeName);
 
-        public byte[] Identifier => NTLMSSPIdentifier;
+        public byte[] Identifier => NtlmsspIdentifier;
     }
 }

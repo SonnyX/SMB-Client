@@ -11,7 +11,7 @@ using System.Net;
 
 namespace SMBLibrary.Client
 {
-    public interface ISMBClient : IDisposable
+    public interface ISmbClient : IDisposable
     {
         bool Connect(IPAddress serverAddress, SMBTransportType transport);
 
@@ -23,21 +23,15 @@ namespace SMBLibrary.Client
 
         NTStatus Logoff();
 
-        List<string> ListShares(out NTStatus status);
+        List<string>? ListShares(out NTStatus status);
 
-        ISMBFileStore TreeConnect(string shareName, out NTStatus status);
+        ISmbFileStore? TreeConnect(string shareName, out NTStatus status);
 
         bool IsConnected { get; }
         bool IsLoggedIn { get; }
 
-        uint MaxReadSize
-        {
-            get;
-        }
+        uint MaxReadSize { get; }
 
-        uint MaxWriteSize
-        {
-            get;
-        }
+        uint MaxWriteSize { get; }
     }
 }

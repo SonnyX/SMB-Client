@@ -14,7 +14,7 @@ namespace SMBLibrary.SMB1
     {
         public const int ParametersLength = 0;
         // Data:
-        public byte[] ReadData;
+        public byte[]? ReadData;
 
         public TransactionReadNamedPipeResponse()
         {
@@ -27,7 +27,7 @@ namespace SMBLibrary.SMB1
 
         public override byte[] GetData(bool isUnicode)
         {
-            return ReadData;
+            return ReadData ?? new byte[0];
         }
 
         public override TransactionSubcommandName SubcommandName => TransactionSubcommandName.TRANS_READ_NMPIPE;

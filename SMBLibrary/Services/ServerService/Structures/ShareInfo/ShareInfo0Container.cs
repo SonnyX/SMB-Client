@@ -14,7 +14,7 @@ namespace SMBLibrary.Services
     /// </summary>
     public class ShareInfo0Container : IShareInfoContainer
     {
-        public NDRConformantArray<ShareInfo0Entry> Entries;
+        public NDRConformantArray<ShareInfo0Entry>? Entries;
 
         public ShareInfo0Container()
         {
@@ -43,25 +43,11 @@ namespace SMBLibrary.Services
 
         public uint Level => 0;
 
-        public int Count
-        {
-            get
-            {
-                if (Entries != null)
-                {
-                    return Entries.Count;
-                }
-
-                return 0;
-            }
-        }
+        public int Count => Entries?.Count ?? 0;
 
         public void Add(ShareInfo0Entry entry)
         {
-            if (Entries == null)
-            {
-                Entries = new NDRConformantArray<ShareInfo0Entry>();
-            }
+            Entries ??= new NDRConformantArray<ShareInfo0Entry>();
             Entries.Add(entry);
         }
     }

@@ -15,7 +15,7 @@ namespace SMBLibrary.Services
     public class WorkstationInfo : INDRStructure
     {
         public uint Level;
-        public WorkstationInfoLevel Info;
+        public WorkstationInfoLevel? Info;
 
         public WorkstationInfo()
         {
@@ -44,12 +44,12 @@ namespace SMBLibrary.Services
             switch (Level)
             {
                 case 100:
-                    WorkstationInfo100 info100 = null;
+                    WorkstationInfo100? info100 = null;
                     parser.ReadEmbeddedStructureFullPointer(ref info100);
                     Info = info100;
                     break;
                 case 101:
-                    WorkstationInfo101 info101 = null;
+                    WorkstationInfo101? info101 = null;
                     parser.ReadEmbeddedStructureFullPointer(ref info101);
                     Info = info101;
                     break;

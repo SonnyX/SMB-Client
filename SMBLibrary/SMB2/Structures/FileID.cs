@@ -12,7 +12,7 @@ namespace SMBLibrary.SMB2
     /// <summary>
     /// [MS-SMB2] 2.2.14.1 - SMB2_FILEID
     /// </summary>
-    public struct FileID
+    public class FileID : NtHandle
     {
         public const int Length = 16;
 

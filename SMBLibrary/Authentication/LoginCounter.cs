@@ -14,7 +14,7 @@ namespace SMBLibrary.Authentication
     {
         public class LoginEntry
         {
-            public DateTime LoginWindowStartDT;
+            public DateTime LoginWindowStartDt;
             public int NumberOfAttempts;
         }
 
@@ -28,18 +28,18 @@ namespace SMBLibrary.Authentication
             m_loginWindowDuration = loginWindowDuration;
         }
 
-        public bool HasRemainingLoginAttempts(string userID)
+        public bool HasRemainingLoginAttempts(string userId)
         {
-            return HasRemainingLoginAttempts(userID, false);
+            return HasRemainingLoginAttempts(userId, false);
         }
 
-        public bool HasRemainingLoginAttempts(string userID, bool incrementCount)
+        public bool HasRemainingLoginAttempts(string userId, bool incrementCount)
         {
             lock (m_loginEntries)
             {
-                if (m_loginEntries.TryGetValue(userID, out LoginEntry entry))
+                if (m_loginEntries.TryGetValue(userId, out LoginEntry entry))
                 {
-                    if (entry.LoginWindowStartDT.Add(m_loginWindowDuration) >= DateTime.UtcNow)
+                    if (entry.LoginWindowStartDt.Add(m_loginWindowDuration) >= DateTime.UtcNow)
                     {
                         // Existing login Window
                         if (incrementCount)
@@ -54,7 +54,7 @@ namespace SMBLibrary.Authentication
                         {
                             return true;
                         }
-                        entry.LoginWindowStartDT = DateTime.UtcNow;
+                        entry.LoginWindowStartDt = DateTime.UtcNow;
                         entry.NumberOfAttempts = 1;
                     }
                 }
@@ -66,10 +66,10 @@ namespace SMBLibrary.Authentication
                     }
                     entry = new LoginEntry
                     {
-                        LoginWindowStartDT = DateTime.UtcNow,
+                        LoginWindowStartDt = DateTime.UtcNow,
                         NumberOfAttempts = 1
                     };
-                    m_loginEntries.Add(userID, entry);
+                    m_loginEntries.Add(userId, entry);
                 }
                 return (entry.NumberOfAttempts < m_maxLoginAttemptsInWindow);
             }

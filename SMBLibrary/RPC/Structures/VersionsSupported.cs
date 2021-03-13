@@ -17,10 +17,6 @@ namespace SMBLibrary.RPC
     {
         public List<Version> Entries = new List<Version>(); // p_protocols
 
-        public VersionsSupported()
-        {
-        }
-
         public VersionsSupported(byte[] buffer, int offset)
         {
             byte protocols = ByteReader.ReadByte(buffer, offset + 0);

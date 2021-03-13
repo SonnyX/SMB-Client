@@ -11,9 +11,6 @@ namespace SMBLibrary.Services
 {
     public interface IShareInfoContainer : INDRStructure
     {
-        uint Level
-        {
-            get;
-        }
+        uint Level { get; }
     }
 }

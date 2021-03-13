@@ -20,7 +20,7 @@ namespace SMBLibrary.SMB1
         public ushort MessageBytesLength;
         public NamedPipeState NamedPipeState;
         // Data:
-        public byte[] ReadData;
+        public byte[]? ReadData;
 
         public TransactionPeekNamedPipeResponse()
         { }
@@ -45,7 +45,7 @@ namespace SMBLibrary.SMB1
 
         public override byte[] GetData(bool isUnicode)
         {
-            return ReadData;
+            return ReadData ?? new byte[0];
         }
 
         public override TransactionSubcommandName SubcommandName => TransactionSubcommandName.TRANS_PEEK_NMPIPE;

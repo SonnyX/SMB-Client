@@ -8,7 +8,7 @@
 using System.IO;
 using Utilities;
 
-namespace SMBLibrary.Authentication.GSSAPI
+namespace SMBLibrary.Authentication.GssApi
 {
     public enum NegState : byte
     {
@@ -30,14 +30,15 @@ namespace SMBLibrary.Authentication.GSSAPI
         public const byte MechanismListMICTag = 0xA3;
 
         public NegState? NegState; // Optional
-        public byte[] SupportedMechanism; // Optional
-        public byte[] ResponseToken; // Optional
-        public byte[] MechanismListMIC; // Optional
+        public byte[]? SupportedMechanism; // Optional
+        public byte[]? ResponseToken; // Optional
+        public byte[]? MechanismListMic; // Optional
 
         public SimpleProtectedNegotiationTokenResponse()
         {
         }
 
+        /// <param name="buffer"></param>
         /// <param name="offset">The offset following the NegTokenResp tag</param>
         /// <exception cref="InvalidDataException"></exception>
         public SimpleProtectedNegotiationTokenResponse(byte[] buffer, int offset)
@@ -67,7 +68,7 @@ namespace SMBLibrary.Authentication.GSSAPI
                 }
                 else if (tag == MechanismListMICTag)
                 {
-                    MechanismListMIC = ReadMechanismListMIC(buffer, ref offset);
+                    MechanismListMic = ReadMechanismListMIC(buffer, ref offset);
                 }
                 else
                 {
@@ -101,9 +102,9 @@ namespace SMBLibrary.Authentication.GSSAPI
             {
                 WriteResponseToken(buffer, ref offset, ResponseToken);
             }
-            if (MechanismListMIC != null)
+            if (MechanismListMic != null)
             {
-                WriteMechanismListMIC(buffer, ref offset, MechanismListMIC);
+                WriteMechanismListMIC(buffer, ref offset, MechanismListMic);
             }
             return buffer;
         }
@@ -132,12 +133,12 @@ namespace SMBLibrary.Authentication.GSSAPI
                 int responseTokenLength = 1 + responseTokenConstructionLengthFieldSize + 1 + responseTokenBytesLengthFieldSize + ResponseToken.Length;
                 result += responseTokenLength;
             }
-            if (MechanismListMIC != null)
+            if (MechanismListMic != null)
             {
-                int mechanismListMICBytesLengthFieldSize = DerEncodingHelper.GetLengthFieldSize(MechanismListMIC.Length);
-                int mechanismListMICConstructionLength = 1 + mechanismListMICBytesLengthFieldSize + MechanismListMIC.Length;
+                int mechanismListMICBytesLengthFieldSize = DerEncodingHelper.GetLengthFieldSize(MechanismListMic.Length);
+                int mechanismListMICConstructionLength = 1 + mechanismListMICBytesLengthFieldSize + MechanismListMic.Length;
                 int mechanismListMICConstructionLengthFieldSize = DerEncodingHelper.GetLengthFieldSize(mechanismListMICConstructionLength);
-                int responseTokenLength = 1 + mechanismListMICConstructionLengthFieldSize + 1 + mechanismListMICBytesLengthFieldSize + MechanismListMIC.Length;
+                int responseTokenLength = 1 + mechanismListMICConstructionLengthFieldSize + 1 + mechanismListMICBytesLengthFieldSize + MechanismListMic.Length;
                 result += responseTokenLength;
             }
             return result;

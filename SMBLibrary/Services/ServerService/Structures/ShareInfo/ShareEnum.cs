@@ -15,7 +15,7 @@ namespace SMBLibrary.Services
     public class ShareEnum : INDRStructure
     {
         public uint Level;
-        public IShareInfoContainer Info;
+        public IShareInfoContainer? Info;
 
         public ShareEnum()
         {
@@ -49,12 +49,12 @@ namespace SMBLibrary.Services
             switch (level)
             {
                 case 0:
-                    ShareInfo0Container info0 = null;
+                    ShareInfo0Container? info0 = null;
                     parser.ReadEmbeddedStructureFullPointer(ref info0);
                     Info = info0;
                     break;
                 case 1:
-                    ShareInfo1Container info1 = null;
+                    ShareInfo1Container? info1 = null;
                     parser.ReadEmbeddedStructureFullPointer(ref info1);
                     Info = info1;
                     break;

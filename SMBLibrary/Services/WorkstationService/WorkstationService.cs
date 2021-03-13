@@ -18,8 +18,8 @@ namespace SMBLibrary.Services
         public const int ServiceVersion = 1;
 
         private readonly uint m_platformID;
-        private readonly string m_computerName;
-        private readonly string m_lanGroup;
+        private readonly string? m_computerName;
+        private readonly string? m_lanGroup;
         private readonly uint m_verMajor;
         private readonly uint m_verMinor;
 
@@ -54,12 +54,18 @@ namespace SMBLibrary.Services
                     {
                         WorkstationInfo100 info = new WorkstationInfo100
                         {
-                            PlatformID = m_platformID
+                            PlatformID = m_platformID,
+                            ComputerName =
+                            {
+                                Value = m_computerName
+                            },
+                            LanGroup =
+                            {
+                                Value = m_lanGroup
+                            },
+                            VerMajor = m_verMajor,
+                            VerMinor = m_verMinor
                         };
-                        info.ComputerName.Value = m_computerName;
-                        info.LanGroup.Value = m_lanGroup;
-                        info.VerMajor = m_verMajor;
-                        info.VerMinor = m_verMinor;
                         response.WkstaInfo = new WorkstationInfo(info);
                         response.Result = Win32Error.ERROR_SUCCESS;
                         return response;
@@ -68,13 +74,22 @@ namespace SMBLibrary.Services
                     {
                         WorkstationInfo101 info = new WorkstationInfo101
                         {
-                            PlatformID = m_platformID
+                            PlatformID = m_platformID,
+                            ComputerName =
+                            {
+                                Value = m_computerName
+                            },
+                            LanGroup =
+                            {
+                                Value = m_lanGroup
+                            },
+                            VerMajor = m_verMajor,
+                            VerMinor = m_verMinor,
+                            LanRoot =
+                            {
+                                Value = m_lanGroup
+                            }
                         };
-                        info.ComputerName.Value = m_computerName;
-                        info.LanGroup.Value = m_lanGroup;
-                        info.VerMajor = m_verMajor;
-                        info.VerMinor = m_verMinor;
-                        info.LanRoot.Value = m_lanGroup;
                         response.WkstaInfo = new WorkstationInfo(info);
                         response.Result = Win32Error.ERROR_SUCCESS;
                         return response;

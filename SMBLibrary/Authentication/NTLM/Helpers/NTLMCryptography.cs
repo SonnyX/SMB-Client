@@ -14,7 +14,7 @@ using Utilities;
 
 namespace SMBLibrary.Authentication.NTLM
 {
-    public class NTLMCryptography
+    public class NtlmCryptography
     {
         public static byte[] ComputeLMv1Response(byte[] challenge, string password)
         {
@@ -51,7 +51,11 @@ namespace SMBLibrary.Authentication.NTLM
         /// <summary>
         /// [MS-NLMP] https://msdn.microsoft.com/en-us/library/cc236700.aspx
         /// </summary>
+        /// <param name="serverChallenge"></param>
         /// <param name="clientChallengeStructurePadded">ClientChallengeStructure with 4 zero bytes padding, a.k.a. temp</param>
+        /// <param name="password"></param>
+        /// <param name="user"></param>
+        /// <param name="domain"></param>
         public static byte[] ComputeNTLMv2Proof(byte[] serverChallenge, byte[] clientChallengeStructurePadded, string password, string user, string domain)
         {
             byte[] key = NTOWFv2(password, user, domain);
@@ -75,14 +79,14 @@ namespace SMBLibrary.Authentication.NTLM
             return result;
         }
 
-        public static ICryptoTransform CreateWeakDesEncryptor(CipherMode mode, byte[] rgbKey, byte[] rgbIV)
+        public static ICryptoTransform? CreateWeakDesEncryptor(CipherMode mode, byte[] rgbKey, byte[] rgbIV)
         {
             using DES des = DES.Create();
             des.Mode = mode;
-            using DESCryptoServiceProvider sm = des as DESCryptoServiceProvider;
+            using DESCryptoServiceProvider? sm = des as DESCryptoServiceProvider;
             MethodInfo mi = sm.GetType().GetMethod("_NewEncryptor", BindingFlags.NonPublic | BindingFlags.Instance);
             object[] Par = { rgbKey, mode, rgbIV, sm.FeedbackSize, 0 };
-            ICryptoTransform trans = mi.Invoke(sm, Par) as ICryptoTransform;
+            ICryptoTransform? trans = mi.Invoke(sm, Par) as ICryptoTransform;
             return trans;
         }
 

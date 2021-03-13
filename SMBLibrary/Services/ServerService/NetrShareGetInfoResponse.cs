@@ -14,7 +14,7 @@ namespace SMBLibrary.Services
     /// </summary>
     public class NetrShareGetInfoResponse
     {
-        public ShareInfo InfoStruct;
+        public ShareInfo? InfoStruct;
         public Win32Error Result;
 
         public NetrShareGetInfoResponse()

@@ -14,7 +14,7 @@ namespace SMBLibrary.Services
     /// </summary>
     public class NetrServerGetInfoResponse
     {
-        public ServerInfo InfoStruct;
+        public ServerInfo? InfoStruct;
         public Win32Error Result;
 
         public NetrServerGetInfoResponse()

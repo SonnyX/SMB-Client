@@ -13,7 +13,7 @@ using Utilities;
 
 namespace SMBLibrary
 {
-    public class NamedPipeStore : INTFileStore
+    public class NamedPipeStore : INtFileStore
     {
         private readonly List<RemoteService> m_services;
 
@@ -22,12 +22,14 @@ namespace SMBLibrary
             m_services = services;
         }
 
-        public NTStatus CreateFile(out object handle, out FileStatus fileStatus, string path, AccessMask desiredAccess, FileAttributes fileAttributes, ShareAccess shareAccess, CreateDisposition createDisposition, CreateOptions createOptions, SecurityContext securityContext)
+        public NTStatus CreateFile(out NtHandle? handle, out FileStatus fileStatus, string path,
+            AccessMask desiredAccess, FileAttributes fileAttributes, ShareAccess shareAccess,
+            CreateDisposition createDisposition, CreateOptions createOptions, SecurityContext? securityContext)
         {
             fileStatus = FileStatus.FILE_DOES_NOT_EXIST;
             // It is possible to have a named pipe that does not use RPC (e.g. MS-WSP),
             // However this is not currently needed by our implementation.
-            RemoteService service = GetService(path);
+            RemoteService? service = GetService(path);
             if (service != null)
             {
                 // All instances of a named pipe share the same pipe name, but each instance has its own buffers and handles,
@@ -41,14 +43,14 @@ namespace SMBLibrary
             return NTStatus.STATUS_OBJECT_PATH_NOT_FOUND;
         }
 
-        public NTStatus CloseFile(object handle)
+        public NTStatus CloseFile(NtHandle? handle)
         {
             FileHandle fileHandle = (FileHandle)handle;
             fileHandle.Stream?.Close();
             return NTStatus.STATUS_SUCCESS;
         }
 
-        private RemoteService GetService(string path)
+        private RemoteService? GetService(string path)
         {
             if (path.StartsWith(@"\"))
             {
@@ -65,10 +67,13 @@ namespace SMBLibrary
             return null;
         }
 
-        public NTStatus ReadFile(out byte[] data, object handle, long offset, int maxCount)
+        public NTStatus ReadFile(out byte[] data, NtHandle? handle, long offset, int maxCount)
         {
-            Stream stream = ((FileHandle)handle).Stream;
             data = new byte[maxCount];
+            if (handle == null)
+                return NTStatus.STATUS_INVALID_SMB;
+
+            Stream stream = ((FileHandle)handle).Stream;
             int bytesRead = stream.Read(data, 0, maxCount);
             if (bytesRead < maxCount)
             {
@@ -78,88 +83,99 @@ namespace SMBLibrary
             return NTStatus.STATUS_SUCCESS;
         }
 
-        public NTStatus WriteFile(out int numberOfBytesWritten, object handle, long offset, byte[] data)
+        public NTStatus WriteFile(out int numberOfBytesWritten, NtHandle? handle, long offset, byte[] data)
         {
+            numberOfBytesWritten = 0;
+            if (handle == null)
+                return NTStatus.STATUS_INVALID_SMB;
             Stream stream = ((FileHandle)handle).Stream;
             stream.Write(data, 0, data.Length);
             numberOfBytesWritten = data.Length;
             return NTStatus.STATUS_SUCCESS;
         }
 
-        public NTStatus FlushFileBuffers(object handle)
+        public NTStatus FlushFileBuffers(NtHandle? handle)
         {
+            if (handle == null)
+                return NTStatus.STATUS_INVALID_SMB;
             FileHandle fileHandle = (FileHandle)handle;
             fileHandle.Stream?.Flush();
             return NTStatus.STATUS_SUCCESS;
         }
 
-        public NTStatus LockFile(object handle, long byteOffset, long length, bool exclusiveLock)
+        public NTStatus LockFile(NtHandle? handle, long byteOffset, long length, bool exclusiveLock)
         {
             return NTStatus.STATUS_NOT_SUPPORTED;
         }
 
-        public NTStatus UnlockFile(object handle, long byteOffset, long length)
+        public NTStatus UnlockFile(NtHandle? handle, long byteOffset, long length)
         {
             return NTStatus.STATUS_NOT_SUPPORTED;
         }
 
-        public NTStatus DeviceIOControl(object handle, uint ctlCode, byte[] input, out byte[] output, int maxOutputLength)
+        public NTStatus DeviceIOControl(NtHandle? handle, uint ctlCode, byte[] input, out byte[]? output, int maxOutputLength)
         {
             output = null;
-            if (ctlCode == (uint)IoControlCode.FSCTL_PIPE_WAIT)
+            if (handle == null)
+                return NTStatus.STATUS_INVALID_SMB;
+
+            switch (ctlCode)
             {
-                PipeWaitRequest request;
-                try
+                case (uint)IoControlCode.FSCTL_PIPE_WAIT:
                 {
-                    request = new PipeWaitRequest(input, 0);
-                }
-                catch
-                {
-                    return NTStatus.STATUS_INVALID_PARAMETER;
-                }
+                    PipeWaitRequest request;
+                    try
+                    {
+                        request = new PipeWaitRequest(input, 0);
+                    }
+                    catch
+                    {
+                        return NTStatus.STATUS_INVALID_PARAMETER;
+                    }
 
-                RemoteService service = GetService(request.Name);
-                if (service == null)
-                {
-                    return NTStatus.STATUS_OBJECT_NAME_NOT_FOUND;
-                }
+                    RemoteService? service = GetService(request.Name);
+                    if (service == null)
+                    {
+                        return NTStatus.STATUS_OBJECT_NAME_NOT_FOUND;
+                    }
 
-                output = new byte[0];
-                return NTStatus.STATUS_SUCCESS;
+                    output = new byte[0];
+                    return NTStatus.STATUS_SUCCESS;
+                }
+                case (uint)IoControlCode.FSCTL_PIPE_TRANSCEIVE:
+                {
+                    NTStatus writeStatus = WriteFile(out _, handle, 0, input);
+                    if (writeStatus != NTStatus.STATUS_SUCCESS)
+                    {
+                        return writeStatus;
+                    }
+                    int messageLength = ((RPCPipeStream)((FileHandle)handle).Stream).MessageLength;
+                    NTStatus readStatus = ReadFile(out output, handle, 0, maxOutputLength);
+                    if (readStatus != NTStatus.STATUS_SUCCESS)
+                    {
+                        return readStatus;
+                    }
+
+                    if (output.Length < messageLength)
+                    {
+                        return NTStatus.STATUS_BUFFER_OVERFLOW;
+                    }
+
+                    return NTStatus.STATUS_SUCCESS;
+                }
+                default:
+                    return NTStatus.STATUS_NOT_SUPPORTED;
             }
-
-            if (ctlCode == (uint)IoControlCode.FSCTL_PIPE_TRANSCEIVE)
-            {
-                NTStatus writeStatus = WriteFile(out _, handle, 0, input);
-                if (writeStatus != NTStatus.STATUS_SUCCESS)
-                {
-                    return writeStatus;
-                }
-                int messageLength = ((RPCPipeStream)((FileHandle)handle).Stream).MessageLength;
-                NTStatus readStatus = ReadFile(out output, handle, 0, maxOutputLength);
-                if (readStatus != NTStatus.STATUS_SUCCESS)
-                {
-                    return readStatus;
-                }
-
-                if (output.Length < messageLength)
-                {
-                    return NTStatus.STATUS_BUFFER_OVERFLOW;
-                }
-
-                return NTStatus.STATUS_SUCCESS;
-            }
-
-            return NTStatus.STATUS_NOT_SUPPORTED;
         }
 
-        public NTStatus QueryDirectory(out List<QueryDirectoryFileInformation> result, object directoryHandle, string fileName, FileInformationClass informationClass)
+        public NTStatus QueryDirectory(out List<QueryDirectoryFileInformation>? result, NtHandle? directoryHandle, string fileName, FileInformationClass informationClass)
         {
             result = null;
             return NTStatus.STATUS_NOT_SUPPORTED;
         }
 
-        public NTStatus GetFileInformation(out FileInformation result, object handle, FileInformationClass informationClass)
+        public NTStatus GetFileInformation(out FileInformation? result, NtHandle? handle,
+            FileInformationClass informationClass)
         {
             switch (informationClass)
             {
@@ -196,12 +212,12 @@ namespace SMBLibrary
             }
         }
 
-        public NTStatus SetFileInformation(object handle, FileInformation information)
+        public NTStatus SetFileInformation(NtHandle? handle, FileInformation information)
         {
             return NTStatus.STATUS_NOT_SUPPORTED;
         }
 
-        public NTStatus GetFileSystemInformation(out FileSystemInformation result, FileSystemInformationClass informationClass)
+        public NTStatus GetFileSystemInformation(out FileSystemInformation? result, FileSystemInformationClass informationClass)
         {
             result = null;
             return NTStatus.STATUS_NOT_SUPPORTED;
@@ -212,24 +228,24 @@ namespace SMBLibrary
             return NTStatus.STATUS_NOT_SUPPORTED;
         }
 
-        public NTStatus GetSecurityInformation(out SecurityDescriptor result, object handle, SecurityInformation securityInformation)
+        public NTStatus GetSecurityInformation(out SecurityDescriptor? result, NtHandle? handle, SecurityInformation securityInformation)
         {
             result = null;
             return NTStatus.STATUS_NOT_SUPPORTED;
         }
 
-        public NTStatus SetSecurityInformation(object handle, SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
+        public NTStatus SetSecurityInformation(NtHandle? handle, SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
         {
             return NTStatus.STATUS_NOT_SUPPORTED;
         }
 
-        public NTStatus NotifyChange(out object ioRequest, object handle, NotifyChangeFilter completionFilter, bool watchTree, int outputBufferSize, OnNotifyChangeCompleted onNotifyChangeCompleted, object context)
+        public NTStatus NotifyChange(out object? ioRequest, NtHandle? handle, NotifyChangeFilter completionFilter, bool watchTree, int outputBufferSize, OnNotifyChangeCompleted onNotifyChangeCompleted, object context)
         {
             ioRequest = null;
             return NTStatus.STATUS_NOT_SUPPORTED;
         }
 
-        public NTStatus Cancel(object ioRequest)
+        public NTStatus Cancel(object? ioRequest)
         {
             return NTStatus.STATUS_NOT_SUPPORTED;
         }

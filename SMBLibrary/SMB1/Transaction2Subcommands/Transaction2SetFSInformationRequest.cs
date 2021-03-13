@@ -23,7 +23,7 @@ namespace SMBLibrary.SMB1
         public ushort InformationLevel; // This field MUST be a pass-through Information Level.
 
         // Data:
-        public byte[] InformationBytes;
+        public byte[]? InformationBytes;
 
         public Transaction2SetFSInformationRequest()
         {

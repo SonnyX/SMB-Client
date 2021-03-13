@@ -14,7 +14,7 @@ namespace SMBLibrary.Services
     /// </summary>
     public class NetrShareEnumResponse
     {
-        public ShareEnum InfoStruct;
+        public ShareEnum? InfoStruct;
         public uint TotalEntries; // The total number of entries that could have been enumerated if the buffer had been big enough to hold all the entries
         public uint ResumeHandle;
         public Win32Error Result;

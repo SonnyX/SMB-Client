@@ -22,7 +22,7 @@ namespace SMBLibrary.SMB2
         public ReadFlags Flags;
         public uint ReadLength;
         public ulong Offset;
-        public FileID FileId;
+        public FileID? FileId;
         public uint MinimumCount;
         public uint Channel;
         public uint RemainingBytes;

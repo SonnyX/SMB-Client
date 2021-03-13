@@ -1,6 +1,6 @@
-namespace SMBLibrary.Authentication.GSSAPI
+namespace SMBLibrary.Authentication.GssApi
 {
-    public enum GSSAttributeName
+    public enum GssAttributeName
     {
         AccessToken,
         DomainName,

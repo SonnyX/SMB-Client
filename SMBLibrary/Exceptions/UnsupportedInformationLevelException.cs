@@ -10,12 +10,5 @@ namespace SMBLibrary
 {
     public class UnsupportedInformationLevelException : Exception
     {
-        public UnsupportedInformationLevelException()
-        {
-        }
-
-        public UnsupportedInformationLevelException(string message) : base(message)
-        {
-        }
     }
 }

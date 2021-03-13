@@ -5,15 +5,15 @@ namespace SMBLibrary.Tests
 {
     public abstract class NTFileStoreTests
     {
-        private readonly INTFileStore m_fileStore;
+        private readonly INtFileStore m_fileStore;
         private readonly string TestDirName = "Dir";
 
         private NTStatus? m_notifyChangeStatus;
 
-        public NTFileStoreTests(INTFileStore fileStore)
+        public NTFileStoreTests(INtFileStore fileStore)
         {
             m_fileStore = fileStore;
-            NTStatus status = m_fileStore.CreateFile(out object handle, out _, TestDirName, AccessMask.GENERIC_ALL, FileAttributes.Directory, ShareAccess.Read, CreateDisposition.FILE_OPEN_IF, CreateOptions.FILE_DIRECTORY_FILE, null);
+            NTStatus status = m_fileStore.CreateFile(out NtHandle handle, out _, TestDirName, AccessMask.GENERIC_ALL, FileAttributes.Directory, ShareAccess.Read, CreateDisposition.FILE_OPEN_IF, CreateOptions.FILE_DIRECTORY_FILE, null);
             Assert.True(status == NTStatus.STATUS_SUCCESS);
             status = m_fileStore.CloseFile(handle);
             Assert.True(status == NTStatus.STATUS_SUCCESS);
@@ -22,7 +22,7 @@ namespace SMBLibrary.Tests
         [Fact]
         public void TestCancel()
         {
-            m_fileStore.CreateFile(out object handle, out FileStatus fileStatus, TestDirName, AccessMask.GENERIC_ALL, FileAttributes.Directory, ShareAccess.Read, CreateDisposition.FILE_OPEN, CreateOptions.FILE_DIRECTORY_FILE, null);
+            m_fileStore.CreateFile(out NtHandle handle, out FileStatus fileStatus, TestDirName, AccessMask.GENERIC_ALL, FileAttributes.Directory, ShareAccess.Read, CreateDisposition.FILE_OPEN, CreateOptions.FILE_DIRECTORY_FILE, null);
 
             NTStatus status = m_fileStore.NotifyChange(out object ioRequest, handle, NotifyChangeFilter.FileName | NotifyChangeFilter.LastWrite | NotifyChangeFilter.DirName, false, 8192, OnNotifyChangeCompleted, null);
             Assert.True(status == NTStatus.STATUS_PENDING);

@@ -19,9 +19,9 @@ namespace SMBLibrary.SMB1
         // Parameters:
         public ushort InformationLevel;
         public uint Reserved;
-        public string FileName; // SMB_STRING
+        public string? FileName; // SMB_STRING
         // Data:
-        public byte[] InformationBytes;
+        public byte[]? InformationBytes;
 
         public Transaction2SetPathInformationRequest()
         {
@@ -62,7 +62,7 @@ namespace SMBLibrary.SMB1
 
         public override byte[] GetData(bool isUnicode)
         {
-            return InformationBytes;
+            return InformationBytes ?? new byte[0];
         }
 
         public bool IsPassthroughInformationLevel => (InformationLevel >= SMB_INFO_PASSTHROUGH);

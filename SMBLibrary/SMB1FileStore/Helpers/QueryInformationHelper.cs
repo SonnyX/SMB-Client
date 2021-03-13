@@ -148,7 +148,7 @@ namespace SMBLibrary.SMB1
             };
         }
 
-        public static FileInformation ToFileInformation(QueryInformation queryInformation)
+        public static FileInformation ToFileInformation(QueryInformation? queryInformation)
         {
             switch (queryInformation)
             {

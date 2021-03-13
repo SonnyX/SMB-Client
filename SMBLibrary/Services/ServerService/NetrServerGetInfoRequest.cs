@@ -14,7 +14,7 @@ namespace SMBLibrary.Services
     /// </summary>
     public class NetrServerGetInfoRequest
     {
-        public string ServerName;
+        public string? ServerName;
         public uint Level;
 
         public NetrServerGetInfoRequest()

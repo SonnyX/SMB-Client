@@ -20,7 +20,7 @@ namespace SMBLibrary.SMB1
         public ushort EaErrorOffset; // Meaningful only when request's InformationLevel is SMB_INFO_QUERY_EAS_FROM_LIST
 
         // Data:
-        public byte[] InformationBytes;
+        public byte[]? InformationBytes;
 
         public Transaction2QueryPathInformationResponse()
         {

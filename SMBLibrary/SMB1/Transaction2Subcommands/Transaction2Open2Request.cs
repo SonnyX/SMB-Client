@@ -23,9 +23,9 @@ namespace SMBLibrary.SMB1
         public OpenMode OpenMode;
         public uint AllocationSize;
         public byte[] Reserved; // 10 bytes
-        public string FileName; // SMB_STRING
+        public string? FileName; // SMB_STRING
         // Data:
-        public FullExtendedAttributeList ExtendedAttributeList;
+        public FullExtendedAttributeList? ExtendedAttributeList;
 
         public Transaction2Open2Request()
         {
@@ -79,7 +79,7 @@ namespace SMBLibrary.SMB1
 
         public override byte[] GetData(bool isUnicode)
         {
-            return ExtendedAttributeList.GetBytes();
+            return ExtendedAttributeList?.GetBytes() ?? new byte[0];
         }
 
         public override Transaction2SubcommandName SubcommandName => Transaction2SubcommandName.TRANS2_OPEN2;

@@ -175,12 +175,17 @@ namespace SMBLibrary.Services
             {
                 case 100:
                     {
-                        ServerInfo100 info = new ServerInfo100
+                        response.InfoStruct = new ServerInfo
                         {
-                            PlatformID = m_platformID
+                            Info = new ServerInfo100
+                            {
+                                PlatformID = m_platformID,
+                                ServerName =
+                                {
+                                    Value = m_serverName
+                                }
+                            }
                         };
-                        info.ServerName.Value = m_serverName;
-                        response.InfoStruct = new ServerInfo(info);
                         response.Result = Win32Error.ERROR_SUCCESS;
                         return response;
                     }
@@ -188,13 +193,19 @@ namespace SMBLibrary.Services
                     {
                         ServerInfo101 info = new ServerInfo101
                         {
-                            PlatformID = m_platformID
+                            PlatformID = m_platformID,
+                            ServerName =
+                            {
+                                Value = m_serverName
+                            },
+                            VerMajor = m_verMajor,
+                            VerMinor = m_verMinor,
+                            Type = m_serverType,
+                            Comment =
+                            {
+                                Value = string.Empty
+                            }
                         };
-                        info.ServerName.Value = m_serverName;
-                        info.VerMajor = m_verMajor;
-                        info.VerMinor = m_verMinor;
-                        info.Type = m_serverType;
-                        info.Comment.Value = string.Empty;
                         response.InfoStruct = new ServerInfo(info);
                         response.Result = Win32Error.ERROR_SUCCESS;
                         return response;

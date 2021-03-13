@@ -20,7 +20,7 @@ namespace SMBLibrary.SMB1
         public FindFlags Flags;
         public FindInformationLevel InformationLevel;
         public SearchStorageType SearchStorageType;
-        public string FileName; // SMB_STRING
+        public string? FileName; // SMB_STRING
         // Data:
         public ExtendedAttributeNameList GetExtendedAttributeList; // Used with FindInformationLevel.SMB_INFO_QUERY_EAS_FROM_LIST
 
@@ -54,11 +54,11 @@ namespace SMBLibrary.SMB1
             int length = 12;
             if (isUnicode)
             {
-                length += FileName.Length * 2 + 2;
+                length += FileName?.Length * 2 + 2 ?? 0;
             }
             else
             {
-                length += FileName.Length + 1;
+                length += FileName?.Length + 1 ?? 0;
             }
 
             byte[] parameters = new byte[length];

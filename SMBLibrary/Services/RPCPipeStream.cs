@@ -25,17 +25,15 @@ namespace SMBLibrary.Services
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            if (m_outputStreams.Count > 0)
+            if (m_outputStreams.Count <= 0)
+                return 0;
+            int result = m_outputStreams[0].Read(buffer, offset, count);
+            if (m_outputStreams[0].Position == m_outputStreams[0].Length)
             {
-                int result = m_outputStreams[0].Read(buffer, offset, count);
-                if (m_outputStreams[0].Position == m_outputStreams[0].Length)
-                {
-                    m_outputStreams.RemoveAt(0);
-                }
-                return result;
+                m_outputStreams.RemoveAt(0);
             }
+            return result;
 
-            return 0;
         }
 
         public override void Write(byte[] buffer, int offset, int count)
@@ -47,15 +45,15 @@ namespace SMBLibrary.Services
 
         private void ProcessRPCRequest(RPCPDU rpcRequest)
         {
-            if (rpcRequest is BindPDU)
+            if (rpcRequest is BindPDU bindPdu)
             {
-                BindAckPDU bindAckPDU = RemoteServiceHelper.GetRPCBindResponse((BindPDU)rpcRequest, m_service);
+                BindAckPDU bindAckPDU = RemoteServiceHelper.GetRPCBindResponse(bindPdu, m_service);
                 m_maxTransmitFragmentSize = bindAckPDU.MaxTransmitFragmentSize;
                 Append(bindAckPDU.GetBytes());
             }
-            else if (m_maxTransmitFragmentSize.HasValue && rpcRequest is RequestPDU) // if BindPDU was not received, we treat as protocol error
+            else if (m_maxTransmitFragmentSize.HasValue && rpcRequest is RequestPDU requestPdu) // if BindPDU was not received, we treat as protocol error
             {
-                List<RPCPDU> responsePDUs = RemoteServiceHelper.GetRPCResponse((RequestPDU)rpcRequest, m_service, m_maxTransmitFragmentSize.Value);
+                List<RPCPDU> responsePDUs = RemoteServiceHelper.GetRPCResponse(requestPdu, m_service, m_maxTransmitFragmentSize.Value);
                 foreach (RPCPDU responsePDU in responsePDUs)
                 {
                     Append(responsePDU.GetBytes());

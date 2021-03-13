@@ -21,8 +21,8 @@ namespace SMBLibrary.SMB2
         // ushort LockCount;
         public byte LSN; // 4 bits
         public uint LockSequenceIndex; // 28 bits
-        public FileID FileId;
-        public List<LockElement> Locks;
+        public FileID? FileId;
+        public List<LockElement>? Locks;
 
         public LockRequest() : base(SMB2CommandName.Lock)
         {

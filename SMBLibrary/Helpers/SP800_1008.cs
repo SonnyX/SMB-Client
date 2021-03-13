@@ -1,4 +1,4 @@
-/// Adapted from https://referencesource.microsoft.com/#system.web/Security/Cryptography/SP800_108.cs
+// Adapted from https://referencesource.microsoft.com/#system.web/Security/Cryptography/SP800_108.cs
 using System;
 using System.Security.Cryptography;
 using Utilities;
@@ -11,10 +11,10 @@ namespace SMBLibrary
     /// </summary>
     internal class SP800_1008
     {
-        public static byte[] DeriveKey(HMAC hmac, byte[] label, byte[] context, int keyLengthInBits)
+        public static byte[] DeriveKey(HMAC hmac, byte[]? label, byte[]? context, int keyLengthInBits)
         {
-            int labelLength = (label != null) ? label.Length : 0;
-            int contextLength = (context != null) ? context.Length : 0;
+            int labelLength = label?.Length ?? 0;
+            int contextLength = context?.Length ?? 0;
             byte[] buffer = new byte[4 /* [i]_2 */ + labelLength /* label */ + 1 /* 0x00 */ + contextLength /* context */ + 4 /* [L]_2 */];
 
             if (labelLength != 0)

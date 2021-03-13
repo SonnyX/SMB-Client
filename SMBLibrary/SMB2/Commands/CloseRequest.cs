@@ -19,7 +19,7 @@ namespace SMBLibrary.SMB2
         private readonly ushort StructureSize;
         public CloseFlags Flags;
         public uint Reserved;
-        public FileID FileId;
+        public FileID? FileId;
 
         public CloseRequest() : base(SMB2CommandName.Close)
         {
@@ -39,7 +39,7 @@ namespace SMBLibrary.SMB2
             LittleEndianWriter.WriteUInt16(buffer, offset + 0, StructureSize);
             LittleEndianWriter.WriteUInt16(buffer, offset + 2, (ushort)Flags);
             LittleEndianWriter.WriteUInt32(buffer, offset + 4, Reserved);
-            FileId.WriteBytes(buffer, offset + 8);
+            FileId?.WriteBytes(buffer, offset + 8);
         }
 
         public bool PostQueryAttributes => ((Flags & CloseFlags.PostQueryAttributes) > 0);

@@ -9,7 +9,7 @@ using System.IO;
 
 namespace SMBLibrary
 {
-    public class FileHandle
+    public class FileHandle : NtHandle
     {
         public string Path;
         public bool IsDirectory;

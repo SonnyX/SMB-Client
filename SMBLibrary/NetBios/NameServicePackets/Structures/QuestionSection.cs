@@ -14,7 +14,7 @@ namespace SMBLibrary.NetBios
     /// </summary>
     public class QuestionSection
     {
-        public string Name;
+        public string? Name;
         public NameRecordType Type;
         public QuestionClass Class;
 

@@ -7,7 +7,7 @@
 
 using Utilities;
 
-namespace SMBLibrary.Authentication.GSSAPI
+namespace SMBLibrary.Authentication.GssApi
 {
     public abstract class SimpleProtectedNegotiationToken
     {
@@ -45,7 +45,7 @@ namespace SMBLibrary.Authentication.GSSAPI
         /// https://tools.ietf.org/html/rfc2743
         /// </summary>
         /// <exception cref="System.IO.InvalidDataException"></exception>
-        public static SimpleProtectedNegotiationToken ReadToken(byte[] tokenBytes, int offset, bool serverInitiatedNegotiation)
+        public static SimpleProtectedNegotiationToken? ReadToken(byte[] tokenBytes, int offset, bool serverInitiatedNegotiation)
         {
             byte tag = ByteReader.ReadByte(tokenBytes, ref offset);
             if (tag == ApplicationTag)

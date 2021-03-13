@@ -5,7 +5,7 @@
  * either version 3 of the License, or (at your option) any later version.
  */
 
-using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using SMBLibrary.NetBios;
@@ -23,22 +23,18 @@ namespace SMBLibrary.Client
             m_serverAddress = serverAddress;
         }
 
-        public string GetServerName()
+        public string? GetServerName()
         {
-            NodeStatusRequest request = new NodeStatusRequest();
-            request.Header.QDCount = 1;
-            request.Question.Name = "*".PadRight(16, '\0');
-            NodeStatusResponse response = SendNodeStatusRequest(request);
-            foreach (KeyValuePair<string, NameFlags> entry in response.Names)
+            NodeStatusRequest request = new NodeStatusRequest
             {
-                NetBiosSuffix suffix = NetBiosUtils.GetSuffixFromMSNetBiosName(entry.Key);
-                if (suffix == NetBiosSuffix.FileServiceService)
+                Header = {QDCount = 1},
+                Question =
                 {
-                    return entry.Key;
+                    Name = "*".PadRight(16, '\0')
                 }
-            }
-
-            return null;
+            };
+            NodeStatusResponse response = SendNodeStatusRequest(request);
+            return (from entry in response.Names let suffix = NetBiosUtils.GetSuffixFromMSNetBiosName(entry.Key) where suffix == NetBiosSuffix.FileServiceService select entry.Key).FirstOrDefault();
         }
 
         private NodeStatusResponse SendNodeStatusRequest(NodeStatusRequest request)

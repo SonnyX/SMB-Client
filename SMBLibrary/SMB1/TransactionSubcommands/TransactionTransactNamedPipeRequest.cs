@@ -17,7 +17,7 @@ namespace SMBLibrary.SMB1
         // Setup:
         public ushort FID;
         // Data:
-        public byte[] WriteData;
+        public byte[]? WriteData;
 
         public TransactionTransactNamedPipeRequest()
         {
@@ -39,7 +39,7 @@ namespace SMBLibrary.SMB1
 
         public override byte[] GetData(bool isUnicode)
         {
-            return WriteData;
+            return WriteData ?? new byte[0];
         }
 
         public override TransactionSubcommandName SubcommandName => TransactionSubcommandName.TRANS_TRANSACT_NMPIPE;
