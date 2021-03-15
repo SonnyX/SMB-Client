@@ -1,7 +1,8 @@
-﻿using SMBLibrary.SMB1;
+﻿using SMBLibrary.Client;
+using SMBLibrary.SMB1;
 using SMBLibrary.SMB2;
 
-namespace SMBLibrary.Client
+namespace SMBLibrary
 {
     public static class OrThrowHelper
     {

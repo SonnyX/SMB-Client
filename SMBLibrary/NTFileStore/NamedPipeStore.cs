@@ -86,12 +86,12 @@ namespace SMBLibrary
             fileHandle.Stream?.Flush();
         }
 
-        public void LockFile(NtHandle? handle, long byteOffset, long length, bool exclusiveLock)
+        public void LockFile(NtHandle handle, long byteOffset, long length, bool exclusiveLock)
         {
             throw new NtStatusException(NTStatus.STATUS_NOT_SUPPORTED);
         }
 
-        public void UnlockFile(NtHandle? handle, long byteOffset, long length)
+        public void UnlockFile(NtHandle handle, long byteOffset, long length)
         {
             throw new NtStatusException(NTStatus.STATUS_NOT_SUPPORTED);
         }
@@ -147,7 +147,7 @@ namespace SMBLibrary
             throw new NtStatusException(NTStatus.STATUS_NOT_SUPPORTED);
         }
 
-        public void GetFileInformation(out FileInformation? result, NtHandle? handle,
+        public void GetFileInformation(out FileInformation? result, NtHandle handle,
             FileInformationClass informationClass)
         {
             switch (informationClass)
@@ -185,12 +185,13 @@ namespace SMBLibrary
             }
         }
 
-        public void SetFileInformation(NtHandle? handle, FileInformation information)
+        public void SetFileInformation(NtHandle handle, FileInformation information)
         {
             throw new NtStatusException(NTStatus.STATUS_NOT_SUPPORTED);
         }
 
-        public void GetFileSystemInformation(out FileSystemInformation? result, FileSystemInformationClass informationClass)
+        public void GetFileSystemInformation(out FileSystemInformation? result,
+            FileSystemInformationClass informationClass)
         {
             result = null;
             throw new NtStatusException(NTStatus.STATUS_NOT_SUPPORTED);
@@ -201,18 +202,18 @@ namespace SMBLibrary
             throw new NtStatusException(NTStatus.STATUS_NOT_SUPPORTED);
         }
 
-        public void GetSecurityInformation(out SecurityDescriptor? result, NtHandle? handle, SecurityInformation securityInformation)
+        public void GetSecurityInformation(out SecurityDescriptor? result, NtHandle handle, SecurityInformation securityInformation)
         {
             result = null;
             throw new NtStatusException(NTStatus.STATUS_NOT_SUPPORTED);
         }
 
-        public void SetSecurityInformation(NtHandle? handle, SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
+        public void SetSecurityInformation(NtHandle handle, SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
         {
             throw new NtStatusException(NTStatus.STATUS_NOT_SUPPORTED);
         }
 
-        public void NotifyChange(out object? ioRequest, NtHandle? handle, NotifyChangeFilter completionFilter, bool watchTree, int outputBufferSize, OnNotifyChangeCompleted onNotifyChangeCompleted, object context)
+        public void NotifyChange(out object? ioRequest, NtHandle handle, NotifyChangeFilter completionFilter, bool watchTree, int outputBufferSize, OnNotifyChangeCompleted onNotifyChangeCompleted, object context)
         {
             ioRequest = null;
             throw new NtStatusException(NTStatus.STATUS_NOT_SUPPORTED);

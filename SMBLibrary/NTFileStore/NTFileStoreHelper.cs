@@ -117,7 +117,7 @@ namespace SMBLibrary
 
         public static FileNetworkOpenInformation? GetNetworkOpenInformation(INtFileStore fileStore, string path, SecurityContext securityContext)
         {
-            fileStore.CreateFile(out NtHandle? handle, out _, path, (AccessMask)FileAccessMask.FILE_READ_ATTRIBUTES, 0, ShareAccess.Read | ShareAccess.Write, CreateDisposition.FILE_OPEN, 0, securityContext);
+            fileStore.CreateFile(out NtHandle handle, out _, path, (AccessMask)FileAccessMask.FILE_READ_ATTRIBUTES, 0, ShareAccess.Read | ShareAccess.Write, CreateDisposition.FILE_OPEN, 0, securityContext);
 
             fileStore.GetFileInformation(out FileInformation? fileInfo, handle, FileInformationClass.FileNetworkOpenInformation);
             fileStore.CloseFile(handle);

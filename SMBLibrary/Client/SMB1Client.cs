@@ -70,8 +70,7 @@ namespace SMBLibrary.Client
             m_forceExtendedSecurity = forceExtendedSecurity;
             int port = transport == SMBTransportType.NetBiosOverTcp ? NetBiosOverTCPPort : DirectTCPPort;
 
-            if (!ConnectSocket(serverAddress, port))
-                return false;
+            ConnectSocket(serverAddress, port);
 
             if (transport == SMBTransportType.NetBiosOverTcp)
             {
@@ -80,7 +79,7 @@ namespace SMBLibrary.Client
                     CalledName = NetBiosUtils.GetMSNetBiosName("*SMBSERVER", NetBiosSuffix.FileServiceService),
                     CallingName = NetBiosUtils.GetMSNetBiosName(Environment.MachineName, NetBiosSuffix.WorkstationService)
                 };
-                TrySendPacket(m_clientSocket!, sessionRequest);
+                SendPacket(m_clientSocket!, sessionRequest);
 
                 SessionPacket? sessionResponsePacket = WaitForSessionResponsePacket();
                 if (!(sessionResponsePacket is PositiveSessionResponsePacket))
@@ -88,10 +87,8 @@ namespace SMBLibrary.Client
                     m_clientSocket?.Shutdown(SocketShutdown.Both);
                     m_clientSocket?.Dispose();
                     m_clientSocket = null;
-                    if (!ConnectSocket(serverAddress, port))
-                    {
-                        return false;
-                    }
+
+                    ConnectSocket(serverAddress, port);
 
                     NameServiceClient nameServiceClient = new NameServiceClient(serverAddress);
                     string? serverName = nameServiceClient.GetServerName();
@@ -101,7 +98,7 @@ namespace SMBLibrary.Client
                     }
 
                     sessionRequest.CalledName = serverName;
-                    TrySendPacket(m_clientSocket, sessionRequest);
+                    SendPacket(m_clientSocket, sessionRequest);
 
                     sessionResponsePacket = WaitForSessionResponsePacket();
                     if (!(sessionResponsePacket is PositiveSessionResponsePacket))
@@ -125,22 +122,18 @@ namespace SMBLibrary.Client
             return m_isConnected;
         }
 
-        private bool ConnectSocket(IPAddress serverAddress, int port)
+        private void ConnectSocket(IPAddress serverAddress, int port)
         {
-            m_clientSocket ??= new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            try
-            {
-                m_clientSocket.Connect(serverAddress, port);
-            }
-            catch (SocketException)
-            {
-                return false;
-            }
+            m_clientSocket?.Disconnect(false);
+            m_clientSocket?.Shutdown(SocketShutdown.Both);
+            m_clientSocket?.Dispose();
+            m_clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            
+            m_clientSocket.Connect(serverAddress, port);
 
             ConnectionState state = new ConnectionState(m_clientSocket);
             NBTConnectionReceiveBuffer buffer = state.ReceiveBuffer;
             m_clientSocket.BeginReceive(buffer.Buffer, buffer.WriteOffset, buffer.AvailableLength, SocketFlags.None, OnClientSocketReceive, state);
-            return true;
         }
 
         public void Disconnect()
@@ -156,11 +149,8 @@ namespace SMBLibrary.Client
             NegotiateRequest request = new NegotiateRequest();
             request.Dialects.Add(NTLanManagerDialect);
 
-            TrySendMessage(request);
-            SMB1Message? reply = WaitForMessage(CommandName.SMB_COM_NEGOTIATE);
-            if (reply == null)
-                return false;
-
+            SendMessage(request);
+            SMB1Message reply = WaitForMessage(CommandName.SMB_COM_NEGOTIATE);
             switch (reply.Commands[0])
             {
                 case NegotiateResponse negotiateResponse when !forceExtendedSecurity:
@@ -247,7 +237,7 @@ namespace SMBLibrary.Client
                     request.UnicodePassword = ByteUtils.Concatenate(proofStr, temp);
                 }
 
-                TrySendMessage(request);
+                SendMessage(request);
 
                 SMB1Message reply = WaitForMessage(CommandName.SMB_COM_SESSION_SETUP_ANDX);
 
@@ -265,7 +255,7 @@ namespace SMBLibrary.Client
                     Capabilities = clientCapabilities,
                     SecurityBlob = negotiateMessage
                 };
-                TrySendMessage(request);
+                SendMessage(request);
 
                 SMB1Message reply = WaitForMessage(CommandName.SMB_COM_SESSION_SETUP_ANDX);
                 if (reply.Header.Status != NTStatus.STATUS_MORE_PROCESSING_REQUIRED || !(reply.Commands[0] is SessionSetupAndXResponseExtended))
@@ -286,7 +276,7 @@ namespace SMBLibrary.Client
                     Capabilities = clientCapabilities,
                     SecurityBlob = authenticateMessage
                 };
-                TrySendMessage(request);
+                SendMessage(request);
 
                 reply = WaitForMessage(CommandName.SMB_COM_SESSION_SETUP_ANDX);
 
@@ -304,10 +294,11 @@ namespace SMBLibrary.Client
                 throw new InvalidOperationException("A login session must be successfully established before attempting logoff");
 
             LogoffAndXRequest request = new LogoffAndXRequest();
-            TrySendMessage(request);
+            SendMessage(request);
 
             SMB1Message reply = WaitForMessage(CommandName.SMB_COM_LOGOFF_ANDX);
-            m_isLoggedIn = (reply.Header.Status != NTStatus.STATUS_SUCCESS);
+            if(reply.Header.Status == NTStatus.STATUS_SUCCESS)
+                m_isLoggedIn = false;
             reply.IsSuccessElseThrow();
         }
 
@@ -342,7 +333,7 @@ namespace SMBLibrary.Client
                 Path = shareName,
                 Service = serviceName
             };
-            TrySendMessage(request);
+            SendMessage(request);
             SMB1Message reply = WaitForMessage(CommandName.SMB_COM_TREE_CONNECT_ANDX);
             reply.IsSuccessElseThrow();
             return new SMB1FileStore(this, reply.Header.TID);
@@ -518,9 +509,9 @@ namespace SMBLibrary.Client
 
         private void Log(string message) => Debug.Print(message);
 
-        private void TrySendMessage(SMB1Command request) => TrySendMessage(request, 0);
+        private void SendMessage(SMB1Command request) => SendMessage(request, 0);
 
-        internal void TrySendMessage(SMB1Command request, ushort treeID)
+        internal void SendMessage(SMB1Command request, ushort treeID)
         {
             SMB1Message message = new SMB1Message
             {
@@ -535,7 +526,7 @@ namespace SMBLibrary.Client
             };
 
             message.Commands.Add(request);
-            TrySendMessage(m_clientSocket!, message);
+            SendMessage(m_clientSocket!, message);
         }
 
         public bool Unicode => m_unicode;
@@ -567,28 +558,19 @@ namespace SMBLibrary.Client
             }
         }
 
-        public static void TrySendMessage(Socket socket, SMB1Message message)
+        public static void SendMessage(Socket socket, SMB1Message message)
         {
             SessionMessagePacket packet = new SessionMessagePacket
             {
                 Trailer = message.GetBytes()
             };
-            TrySendPacket(socket, packet);
+            SendPacket(socket, packet);
         }
 
-        public static void TrySendPacket(Socket socket, SessionPacket packet)
+        public static void SendPacket(Socket socket, SessionPacket packet)
         {
-            try
-            {
-                byte[] packetBytes = packet.GetBytes();
-                socket.Send(packetBytes);
-            }
-            catch (SocketException)
-            {
-            }
-            catch (ObjectDisposedException)
-            {
-            }
+            byte[] packetBytes = packet.GetBytes();
+            socket.Send(packetBytes);
         }
 
         public void Dispose()

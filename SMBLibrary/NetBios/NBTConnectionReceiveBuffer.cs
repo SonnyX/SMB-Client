@@ -6,7 +6,6 @@
  */
 using System;
 using System.IO;
-using Utilities;
 
 namespace SMBLibrary.NetBios
 {
@@ -34,12 +33,16 @@ namespace SMBLibrary.NetBios
         public void IncreaseBufferSize(int bufferLength)
         {
             byte[] buffer = new byte[bufferLength];
-            if (m_bytesInBuffer > 0)
+            lock (m_buffer)
             {
-                Array.Copy(m_buffer, m_readOffset, buffer, 0, m_bytesInBuffer);
-                m_readOffset = 0;
+                if (m_bytesInBuffer > 0)
+                {
+                    Array.Copy(m_buffer, m_readOffset, buffer, 0, m_bytesInBuffer);
+                    m_readOffset = 0;
+                }
+
+                m_buffer = buffer;
             }
-            m_buffer = buffer;
         }
 
         public void SetNumberOfBytesReceived(int numberOfBytesReceived)
@@ -75,16 +78,6 @@ namespace SMBLibrary.NetBios
             return packet;
         }
 
-        /// <summary>
-        /// HasCompletePDU must be called and return true before calling DequeuePDUBytes
-        /// </summary>
-        public byte[] DequeuePacketBytes()
-        {
-            byte[] packetBytes = ByteReader.ReadBytes(m_buffer, m_readOffset, m_packetLength ?? 0);
-            RemovePacketBytes();
-            return packetBytes;
-        }
-
         private void RemovePacketBytes()
         {
             m_bytesInBuffer -= m_packetLength ?? 0;
@@ -107,8 +100,6 @@ namespace SMBLibrary.NetBios
         public byte[] Buffer => m_buffer;
 
         public int WriteOffset => m_readOffset + m_bytesInBuffer;
-
-        public int BytesInBuffer => m_bytesInBuffer;
 
         public int AvailableLength => m_buffer.Length - (m_readOffset + m_bytesInBuffer);
     }

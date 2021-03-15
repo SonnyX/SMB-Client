@@ -345,7 +345,8 @@ namespace SMBLibrary.Client
             reply.IsSuccessElseThrow();
         }
 
-        public void GetFileSystemInformation(out FileSystemInformation? result, FileSystemInformationClass informationClass)
+        public void GetFileSystemInformation(out FileSystemInformation? result,
+            FileSystemInformationClass informationClass)
         {
             if (!m_client.InfoLevelPassthrough)
                 throw new NotSupportedException("Server does not support InfoLevelPassthrough");
@@ -532,7 +533,7 @@ namespace SMBLibrary.Client
 
         private void TrySendMessage(SMB1Command request)
         {
-            m_client.TrySendMessage(request, m_treeID);
+            m_client.SendMessage(request, m_treeID);
         }
 
         public uint MaxReadSize => m_client.MaxReadSize;

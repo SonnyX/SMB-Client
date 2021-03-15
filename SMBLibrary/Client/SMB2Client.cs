@@ -294,6 +294,7 @@ namespace SMBLibrary.Client
             catch (ArgumentException) // The IAsyncResult object was not returned from the corresponding synchronous method on this class.
             {
                 Log("[ReceiveCallback] EndReceive ArgumentException: The IAsyncResult object was not returned from the corresponding synchronous method on this class");
+                m_isConnected = false;
                 return;
             }
             catch (ObjectDisposedException)
@@ -519,8 +520,7 @@ namespace SMBLibrary.Client
             // [MS-SMB2] If the client encrypts the message [..] then the client MUST set the Signature field of the SMB2 header to zero
             if (m_signingRequired && !encryptData)
             {
-                request.Header.IsSigned = (m_sessionID != 0 && ((request.CommandName == SMB2CommandName.TreeConnect || request.Header.TreeID != 0) ||
-                                                                (m_dialect == SMB2Dialect.SMB300 && request.CommandName == SMB2CommandName.Logoff)));
+                request.Header.IsSigned = (m_sessionID != 0 && ((request.CommandName == SMB2CommandName.TreeConnect || request.Header.TreeID != 0) || (m_dialect == SMB2Dialect.SMB300 && request.CommandName == SMB2CommandName.Logoff)));
                 if (request.Header.IsSigned)
                 {
                     request.Header.Signature = new byte[16]; // Request could be reused
