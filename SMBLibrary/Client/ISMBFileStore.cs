@@ -9,7 +9,7 @@ namespace SMBLibrary.Client
 {
     public interface ISmbFileStore : INtFileStore
     {
-        NTStatus Disconnect();
+        void Disconnect();
 
         uint MaxReadSize { get; }
 

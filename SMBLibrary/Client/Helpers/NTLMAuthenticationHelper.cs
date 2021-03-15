@@ -17,7 +17,7 @@ namespace SMBLibrary.Client
 {
     public class NtlmAuthenticationHelper
     {
-        public static byte[]? GetNegotiateMessage(byte[] securityBlob, string domainName, AuthenticationMethod authenticationMethod)
+        public static byte[] GetNegotiateMessage(byte[] securityBlob, string domainName, AuthenticationMethod authenticationMethod)
         {
             bool useGssapi = false;
             if (securityBlob.Length > 0)
@@ -34,7 +34,7 @@ namespace SMBLibrary.Client
 
                 if (inputToken == null || !ContainsMechanism(inputToken, GssProvider.NtlmSspIdentifier))
                 {
-                    return null;
+                    throw new Exception("GetNegotiateMessage: InputToken is Null OR it doesn't contain the mechanism NtlmSspIdentifier");
                 }
                 useGssapi = true;
             }
@@ -78,7 +78,6 @@ namespace SMBLibrary.Client
                 MechanismToken = negotiateMessage.GetBytes()
             };
             return outputToken.GetBytes(true);
-
         }
 
         public static byte[]? GetAuthenticateMessage(byte[] securityBlob, string domainName, string userName, string password, AuthenticationMethod authenticationMethod, out byte[]? sessionKey)
@@ -207,7 +206,6 @@ namespace SMBLibrary.Client
                 ResponseToken = authenticateMessage.GetBytes()
             };
             return outputToken.GetBytes();
-
         }
 
         private static ChallengeMessage? GetChallengeMessage(byte[] messageBytes)

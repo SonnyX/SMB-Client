@@ -15,13 +15,9 @@ namespace SMBLibrary.Client
 {
     public class ServerServiceHelper
     {
-        public static List<string>? ListShares(INtFileStore namedPipeShare, ShareType? shareType, out NTStatus status)
+        public static List<string> ListShares(INtFileStore namedPipeShare, ShareType? shareType)
         {
-            status = NamedPipeHelper.BindPipe(namedPipeShare, ServerService.ServicePipeName, ServerService.ServiceInterfaceGuid, ServerService.ServiceVersion, out NtHandle? pipeHandle, out int maxTransmitFragmentSize);
-            if (status != NTStatus.STATUS_SUCCESS)
-            {
-                return null;
-            }
+            NamedPipeHelper.BindPipe(namedPipeShare, ServerService.ServicePipeName, ServerService.ServiceInterfaceGuid, ServerService.ServiceVersion, out NtHandle? pipeHandle, out int maxTransmitFragmentSize).IsSuccessElseThrow();
 
             NetrShareEnumRequest shareEnumRequest = new NetrShareEnumRequest
             {
@@ -44,36 +40,26 @@ namespace SMBLibrary.Client
                     ByteOrder = ByteOrder.LittleEndian,
                     FloatingPointRepresentation = FloatingPointRepresentation.IEEE
                 },
-                OpNum = (ushort) ServerServiceOpName.NetrShareEnum,
+                OpNum = (ushort)ServerServiceOpName.NetrShareEnum,
                 Data = data,
                 AllocationHint = (uint)data.Length
             };
             byte[] input = requestPdu.GetBytes();
-            status = namedPipeShare.DeviceIOControl(pipeHandle, (uint)IoControlCode.FSCTL_PIPE_TRANSCEIVE, input, out byte[]? output, maxTransmitFragmentSize);
-            if (status != NTStatus.STATUS_SUCCESS)
-            {
-                return null;
-            }
+            namedPipeShare.DeviceIOControl(pipeHandle, (uint)IoControlCode.FSCTL_PIPE_TRANSCEIVE, input, out byte[]? output, maxTransmitFragmentSize);
 
             if (!(RPCPDU.GetPDU(output, 0) is ResponsePDU responsePdu))
             {
-                status = NTStatus.STATUS_NOT_SUPPORTED;
-                return null;
+                throw new NtStatusException(NTStatus.STATUS_NOT_SUPPORTED);
             }
 
             byte[] responseData = responsePdu.Data;
             while ((responsePdu.Flags & PacketFlags.LastFragment) == 0)
             {
-                status = namedPipeShare.ReadFile(out output, pipeHandle, 0, maxTransmitFragmentSize);
-                if (status != NTStatus.STATUS_SUCCESS)
-                {
-                    return null;
-                }
+                namedPipeShare.ReadFile(out output, pipeHandle, 0, maxTransmitFragmentSize);
 
                 if (!(RPCPDU.GetPDU(output, 0) is ResponsePDU responsePdu2))
                 {
-                    status = NTStatus.STATUS_NOT_SUPPORTED;
-                    return null;
+                    throw new NtStatusException(NTStatus.STATUS_NOT_SUPPORTED);
                 }
                 responseData = ByteUtils.Concatenate(responseData, responsePdu2.Data);
             }
@@ -82,9 +68,7 @@ namespace SMBLibrary.Client
             if (shareEnumResponse.InfoStruct.Info is ShareInfo1Container shareInfo1 && shareInfo1.Entries != null)
                 return (from entry in shareInfo1.Entries where !shareType.HasValue || shareType.Value == entry.ShareType.ShareType select entry.NetName.Value).ToList();
 
-            status = shareEnumResponse.Result == Win32Error.ERROR_ACCESS_DENIED ? NTStatus.STATUS_ACCESS_DENIED : NTStatus.STATUS_NOT_SUPPORTED;
-            return null;
-
+            throw new NtStatusException(shareEnumResponse.Result == Win32Error.ERROR_ACCESS_DENIED ? NTStatus.STATUS_ACCESS_DENIED : NTStatus.STATUS_NOT_SUPPORTED);
         }
     }
 }

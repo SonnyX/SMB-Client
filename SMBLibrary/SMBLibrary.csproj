@@ -12,7 +12,7 @@
 
     <RepositoryUrl>https://github.com/SonnyX/SMB-Client</RepositoryUrl>
     <PackageTags>smb smb-client</PackageTags>
-    <Version>1.4.10</Version>
+    <Version>1.4.11</Version>
 
     <Description>Free, Open Source, User-Mode SMB 1.0/CIFS, SMB 2.0, SMB 2.1 and SMB 3.0 Client Library</Description>
     <Nullable>Enable</Nullable>

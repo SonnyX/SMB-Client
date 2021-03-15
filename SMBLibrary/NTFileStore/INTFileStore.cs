@@ -1,5 +1,5 @@
 /* Copyright (C) 2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
@@ -16,37 +16,33 @@ namespace SMBLibrary
     /// </summary>
     public interface INtFileStore
     {
-        NTStatus CreateFile(out NtHandle? handle, out FileStatus fileStatus, string path, AccessMask desiredAccess,
-            FileAttributes fileAttributes, ShareAccess shareAccess, CreateDisposition createDisposition,
-            CreateOptions createOptions, SecurityContext? securityContext);
+        void CreateFile(out NtHandle handle, out FileStatus fileStatus, string path, AccessMask desiredAccess, FileAttributes fileAttributes, ShareAccess shareAccess, CreateDisposition createDisposition, CreateOptions createOptions, SecurityContext? securityContext);
 
-        NTStatus CloseFile(NtHandle? handle);
+        void CloseFile(NtHandle handle);
 
-        NTStatus ReadFile(out byte[]? data, NtHandle? handle, long offset, int maxCount);
+        void ReadFile(out byte[]? data, NtHandle handle, long offset, int maxCount);
 
-        NTStatus WriteFile(out int numberOfBytesWritten, NtHandle? handle, long offset, byte[] data);
+        void WriteFile(out int numberOfBytesWritten, NtHandle handle, long offset, byte[] data);
 
-        NTStatus FlushFileBuffers(NtHandle? handle);
+        void FlushFileBuffers(NtHandle handle);
 
-        NTStatus LockFile(NtHandle? handle, long byteOffset, long length, bool exclusiveLock);
+        void LockFile(NtHandle handle, long byteOffset, long length, bool exclusiveLock);
 
-        NTStatus UnlockFile(NtHandle? handle, long byteOffset, long length);
+        void UnlockFile(NtHandle handle, long byteOffset, long length);
 
-        NTStatus QueryDirectory(out List<QueryDirectoryFileInformation>? result, NtHandle? handle, string fileName,
-            FileInformationClass informationClass);
+        void QueryDirectory(out List<QueryDirectoryFileInformation>? result, NtHandle handle, string fileName, FileInformationClass informationClass);
 
-        NTStatus GetFileInformation(out FileInformation? result, NtHandle? handle,
-            FileInformationClass informationClass);
+        void GetFileInformation(out FileInformation? result, NtHandle handle, FileInformationClass informationClass);
 
-        NTStatus SetFileInformation(NtHandle? handle, FileInformation information);
+        void SetFileInformation(NtHandle handle, FileInformation information);
 
-        NTStatus GetFileSystemInformation(out FileSystemInformation? result, FileSystemInformationClass informationClass);
+        void GetFileSystemInformation(out FileSystemInformation? result, FileSystemInformationClass informationClass);
 
-        NTStatus SetFileSystemInformation(FileSystemInformation information);
+        void SetFileSystemInformation(FileSystemInformation information);
 
-        NTStatus GetSecurityInformation(out SecurityDescriptor? result, NtHandle? handle, SecurityInformation securityInformation);
+        void GetSecurityInformation(out SecurityDescriptor? result, NtHandle handle, SecurityInformation securityInformation);
 
-        NTStatus SetSecurityInformation(NtHandle? handle, SecurityInformation securityInformation, SecurityDescriptor securityDescriptor);
+        void SetSecurityInformation(NtHandle handle, SecurityInformation securityInformation, SecurityDescriptor securityDescriptor);
 
         /// <summary>
         /// Monitor the contents of a directory (and its subdirectories) by using change notifications.
@@ -57,10 +53,10 @@ namespace SMBLibrary
         /// STATUS_NOT_SUPPORTED - The underlying object store does not support change notifications.
         /// STATUS_INVALID_HANDLE - The handle supplied is invalid.
         /// </returns>
-        NTStatus NotifyChange(out object? ioRequest, NtHandle? handle, NotifyChangeFilter completionFilter, bool watchTree, int outputBufferSize, OnNotifyChangeCompleted onNotifyChangeCompleted, object context);
+        void NotifyChange(out object? ioRequest, NtHandle handle, NotifyChangeFilter completionFilter, bool watchTree, int outputBufferSize, OnNotifyChangeCompleted onNotifyChangeCompleted, object context);
 
-        NTStatus Cancel(object ioRequest);
+        void Cancel(object ioRequest);
 
-        NTStatus DeviceIOControl(NtHandle? handle, uint ctlCode, byte[] input, out byte[]? output, int maxOutputLength);
+        void DeviceIOControl(NtHandle handle, uint ctlCode, byte[] input, out byte[]? output, int maxOutputLength);
     }
 }

@@ -17,15 +17,15 @@ namespace SMBLibrary.Client
 
         void Disconnect();
 
-        NTStatus Login(string domainName, string userName, string password);
+        void Login(string domainName, string userName, string password);
 
-        NTStatus Login(string domainName, string userName, string password, AuthenticationMethod authenticationMethod);
+        void Login(string domainName, string userName, string password, AuthenticationMethod authenticationMethod);
 
-        NTStatus Logoff();
+        void Logoff();
 
-        List<string>? ListShares(out NTStatus status);
+        List<string> ListShares();
 
-        ISmbFileStore? TreeConnect(string shareName, out NTStatus status);
+        ISmbFileStore TreeConnect(string shareName);
 
         bool IsConnected { get; }
         bool IsLoggedIn { get; }

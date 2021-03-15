@@ -1,5 +1,5 @@
 /* Copyright (C) 2014-2017 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
@@ -47,7 +47,7 @@ namespace SMBLibrary
             // Technically, FILE_OPEN_IF should only require Write access if the file does not exist,
             // However, It's uncommon for a client to open a file with FILE_OPEN_IF
             // without requesting any kind of write access in the access mask.
-            // (because [if the file does not exist] an empty file will be created without the ability to write data to the file). 
+            // (because [if the file does not exist] an empty file will be created without the ability to write data to the file).
             if (createDisposition == CreateDisposition.FILE_CREATE ||
                 createDisposition == CreateDisposition.FILE_SUPERSEDE ||
                 createDisposition == CreateDisposition.FILE_OPEN_IF ||
@@ -117,30 +117,17 @@ namespace SMBLibrary
 
         public static FileNetworkOpenInformation? GetNetworkOpenInformation(INtFileStore fileStore, string path, SecurityContext securityContext)
         {
-            NTStatus openStatus = fileStore.CreateFile(out NtHandle? handle, out _, path, (AccessMask)FileAccessMask.FILE_READ_ATTRIBUTES, 0, ShareAccess.Read | ShareAccess.Write, CreateDisposition.FILE_OPEN, 0, securityContext);
-            if (openStatus != NTStatus.STATUS_SUCCESS)
-            {
-                return null;
-            }
+            fileStore.CreateFile(out NtHandle? handle, out _, path, (AccessMask)FileAccessMask.FILE_READ_ATTRIBUTES, 0, ShareAccess.Read | ShareAccess.Write, CreateDisposition.FILE_OPEN, 0, securityContext);
 
-            NTStatus queryStatus = fileStore.GetFileInformation(out FileInformation? fileInfo, handle, FileInformationClass.FileNetworkOpenInformation);
+            fileStore.GetFileInformation(out FileInformation? fileInfo, handle, FileInformationClass.FileNetworkOpenInformation);
             fileStore.CloseFile(handle);
-            if (queryStatus != NTStatus.STATUS_SUCCESS)
-            {
-                return null;
-            }
-            return (FileNetworkOpenInformation?) fileInfo;
+            return (FileNetworkOpenInformation?)fileInfo;
         }
 
         public static FileNetworkOpenInformation? GetNetworkOpenInformation(INtFileStore fileStore, NtHandle handle)
         {
-            NTStatus status = fileStore.GetFileInformation(out FileInformation? fileInfo, handle, FileInformationClass.FileNetworkOpenInformation);
-            if (status != NTStatus.STATUS_SUCCESS)
-            {
-                return null;
-            }
-
-            return (FileNetworkOpenInformation?) fileInfo;
+            fileStore.GetFileInformation(out FileInformation? fileInfo, handle, FileInformationClass.FileNetworkOpenInformation);
+            return (FileNetworkOpenInformation?)fileInfo;
         }
     }
 }

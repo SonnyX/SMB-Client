@@ -16,11 +16,7 @@ namespace SMBLibrary.Client
         public static NTStatus BindPipe(INtFileStore namedPipeShare, string pipeName, Guid interfaceGuid, uint interfaceVersion, out NtHandle? pipeHandle, out int maxTransmitFragmentSize)
         {
             maxTransmitFragmentSize = 0;
-            NTStatus status = namedPipeShare.CreateFile(out pipeHandle, out _, pipeName, (AccessMask)(FileAccessMask.FILE_READ_DATA | FileAccessMask.FILE_WRITE_DATA), 0, ShareAccess.Read | ShareAccess.Write, CreateDisposition.FILE_OPEN, 0, null);
-            if (status != NTStatus.STATUS_SUCCESS)
-            {
-                return status;
-            }
+            namedPipeShare.CreateFile(out pipeHandle, out _, pipeName, (AccessMask)(FileAccessMask.FILE_READ_DATA | FileAccessMask.FILE_WRITE_DATA), 0, ShareAccess.Read | ShareAccess.Write, CreateDisposition.FILE_OPEN, 0, null);
 
             BindPDU bindPdu = new BindPDU
             {
@@ -44,11 +40,7 @@ namespace SMBLibrary.Client
             bindPdu.ContextList.Add(serviceContext);
 
             byte[] input = bindPdu.GetBytes();
-            status = namedPipeShare.DeviceIOControl(pipeHandle, (uint)IoControlCode.FSCTL_PIPE_TRANSCEIVE, input, out byte[]? output, 4096);
-            if (status != NTStatus.STATUS_SUCCESS)
-            {
-                return status;
-            }
+            namedPipeShare.DeviceIOControl(pipeHandle, (uint)IoControlCode.FSCTL_PIPE_TRANSCEIVE, input, out byte[]? output, 4096);
 
             if (!(RPCPDU.GetPDU(output, 0) is BindAckPDU bindAckPDU))
                 return NTStatus.STATUS_NOT_SUPPORTED;
