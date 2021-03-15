@@ -37,7 +37,7 @@
   </ItemGroup>
 
   <Target Name="ILMerge" Condition="'$(Configuration)' == 'Release'" AfterTargets="AfterBuild">
-    <Message Text="MERGING: into $(OutputAssembly)" Importance="High" />
-    <Exec Command="$(ILMergeConsolePath) /out:$(OutputPath)\\$(AssemblyName).dll $(OutputPath)\\$(AssemblyName).dll $(OutputPath)\\Utilities.dll" />
+    <Message Text="MERGING: &quot;$(OutputPath)\\Utilities.dll&quot; into &quot;$(OutputPath)\\$(AssemblyName).dll&quot;" Importance="High" />
+    <Exec Command="&quot;$(ILMergeConsolePath)&quot; /out:&quot;$(OutputPath)\\$(AssemblyName).dll&quot; &quot;$(OutputPath)\\$(AssemblyName).dll&quot; &quot;$(OutputPath)\\Utilities.dll&quot;" />
   </Target>
 </Project>
