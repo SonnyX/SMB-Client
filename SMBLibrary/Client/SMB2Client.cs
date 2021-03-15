@@ -17,7 +17,7 @@ using Utilities;
 
 namespace SMBLibrary.Client
 {
-    public sealed class SMB2Client : ISmbClient
+    public sealed class Smb2Client : ISmbClient
     {
         public static readonly int NetBiosOverTCPPort = 139;
         public static readonly int DirectTCPPort = 445;
@@ -54,16 +54,17 @@ namespace SMBLibrary.Client
         private byte[]? m_sessionKey;
         private ushort m_availableCredits = 1;
 
-        public bool IsConnected => m_isConnected && m_clientSocket.Connected;
+        public bool IsConnected => m_isConnected && (m_clientSocket?.Connected ?? false);
         public bool IsLoggedIn => m_isLoggedIn && IsConnected;
 
         public bool Connect(IPAddress serverAddress, SMBTransportType transport)
         {
             // Sometimes underline socket is disconnected, but m_isConnected flag is still true.
             // This cause the caller try to reuse the client and fail on all calls.
-            if (m_clientSocket is {Connected: false})
+            if (m_clientSocket is { Connected: false })
             {
-                m_clientSocket.Dispose();
+                m_isConnected = false;
+                m_isLoggedIn = false;
             }
 
             m_transport = transport;
@@ -87,7 +88,7 @@ namespace SMBLibrary.Client
                 SessionPacket? sessionResponsePacket = WaitForSessionResponsePacket();
                 if (!(sessionResponsePacket is PositiveSessionResponsePacket))
                 {
-                    m_clientSocket?.Disconnect(false);
+                    m_clientSocket?.Disconnect(true);
                     if (!ConnectSocket(serverAddress, port))
                         return false;
 
@@ -132,7 +133,7 @@ namespace SMBLibrary.Client
 
             ConnectionState state = new ConnectionState(m_clientSocket);
             NBTConnectionReceiveBuffer buffer = state.ReceiveBuffer;
-            m_clientSocket.BeginReceive(buffer.Buffer, buffer.WriteOffset, buffer.AvailableLength, SocketFlags.None, new AsyncCallback(OnClientSocketReceive), state);
+            m_clientSocket.BeginReceive(buffer.Buffer, buffer.WriteOffset, buffer.AvailableLength, SocketFlags.None, OnClientSocketReceive, state);
             return true;
         }
 
@@ -142,7 +143,7 @@ namespace SMBLibrary.Client
 
             if (!m_clientSocket?.Connected ?? true)
                 return;
-            m_clientSocket?.Disconnect(false);
+            m_clientSocket?.Disconnect(true);
         }
 
         private bool NegotiateDialect()
@@ -175,7 +176,7 @@ namespace SMBLibrary.Client
 
         public NTStatus Login(string domainName, string userName, string password, AuthenticationMethod authenticationMethod)
         {
-            if (!m_isConnected)
+            if (!IsConnected)
                 throw new InvalidOperationException("A connection must be successfully established before attempting login");
 
             byte[]? negotiateMessage = NtlmAuthenticationHelper.GetNegotiateMessage(m_securityBlob, domainName, authenticationMethod);
@@ -228,7 +229,7 @@ namespace SMBLibrary.Client
 
         public NTStatus Logoff()
         {
-            if (!m_isConnected)
+            if (!IsConnected)
             {
                 throw new InvalidOperationException("A login session must be successfully established before attempting logoff");
             }
@@ -246,7 +247,7 @@ namespace SMBLibrary.Client
 
         public List<string>? ListShares(out NTStatus status)
         {
-            if (!m_isConnected)
+            if (!IsConnected)
                 throw new InvalidOperationException("A session must be successfully established before retrieving share list");
 
             if (!m_isLoggedIn)
@@ -256,14 +257,14 @@ namespace SMBLibrary.Client
             if (namedPipeShare == null)
                 return null;
 
-            List<string> shares = ServerServiceHelper.ListShares(namedPipeShare, Services.ShareType.DiskDrive, out status);
+            List<string>? shares = ServerServiceHelper.ListShares(namedPipeShare, Services.ShareType.DiskDrive, out status);
             namedPipeShare.Disconnect();
             return shares;
         }
 
         public ISmbFileStore? TreeConnect(string shareName, out NTStatus status)
         {
-            if (!m_isConnected)
+            if (!IsConnected)
                 throw new InvalidOperationException("A session must be successfully established before connecting to a share");
 
             if (!m_isLoggedIn)
@@ -335,7 +336,7 @@ namespace SMBLibrary.Client
 
                 try
                 {
-                    clientSocket.BeginReceive(buffer.Buffer, buffer.WriteOffset, buffer.AvailableLength, SocketFlags.None, new AsyncCallback(OnClientSocketReceive), state);
+                    clientSocket.BeginReceive(buffer.Buffer, buffer.WriteOffset, buffer.AvailableLength, SocketFlags.None, OnClientSocketReceive, state);
                 }
                 catch (ObjectDisposedException)
                 {
@@ -367,10 +368,7 @@ namespace SMBLibrary.Client
                     break;
                 }
 
-                if (packet != null)
-                {
-                    ProcessPacket(packet, state);
-                }
+                ProcessPacket(packet, state);
             }
         }
 
@@ -474,10 +472,10 @@ namespace SMBLibrary.Client
 
         internal SessionPacket? WaitForSessionResponsePacket()
         {
-            const int TimeOut = 5000;
+            const int timeOut = 5000;
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            while (stopwatch.ElapsedMilliseconds < TimeOut)
+            while (stopwatch.ElapsedMilliseconds < timeOut)
             {
                 if (m_sessionResponsePacket != null)
                 {
