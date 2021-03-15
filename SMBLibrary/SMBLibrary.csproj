@@ -12,7 +12,7 @@
 
     <RepositoryUrl>https://github.com/SonnyX/SMB-Client</RepositoryUrl>
     <PackageTags>smb smb-client</PackageTags>
-    <Version>1.4.9</Version>
+    <Version>1.4.10</Version>
 
     <Description>Free, Open Source, User-Mode SMB 1.0/CIFS, SMB 2.0, SMB 2.1 and SMB 3.0 Client Library</Description>
     <Nullable>Enable</Nullable>
@@ -32,12 +32,5 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="ilmerge" Version="3.0.41" PrivateAssets="All" />
-    <ProjectReference Include="..\Utilities\Utilities.csproj" PrivateAssets="All" />
   </ItemGroup>
-
-  <Target Name="ILMerge" Condition="'$(Configuration)' == 'Release'" AfterTargets="AfterBuild">
-    <Message Text="MERGING: &quot;$(OutputPath)\\Utilities.dll&quot; into &quot;$(OutputPath)\\$(AssemblyName).dll&quot;" Importance="High" />
-    <Exec Command="&quot;$(ILMergeConsolePath)&quot; /out:&quot;$(OutputPath)\\$(AssemblyName).dll&quot; &quot;$(OutputPath)\\$(AssemblyName).dll&quot; &quot;$(OutputPath)\\Utilities.dll&quot;" />
-  </Target>
 </Project>

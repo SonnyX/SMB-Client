@@ -120,11 +120,6 @@ namespace Utilities
             stream.Write(bytes, 0, bytes.Length);
         }
 
-        public static void WriteBytes(Stream stream, byte[] bytes, int count)
-        {
-            stream.Write(bytes, 0, count);
-        }
-
         public static void WriteAnsiString(Stream stream, string value)
         {
             WriteAnsiString(stream, value, value.Length);
@@ -139,24 +134,6 @@ namespace Utilities
                 byte[] zeroFill = new byte[fieldLength - bytes.Length];
                 stream.Write(zeroFill, 0, zeroFill.Length);
             }
-        }
-
-        public static void WriteUTF8String(Stream stream, string value)
-        {
-            byte[] bytes = Encoding.UTF8.GetBytes(value);
-            stream.Write(bytes, 0, bytes.Length);
-        }
-
-        public static void WriteUTF16String(Stream stream, string value)
-        {
-            byte[] bytes = Encoding.Unicode.GetBytes(value);
-            stream.Write(bytes, 0, bytes.Length);
-        }
-
-        public static void WriteUTF16BEString(Stream stream, string value)
-        {
-            byte[] bytes = Encoding.BigEndianUnicode.GetBytes(value);
-            stream.Write(bytes, 0, bytes.Length);
         }
     }
 }

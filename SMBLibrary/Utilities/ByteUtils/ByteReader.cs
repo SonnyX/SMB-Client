@@ -119,40 +119,5 @@ namespace Utilities
             }
             return result;
         }
-
-        public static byte[] ReadBytes(Stream stream, int count)
-        {
-            using MemoryStream temp = new MemoryStream();
-            ByteUtils.CopyStream(stream, temp, count);
-            return temp.ToArray();
-        }
-
-        /// <summary>
-        /// Return all bytes from current stream position to the end of the stream
-        /// </summary>
-        public static byte[] ReadAllBytes(Stream stream)
-        {
-            using MemoryStream temp = new MemoryStream();
-            ByteUtils.CopyStream(stream, temp);
-            return temp.ToArray();
-        }
-
-        public static string ReadAnsiString(Stream stream, int length)
-        {
-            byte[] buffer = ReadBytes(stream, length);
-            return Encoding.GetEncoding(28591).GetString(buffer);
-        }
-
-        public static string ReadNullTerminatedAnsiString(Stream stream)
-        {
-            StringBuilder builder = new StringBuilder();
-            char c = (char)stream.ReadByte();
-            while (c != '\0')
-            {
-                builder.Append(c);
-                c = (char)stream.ReadByte();
-            }
-            return builder.ToString();
-        }
     }
 }

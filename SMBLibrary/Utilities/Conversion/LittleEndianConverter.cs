@@ -1,9 +1,10 @@
 /* Copyright (C) 2012-2020 Tal Aloni <tal.aloni.il@gmail.com>. All rights reserved.
- * 
+ *
  * You can redistribute this program and/or modify it under the terms of
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 
 namespace Utilities
@@ -39,40 +40,6 @@ namespace Utilities
         public static long ToInt64(byte[] buffer, int offset)
         {
             return (long)ToUInt64(buffer, offset);
-        }
-
-        public static float ToFloat32(byte[] buffer, int offset)
-        {
-            byte[] bytes = new byte[4];
-            Array.Copy(buffer, offset, bytes, 0, 4);
-            if (!BitConverter.IsLittleEndian)
-            {
-                // reverse the order of 'bytes'
-                for (int index = 0; index < 2; index++)
-                {
-                    byte temp = bytes[index];
-                    bytes[index] = bytes[3 - index];
-                    bytes[3 - index] = temp;
-                }
-            }
-            return BitConverter.ToSingle(bytes, 0);
-        }
-
-        public static double ToFloat64(byte[] buffer, int offset)
-        {
-            byte[] bytes = new byte[8];
-            Array.Copy(buffer, offset, bytes, 0, 8);
-            if (!BitConverter.IsLittleEndian)
-            {
-                // reverse the order of 'bytes'
-                for(int index = 0; index < 4; index++)
-                {
-                    byte temp = bytes[index];
-                    bytes[index] = bytes[7 - index];
-                    bytes[7 - index] = temp;
-                }
-            }
-            return BitConverter.ToDouble(bytes, 0);
         }
 
         public static Guid ToGuid(byte[] buffer, int offset)
@@ -113,11 +80,6 @@ namespace Utilities
             result[3] = (byte)((value >> 24) & 0xFF);
 
             return result;
-        }
-
-        public static byte[] GetBytes(int value)
-        {
-            return GetBytes((uint)value);
         }
 
         public static byte[] GetBytes(ulong value)

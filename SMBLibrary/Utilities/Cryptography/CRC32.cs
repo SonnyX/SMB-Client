@@ -49,21 +49,6 @@ namespace Utilities
 
         public override int HashSize => 32;
 
-        public static uint Compute(byte[] buffer)
-        {
-            return ~CalculateHash(InitializeTable(DefaultPolynomial), DefaultSeed, buffer, 0, buffer.Length);
-        }
-
-        public static uint Compute(uint seed, byte[] buffer)
-        {
-            return ~CalculateHash(InitializeTable(DefaultPolynomial), seed, buffer, 0, buffer.Length);
-        }
-
-        public static uint Compute(uint polynomial, uint seed, byte[] buffer)
-        {
-            return ~CalculateHash(InitializeTable(polynomial), seed, buffer, 0, buffer.Length);
-        }
-
         private static uint[] InitializeTable(uint polynomial)
         {
             if (polynomial == DefaultPolynomial && defaultTable != null)
@@ -106,13 +91,6 @@ namespace Utilities
                 (byte)((x >> 8) & 0xff),
                 (byte)(x & 0xff)
             };
-        }
-
-        // Added by Tal Aloni 2013.07.11
-        public static uint UPDC32(byte octet, uint crc)
-        {
-            uint[] table = InitializeTable(DefaultPolynomial);
-            return (table[((crc) ^ ((byte)octet)) & 0xff] ^ ((crc) >> 8));
         }
     }
 }
