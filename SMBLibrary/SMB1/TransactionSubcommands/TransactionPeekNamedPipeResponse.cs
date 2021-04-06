@@ -15,21 +15,25 @@ namespace SMBLibrary.SMB1
     public class TransactionPeekNamedPipeResponse : TransactionSubcommand
     {
         public const int ParametersLength = 6;
+
         // Parameters:
         public ushort ReadDataAvailable;
         public ushort MessageBytesLength;
+
         public NamedPipeState NamedPipeState;
+
         // Data:
         public byte[]? ReadData;
 
         public TransactionPeekNamedPipeResponse()
-        { }
+        {
+        }
 
         public TransactionPeekNamedPipeResponse(byte[] parameters, byte[] data)
         {
             ReadDataAvailable = LittleEndianConverter.ToUInt16(parameters, 0);
             MessageBytesLength = LittleEndianConverter.ToUInt16(parameters, 2);
-            NamedPipeState = (NamedPipeState)LittleEndianConverter.ToUInt16(parameters, 4);
+            NamedPipeState = (NamedPipeState) LittleEndianConverter.ToUInt16(parameters, 4);
 
             ReadData = data;
         }
@@ -39,7 +43,7 @@ namespace SMBLibrary.SMB1
             byte[] parameters = new byte[ParametersLength];
             LittleEndianWriter.WriteUInt16(parameters, 0, ReadDataAvailable);
             LittleEndianWriter.WriteUInt16(parameters, 2, MessageBytesLength);
-            LittleEndianWriter.WriteUInt16(parameters, 4, (ushort)NamedPipeState);
+            LittleEndianWriter.WriteUInt16(parameters, 4, (ushort) NamedPipeState);
             return parameters;
         }
 

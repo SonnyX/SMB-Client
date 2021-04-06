@@ -15,11 +15,15 @@ namespace SMBLibrary.SMB1
     public class Transaction2QueryPathInformationRequest : Transaction2Subcommand
     {
         private const ushort SMB_INFO_PASSTHROUGH = 0x03E8;
+
         public const int ParametersFixedLength = 6;
+
         // Parameters:
         public ushort InformationLevel;
         public uint Reserved;
+
         public string? FileName; // SMB_STRING
+
         // Data:
         public FullExtendedAttributeList GetExtendedAttributeList; // Used with QueryInformationLevel.SMB_INFO_QUERY_EAS_FROM_LIST
 
@@ -42,7 +46,7 @@ namespace SMBLibrary.SMB1
 
         public override byte[] GetSetup()
         {
-            return LittleEndianConverter.GetBytes((ushort)SubcommandName);
+            return LittleEndianConverter.GetBytes((ushort) SubcommandName);
         }
 
         public override byte[] GetParameters(bool isUnicode)
@@ -56,6 +60,7 @@ namespace SMBLibrary.SMB1
             {
                 length += FileName.Length + 1;
             }
+
             byte[] parameters = new byte[length];
             LittleEndianWriter.WriteUInt16(parameters, 0, InformationLevel);
             LittleEndianWriter.WriteUInt32(parameters, 2, Reserved);
@@ -77,14 +82,14 @@ namespace SMBLibrary.SMB1
 
         public QueryInformationLevel QueryInformationLevel
         {
-            get => (QueryInformationLevel)InformationLevel;
-            set => InformationLevel = (ushort)value;
+            get => (QueryInformationLevel) InformationLevel;
+            set => InformationLevel = (ushort) value;
         }
 
         public FileInformationClass FileInformationClass
         {
-            get => (FileInformationClass)(InformationLevel - SMB_INFO_PASSTHROUGH);
-            set => InformationLevel = (ushort)((ushort)value + SMB_INFO_PASSTHROUGH);
+            get => (FileInformationClass) (InformationLevel - SMB_INFO_PASSTHROUGH);
+            set => InformationLevel = (ushort) ((ushort) value + SMB_INFO_PASSTHROUGH);
         }
 
         public override Transaction2SubcommandName SubcommandName => Transaction2SubcommandName.TRANS2_QUERY_PATH_INFORMATION;

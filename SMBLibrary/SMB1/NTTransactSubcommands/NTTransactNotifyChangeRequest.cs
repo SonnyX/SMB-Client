@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using Utilities;
 
@@ -15,6 +16,7 @@ namespace SMBLibrary.SMB1
     public class NTTransactNotifyChangeRequest : NTTransactSubcommand
     {
         public const int SetupLength = 8;
+
         // Setup:
         public NotifyChangeFilter CompletionFilter;
         public ushort FID;
@@ -27,7 +29,7 @@ namespace SMBLibrary.SMB1
 
         public NTTransactNotifyChangeRequest(byte[] setup)
         {
-            CompletionFilter = (NotifyChangeFilter)LittleEndianConverter.ToUInt32(setup, 0);
+            CompletionFilter = (NotifyChangeFilter) LittleEndianConverter.ToUInt32(setup, 0);
             FID = LittleEndianConverter.ToUInt16(setup, 4);
             WatchTree = (ByteReader.ReadByte(setup, 6) != 0);
             Reserved = ByteReader.ReadByte(setup, 7);
@@ -36,7 +38,7 @@ namespace SMBLibrary.SMB1
         public override byte[] GetSetup()
         {
             byte[] setup = new byte[SetupLength];
-            LittleEndianWriter.WriteUInt32(setup, 0, (uint)CompletionFilter);
+            LittleEndianWriter.WriteUInt32(setup, 0, (uint) CompletionFilter);
             LittleEndianWriter.WriteUInt32(setup, 4, FID);
             ByteWriter.WriteByte(setup, 6, Convert.ToByte(WatchTree));
             ByteWriter.WriteByte(setup, 7, Reserved);

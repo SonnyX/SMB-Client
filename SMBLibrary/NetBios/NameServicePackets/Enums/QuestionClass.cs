@@ -1,4 +1,3 @@
-
 namespace SMBLibrary.NetBios
 {
     public enum QuestionClass : ushort

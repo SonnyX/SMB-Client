@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -14,14 +15,16 @@ namespace SMBLibrary.SMB1
     public class SessionSetupAndXResponse : SMBAndXCommand
     {
         public const int ParametersLength = 6;
+
         // Parameters:
         // CommandName AndXCommand;
         // byte AndXReserved;
         // ushort AndXOffset;
         public SessionSetupAction Action;
+
         // Data:
-        public string NativeOS;      // SMB_STRING (If Unicode, this field MUST be aligned to start on a 2-byte boundary from the start of the SMB header)
-        public string NativeLanMan;  // SMB_STRING (this field WILL be aligned to start on a 2-byte boundary from the start of the SMB header)
+        public string NativeOS; // SMB_STRING (If Unicode, this field MUST be aligned to start on a 2-byte boundary from the start of the SMB header)
+        public string NativeLanMan; // SMB_STRING (this field WILL be aligned to start on a 2-byte boundary from the start of the SMB header)
         public string PrimaryDomain; // SMB_STRING (this field WILL be aligned to start on a 2-byte boundary from the start of the SMB header)
 
         public SessionSetupAndXResponse()
@@ -33,7 +36,7 @@ namespace SMBLibrary.SMB1
 
         public SessionSetupAndXResponse(byte[] buffer, int offset, bool isUnicode) : base(buffer, offset)
         {
-            Action = (SessionSetupAction)LittleEndianConverter.ToUInt16(SMBParameters, 4);
+            Action = (SessionSetupAction) LittleEndianConverter.ToUInt16(SMBParameters, 4);
 
             int dataOffset = 0;
             if (isUnicode)
@@ -42,6 +45,7 @@ namespace SMBLibrary.SMB1
                 // Note: SMBData starts at an odd offset.
                 dataOffset++;
             }
+
             NativeOS = SMB1Helper.ReadSMBString(SMBData, ref dataOffset, isUnicode);
             NativeLanMan = SMB1Helper.ReadSMBString(SMBData, ref dataOffset, isUnicode);
             if ((SMBData.Length - dataOffset) % 2 == 1)
@@ -49,13 +53,14 @@ namespace SMBLibrary.SMB1
                 // Workaround for a single terminating null byte
                 SMBData = ByteUtils.Concatenate(SMBData, new byte[1]);
             }
+
             PrimaryDomain = SMB1Helper.ReadSMBString(SMBData, ref dataOffset, isUnicode);
         }
 
         public override byte[] GetBytes(bool isUnicode)
         {
             SMBParameters = new byte[ParametersLength];
-            LittleEndianWriter.WriteUInt16(SMBParameters, 4, (ushort)Action);
+            LittleEndianWriter.WriteUInt16(SMBParameters, 4, (ushort) Action);
 
             int offset = 0;
             if (isUnicode)
@@ -70,6 +75,7 @@ namespace SMBLibrary.SMB1
             {
                 SMBData = new byte[NativeOS.Length + NativeLanMan.Length + PrimaryDomain.Length + 3];
             }
+
             SMB1Helper.WriteSMBString(SMBData, ref offset, isUnicode, NativeOS);
             SMB1Helper.WriteSMBString(SMBData, ref offset, isUnicode, NativeLanMan);
             SMB1Helper.WriteSMBString(SMBData, ref offset, isUnicode, PrimaryDomain);

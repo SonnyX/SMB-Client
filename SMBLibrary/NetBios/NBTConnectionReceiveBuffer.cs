@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.IO;
 
@@ -27,6 +28,7 @@ namespace SMBLibrary.NetBios
             {
                 throw new ArgumentException("bufferLength must be large enough to hold the largest possible NBT packet");
             }
+
             m_buffer = new byte[bufferLength];
         }
 
@@ -74,6 +76,7 @@ namespace SMBLibrary.NetBios
             {
                 throw new InvalidDataException("Invalid NetBIOS session packet", ex);
             }
+
             RemovePacketBytes();
             return packet;
         }

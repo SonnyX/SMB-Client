@@ -46,8 +46,8 @@ namespace SMBLibrary.SMB2
             RemainingBytes = LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 36);
             WriteChannelInfoOffset = LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 40);
             WriteChannelInfoLength = LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 42);
-            Flags = (WriteFlags)LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 44);
-            Data = ByteReader.ReadBytes(buffer, offset + DataOffset, (int)DataLength);
+            Flags = (WriteFlags) LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 44);
+            Data = ByteReader.ReadBytes(buffer, offset + DataOffset, (int) DataLength);
             WriteChannelInfo = ByteReader.ReadBytes(buffer, offset + WriteChannelInfoOffset, WriteChannelInfoLength);
         }
 
@@ -56,17 +56,19 @@ namespace SMBLibrary.SMB2
             // Note: DataLength is UInt32 while WriteChannelInfoOffset is UInt16
             // so it is best to put WriteChannelInfo before Data.
             WriteChannelInfoOffset = 0;
-            WriteChannelInfoLength = (ushort)WriteChannelInfo.Length;
+            WriteChannelInfoLength = (ushort) WriteChannelInfo.Length;
             if (WriteChannelInfo.Length > 0)
             {
                 WriteChannelInfoOffset = SMB2Header.Length + FixedSize;
             }
+
             DataOffset = 0;
-            DataLength = (uint)Data.Length;
+            DataLength = (uint) Data.Length;
             if (Data.Length > 0)
             {
-                DataOffset = (ushort)(SMB2Header.Length + FixedSize + WriteChannelInfo.Length);
+                DataOffset = (ushort) (SMB2Header.Length + FixedSize + WriteChannelInfo.Length);
             }
+
             LittleEndianWriter.WriteUInt16(buffer, offset + 0, StructureSize);
             LittleEndianWriter.WriteUInt16(buffer, offset + 2, DataOffset);
             LittleEndianWriter.WriteUInt32(buffer, offset + 4, DataLength);
@@ -76,11 +78,12 @@ namespace SMBLibrary.SMB2
             LittleEndianWriter.WriteUInt32(buffer, offset + 36, RemainingBytes);
             LittleEndianWriter.WriteUInt16(buffer, offset + 40, WriteChannelInfoOffset);
             LittleEndianWriter.WriteUInt16(buffer, offset + 42, WriteChannelInfoLength);
-            LittleEndianWriter.WriteUInt32(buffer, offset + 44, (uint)Flags);
+            LittleEndianWriter.WriteUInt32(buffer, offset + 44, (uint) Flags);
             if (WriteChannelInfo.Length > 0)
             {
                 ByteWriter.WriteBytes(buffer, offset + FixedSize, WriteChannelInfo);
             }
+
             if (Data.Length > 0)
             {
                 ByteWriter.WriteBytes(buffer, offset + FixedSize + WriteChannelInfo.Length, Data);

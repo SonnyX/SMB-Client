@@ -26,7 +26,7 @@ namespace System.Security.Cryptography
             byte[] s = new byte[256];
             for (int index = 0; index < 256; index++)
             {
-                s[index] = (byte)index;
+                s[index] = (byte) index;
             }
 
             for (int i = 0, j = 0; i < 256; i++)
@@ -53,8 +53,9 @@ namespace System.Security.Cryptography
                 j = (j + s[i]) & 255;
 
                 Swap(s, i, j);
-                output[index] = (byte)(data[index] ^ s[(s[i] + s[j]) & 255]);
+                output[index] = (byte) (data[index] ^ s[(s[i] + s[j]) & 255]);
             }
+
             return output;
         }
 

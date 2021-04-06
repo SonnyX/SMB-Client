@@ -15,6 +15,7 @@ namespace SMBLibrary.SMB1
     public class ReadRequest : SMB1Command
     {
         public const int ParametersLength = 10;
+
         // Parameters:
         public ushort FID;
         public ushort CountOfBytesToRead;

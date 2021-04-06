@@ -39,9 +39,9 @@ namespace SMBLibrary.NetBios
         {
             TransactionID = BigEndianConverter.ToUInt16(buffer, offset + 0);
             ushort temp = BigEndianConverter.ToUInt16(buffer, offset + 2);
-            ResultCode = (byte)(temp & 0xF);
-            Flags = (OperationFlags)((temp >> 4) & 0x7F);
-            OpCode = (NameServiceOperation)((temp >> 11) & 0x1F);
+            ResultCode = (byte) (temp & 0xF);
+            Flags = (OperationFlags) ((temp >> 4) & 0x7F);
+            OpCode = (NameServiceOperation) ((temp >> 11) & 0x1F);
             QDCount = BigEndianConverter.ToUInt16(buffer, offset + 4);
             ANCount = BigEndianConverter.ToUInt16(buffer, offset + 6);
             NSCount = BigEndianConverter.ToUInt16(buffer, offset + 8);
@@ -51,9 +51,9 @@ namespace SMBLibrary.NetBios
         public void WriteBytes(Stream stream)
         {
             BigEndianWriter.WriteUInt16(stream, TransactionID);
-            ushort temp = (ushort)(ResultCode & (0xF));
-            temp |= (ushort)((byte)Flags << 4);
-            temp |= (ushort)((byte)OpCode << 11);
+            ushort temp = (ushort) (ResultCode & (0xF));
+            temp |= (ushort) ((byte) Flags << 4);
+            temp |= (ushort) ((byte) OpCode << 11);
             BigEndianWriter.WriteUInt16(stream, temp);
             BigEndianWriter.WriteUInt16(stream, QDCount);
             BigEndianWriter.WriteUInt16(stream, ANCount);

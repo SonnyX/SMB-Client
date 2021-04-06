@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using Utilities;
 
 namespace SMBLibrary
@@ -31,12 +32,12 @@ namespace SMBLibrary
             StreamNameLength = LittleEndianConverter.ToUInt32(buffer, offset + 4);
             StreamSize = LittleEndianConverter.ToInt64(buffer, offset + 8);
             StreamAllocationSize = LittleEndianConverter.ToInt64(buffer, offset + 16);
-            StreamName = ByteReader.ReadUTF16String(buffer, offset + 24, (int)StreamNameLength / 2);
+            StreamName = ByteReader.ReadUTF16String(buffer, offset + 24, (int) StreamNameLength / 2);
         }
 
         public void WriteBytes(byte[] buffer, int offset)
         {
-            StreamNameLength = (uint)(StreamName.Length * 2);
+            StreamNameLength = (uint) (StreamName.Length * 2);
             LittleEndianWriter.WriteUInt32(buffer, offset + 0, NextEntryOffset);
             LittleEndianWriter.WriteUInt32(buffer, offset + 4, StreamNameLength);
             LittleEndianWriter.WriteInt64(buffer, offset + 8, StreamSize);

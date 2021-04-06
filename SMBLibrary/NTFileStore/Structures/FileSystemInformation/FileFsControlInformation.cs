@@ -35,7 +35,7 @@ namespace SMBLibrary
             FreeSpaceStopFiltering = LittleEndianConverter.ToInt64(buffer, offset + 16);
             DefaultQuotaThreshold = LittleEndianConverter.ToUInt64(buffer, offset + 24);
             DefaultQuotaLimit = LittleEndianConverter.ToUInt64(buffer, offset + 32);
-            FileSystemControlFlags = (FileSystemControlFlags)LittleEndianConverter.ToUInt32(buffer, offset + 40);
+            FileSystemControlFlags = (FileSystemControlFlags) LittleEndianConverter.ToUInt32(buffer, offset + 40);
             Padding = LittleEndianConverter.ToUInt32(buffer, offset + 44);
         }
 
@@ -46,7 +46,7 @@ namespace SMBLibrary
             LittleEndianWriter.WriteInt64(buffer, offset + 16, FreeSpaceStopFiltering);
             LittleEndianWriter.WriteUInt64(buffer, offset + 24, DefaultQuotaThreshold);
             LittleEndianWriter.WriteUInt64(buffer, offset + 32, DefaultQuotaLimit);
-            LittleEndianWriter.WriteUInt32(buffer, offset + 40, (uint)FileSystemControlFlags);
+            LittleEndianWriter.WriteUInt32(buffer, offset + 40, (uint) FileSystemControlFlags);
             LittleEndianWriter.WriteUInt32(buffer, offset + 44, Padding);
         }
 

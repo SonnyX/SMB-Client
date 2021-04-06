@@ -45,8 +45,9 @@ namespace Utilities
                 byte[] result = new byte[length];
                 for (int index = 0; index < length; index++)
                 {
-                    result[index] = (byte)(array1[offset1 + index] ^ array2[offset2 + index]);
+                    result[index] = (byte) (array1[offset1 + index] ^ array2[offset2 + index]);
                 }
+
                 return result;
             }
 

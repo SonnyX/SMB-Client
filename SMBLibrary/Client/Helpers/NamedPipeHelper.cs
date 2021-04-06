@@ -16,31 +16,17 @@ namespace SMBLibrary.Client
         public static NTStatus BindPipe(INtFileStore namedPipeShare, string pipeName, Guid interfaceGuid, uint interfaceVersion, out NtHandle? pipeHandle, out int maxTransmitFragmentSize)
         {
             maxTransmitFragmentSize = 0;
-            namedPipeShare.CreateFile(out pipeHandle, out _, pipeName, (AccessMask)(FileAccessMask.FILE_READ_DATA | FileAccessMask.FILE_WRITE_DATA), 0, ShareAccess.Read | ShareAccess.Write, CreateDisposition.FILE_OPEN, 0, null);
+            namedPipeShare.CreateFile(out pipeHandle, out _, pipeName, (AccessMask) (FileAccessMask.FILE_READ_DATA | FileAccessMask.FILE_WRITE_DATA), 0, ShareAccess.Read | ShareAccess.Write, CreateDisposition.FILE_OPEN, 0, null);
 
-            BindPDU bindPdu = new BindPDU
-            {
-                Flags = PacketFlags.FirstFragment | PacketFlags.LastFragment,
-                DataRepresentation =
-                {
-                    CharacterFormat = CharacterFormat.ASCII,
-                    ByteOrder = ByteOrder.LittleEndian,
-                    FloatingPointRepresentation = FloatingPointRepresentation.IEEE
-                },
-                MaxTransmitFragmentSize = 5680,
-                MaxReceiveFragmentSize = 5680
-            };
+            BindPDU bindPdu = new BindPDU {Flags = PacketFlags.FirstFragment | PacketFlags.LastFragment, DataRepresentation = {CharacterFormat = CharacterFormat.ASCII, ByteOrder = ByteOrder.LittleEndian, FloatingPointRepresentation = FloatingPointRepresentation.IEEE}, MaxTransmitFragmentSize = 5680, MaxReceiveFragmentSize = 5680};
 
-            ContextElement serviceContext = new ContextElement
-            {
-                AbstractSyntax = new SyntaxID(interfaceGuid, interfaceVersion)
-            };
+            ContextElement serviceContext = new ContextElement {AbstractSyntax = new SyntaxID(interfaceGuid, interfaceVersion)};
             serviceContext.TransferSyntaxList.Add(new SyntaxID(RemoteServiceHelper.NDRTransferSyntaxIdentifier, RemoteServiceHelper.NDRTransferSyntaxVersion));
 
             bindPdu.ContextList.Add(serviceContext);
 
             byte[] input = bindPdu.GetBytes();
-            namedPipeShare.DeviceIOControl(pipeHandle, (uint)IoControlCode.FSCTL_PIPE_TRANSCEIVE, input, out byte[]? output, 4096);
+            namedPipeShare.DeviceIOControl(pipeHandle, (uint) IoControlCode.FSCTL_PIPE_TRANSCEIVE, input, out byte[]? output, 4096);
 
             if (!(RPCPDU.GetPDU(output, 0) is BindAckPDU bindAckPDU))
                 return NTStatus.STATUS_NOT_SUPPORTED;

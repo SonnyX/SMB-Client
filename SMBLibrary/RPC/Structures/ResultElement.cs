@@ -22,15 +22,15 @@ namespace SMBLibrary.RPC
 
         public ResultElement(byte[] buffer, int offset)
         {
-            Result = (NegotiationResult)LittleEndianConverter.ToUInt16(buffer, offset + 0);
-            Reason = (RejectionReason)LittleEndianConverter.ToUInt16(buffer, offset + 2);
+            Result = (NegotiationResult) LittleEndianConverter.ToUInt16(buffer, offset + 0);
+            Reason = (RejectionReason) LittleEndianConverter.ToUInt16(buffer, offset + 2);
             TransferSyntax = new SyntaxID(buffer, offset + 4);
         }
 
         public void WriteBytes(byte[] buffer, int offset)
         {
-            LittleEndianWriter.WriteUInt16(buffer, offset + 0, (ushort)Result);
-            LittleEndianWriter.WriteUInt16(buffer, offset + 2, (ushort)Reason);
+            LittleEndianWriter.WriteUInt16(buffer, offset + 0, (ushort) Result);
+            LittleEndianWriter.WriteUInt16(buffer, offset + 2, (ushort) Reason);
             TransferSyntax.WriteBytes(buffer, offset + 4);
         }
     }

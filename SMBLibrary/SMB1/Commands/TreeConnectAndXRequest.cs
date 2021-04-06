@@ -15,13 +15,16 @@ namespace SMBLibrary.SMB1
     public class TreeConnectAndXRequest : SMBAndXCommand
     {
         public const int ParametersLength = 8;
+
         // Parameters:
         public TreeConnectFlags Flags;
+
         // ushort PasswordLength;
         // Data:
         public byte[] Password;
+
         // Padding
-        public string Path;         // SMB_STRING (If Unicode, this field MUST be aligned to start on a 2-byte boundary from the start of the SMB header)
+        public string Path; // SMB_STRING (If Unicode, this field MUST be aligned to start on a 2-byte boundary from the start of the SMB header)
         public ServiceName Service; // OEM string
 
         public TreeConnectAndXRequest()
@@ -32,7 +35,7 @@ namespace SMBLibrary.SMB1
         public TreeConnectAndXRequest(byte[] buffer, int offset, bool isUnicode) : base(buffer, offset)
         {
             int parametersOffset = 4;
-            Flags = (TreeConnectFlags)LittleEndianReader.ReadUInt16(SMBParameters, ref parametersOffset);
+            Flags = (TreeConnectFlags) LittleEndianReader.ReadUInt16(SMBParameters, ref parametersOffset);
             ushort passwordLength = LittleEndianReader.ReadUInt16(SMBParameters, ref parametersOffset);
 
             int dataOffset = 0;
@@ -43,6 +46,7 @@ namespace SMBLibrary.SMB1
                 int padding = (1 + passwordLength) % 2;
                 dataOffset += padding;
             }
+
             Path = SMB1Helper.ReadSMBString(SMBData, ref dataOffset, isUnicode);
             // Should be read as OEM string but it doesn't really matter
             string serviceString = ByteReader.ReadNullTerminatedAnsiString(SMBData, ref dataOffset);
@@ -51,11 +55,11 @@ namespace SMBLibrary.SMB1
 
         public override byte[] GetBytes(bool isUnicode)
         {
-            ushort passwordLength = (ushort)Password.Length;
+            ushort passwordLength = (ushort) Password.Length;
 
             SMBParameters = new byte[ParametersLength];
             int parametersOffset = 4;
-            LittleEndianWriter.WriteUInt16(SMBParameters, ref parametersOffset, (ushort)Flags);
+            LittleEndianWriter.WriteUInt16(SMBParameters, ref parametersOffset, (ushort) Flags);
             LittleEndianWriter.WriteUInt16(SMBParameters, ref parametersOffset, passwordLength);
 
             string serviceString = ServiceNameHelper.GetServiceString(Service);
@@ -69,6 +73,7 @@ namespace SMBLibrary.SMB1
             {
                 dataLength += Path.Length + 1;
             }
+
             SMBData = new byte[dataLength];
             int dataOffset = 0;
             ByteWriter.WriteBytes(SMBData, ref dataOffset, Password);
@@ -78,6 +83,7 @@ namespace SMBLibrary.SMB1
                 int padding = (1 + passwordLength) % 2;
                 dataOffset += padding;
             }
+
             SMB1Helper.WriteSMBString(SMBData, ref dataOffset, isUnicode, Path);
             ByteWriter.WriteNullTerminatedAnsiString(SMBData, ref dataOffset, serviceString);
 

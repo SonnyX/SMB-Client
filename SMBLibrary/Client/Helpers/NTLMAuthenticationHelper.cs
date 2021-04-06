@@ -36,23 +36,11 @@ namespace SMBLibrary.Client
                 {
                     throw new Exception("GetNegotiateMessage: InputToken is Null OR it doesn't contain the mechanism NtlmSspIdentifier");
                 }
+
                 useGssapi = true;
             }
 
-            NegotiateMessage negotiateMessage = new NegotiateMessage
-            {
-                NegotiateFlags = NegotiateFlags.UnicodeEncoding |
-                                              NegotiateFlags.OEMEncoding |
-                                              NegotiateFlags.Sign |
-                                              NegotiateFlags.NTLMSessionSecurity |
-                                              NegotiateFlags.DomainNameSupplied |
-                                              NegotiateFlags.WorkstationNameSupplied |
-                                              NegotiateFlags.AlwaysSign |
-                                              NegotiateFlags.Version |
-                                              NegotiateFlags.Use128BitEncryption |
-                                              NegotiateFlags.KeyExchange |
-                                              NegotiateFlags.Use56BitEncryption
-            };
+            NegotiateMessage negotiateMessage = new NegotiateMessage {NegotiateFlags = NegotiateFlags.UnicodeEncoding | NegotiateFlags.OEMEncoding | NegotiateFlags.Sign | NegotiateFlags.NTLMSessionSecurity | NegotiateFlags.DomainNameSupplied | NegotiateFlags.WorkstationNameSupplied | NegotiateFlags.AlwaysSign | NegotiateFlags.Version | NegotiateFlags.Use128BitEncryption | NegotiateFlags.KeyExchange | NegotiateFlags.Use56BitEncryption};
 
             if (authenticationMethod == AuthenticationMethod.NtlmV1)
             {
@@ -69,14 +57,7 @@ namespace SMBLibrary.Client
             if (!useGssapi)
                 return negotiateMessage.GetBytes();
 
-            SimpleProtectedNegotiationTokenInit outputToken = new SimpleProtectedNegotiationTokenInit
-            {
-                MechanismTypeList = new List<byte[]>
-                {
-                    GssProvider.NtlmSspIdentifier
-                },
-                MechanismToken = negotiateMessage.GetBytes()
-            };
+            SimpleProtectedNegotiationTokenInit outputToken = new SimpleProtectedNegotiationTokenInit {MechanismTypeList = new List<byte[]> {GssProvider.NtlmSspIdentifier}, MechanismToken = negotiateMessage.GetBytes()};
             return outputToken.GetBytes(true);
         }
 
@@ -117,12 +98,7 @@ namespace SMBLibrary.Client
             AuthenticateMessage authenticateMessage = new AuthenticateMessage
             {
                 // https://msdn.microsoft.com/en-us/library/cc236676.aspx
-                NegotiateFlags = NegotiateFlags.Sign |
-                                                 NegotiateFlags.NTLMSessionSecurity |
-                                                 NegotiateFlags.AlwaysSign |
-                                                 NegotiateFlags.Version |
-                                                 NegotiateFlags.Use128BitEncryption |
-                                                 NegotiateFlags.Use56BitEncryption
+                NegotiateFlags = NegotiateFlags.Sign | NegotiateFlags.NTLMSessionSecurity | NegotiateFlags.AlwaysSign | NegotiateFlags.Version | NegotiateFlags.Use128BitEncryption | NegotiateFlags.Use56BitEncryption
             };
             if ((challengeMessage.NegotiateFlags & NegotiateFlags.UnicodeEncoding) > 0)
             {
@@ -164,6 +140,7 @@ namespace SMBLibrary.Client
                     authenticateMessage.LmChallengeResponse = ByteUtils.Concatenate(clientChallenge, new byte[16]);
                     authenticateMessage.NtChallengeResponse = NtlmCryptography.ComputeNTLMv1ExtendedSessionSecurityResponse(challengeMessage.ServerChallenge, clientChallenge, password);
                 }
+
                 // https://msdn.microsoft.com/en-us/library/cc236699.aspx
                 sessionBaseKey = new MD4().GetByteHashFromBytes(NtlmCryptography.NTOWFv1(password));
                 byte[] lmowf = NtlmCryptography.LMOWFv1(password);
@@ -184,6 +161,7 @@ namespace SMBLibrary.Client
                 sessionBaseKey = md5.ComputeHash(ntProofStr);
                 keyExchangeKey = sessionBaseKey;
             }
+
             authenticateMessage.Version = NtlmVersion.Server2003;
 
             // https://msdn.microsoft.com/en-us/library/cc236676.aspx
@@ -201,10 +179,7 @@ namespace SMBLibrary.Client
             if (!useGssApi)
                 return authenticateMessage.GetBytes();
 
-            SimpleProtectedNegotiationTokenResponse outputToken = new SimpleProtectedNegotiationTokenResponse
-            {
-                ResponseToken = authenticateMessage.GetBytes()
-            };
+            SimpleProtectedNegotiationTokenResponse outputToken = new SimpleProtectedNegotiationTokenResponse {ResponseToken = authenticateMessage.GetBytes()};
             return outputToken.GetBytes();
         }
 

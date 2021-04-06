@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using Utilities;
 
@@ -48,7 +49,7 @@ namespace SMBLibrary.SMB1
         public static void WriteUTime(byte[] buffer, int offset, DateTime time)
         {
             TimeSpan timespan = time - MinUTimeValue;
-            uint span = (uint)timespan.TotalSeconds;
+            uint span = (uint) timespan.TotalSeconds;
             LittleEndianWriter.WriteUInt32(buffer, offset, span);
         }
 
@@ -64,8 +65,9 @@ namespace SMBLibrary.SMB1
             if (time.HasValue)
             {
                 TimeSpan timespan = time.Value - MinUTimeValue;
-                span = (uint)timespan.TotalSeconds;
+                span = (uint) timespan.TotalSeconds;
             }
+
             LittleEndianWriter.WriteUInt32(buffer, offset, span);
         }
 

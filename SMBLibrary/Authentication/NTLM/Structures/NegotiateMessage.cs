@@ -32,8 +32,8 @@ namespace SMBLibrary.Authentication.NTLM
         public NegotiateMessage(byte[] buffer)
         {
             Signature = ByteReader.ReadAnsiString(buffer, 0, 8);
-            MessageType = (MessageTypeName)LittleEndianConverter.ToUInt32(buffer, 8);
-            NegotiateFlags = (NegotiateFlags)LittleEndianConverter.ToUInt32(buffer, 12);
+            MessageType = (MessageTypeName) LittleEndianConverter.ToUInt32(buffer, 8);
+            NegotiateFlags = (NegotiateFlags) LittleEndianConverter.ToUInt32(buffer, 12);
             DomainName = AuthenticationMessageUtils.ReadAnsiStringBufferPointer(buffer, 16);
             Workstation = AuthenticationMessageUtils.ReadAnsiStringBufferPointer(buffer, 24);
             if ((NegotiateFlags & NegotiateFlags.Version) > 0)
@@ -59,11 +59,12 @@ namespace SMBLibrary.Authentication.NTLM
             {
                 fixedLength += 8;
             }
+
             int payloadLength = DomainName.Length * 2 + Workstation.Length * 2;
             byte[] buffer = new byte[fixedLength + payloadLength];
             ByteWriter.WriteAnsiString(buffer, 0, AuthenticateMessage.ValidSignature, 8);
-            LittleEndianWriter.WriteUInt32(buffer, 8, (uint)MessageType);
-            LittleEndianWriter.WriteUInt32(buffer, 12, (uint)NegotiateFlags);
+            LittleEndianWriter.WriteUInt32(buffer, 8, (uint) MessageType);
+            LittleEndianWriter.WriteUInt32(buffer, 12, (uint) NegotiateFlags);
 
             if ((NegotiateFlags & NegotiateFlags.Version) > 0)
             {
@@ -71,9 +72,9 @@ namespace SMBLibrary.Authentication.NTLM
             }
 
             int offset = fixedLength;
-            AuthenticationMessageUtils.WriteBufferPointer(buffer, 16, (ushort)(DomainName.Length * 2), (uint)offset);
+            AuthenticationMessageUtils.WriteBufferPointer(buffer, 16, (ushort) (DomainName.Length * 2), (uint) offset);
             ByteWriter.WriteUTF16String(buffer, ref offset, DomainName);
-            AuthenticationMessageUtils.WriteBufferPointer(buffer, 24, (ushort)(Workstation.Length * 2), (uint)offset);
+            AuthenticationMessageUtils.WriteBufferPointer(buffer, 24, (ushort) (Workstation.Length * 2), (uint) offset);
             ByteWriter.WriteUTF16String(buffer, ref offset, Workstation);
 
             return buffer;

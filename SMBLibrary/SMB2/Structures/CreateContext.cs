@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Collections.Generic;
 using Utilities;
@@ -22,6 +23,7 @@ namespace SMBLibrary.SMB2
         /// This field MUST be set to 0 if there are no subsequent contexts.
         /// </summary>
         public uint Next;
+
         private ushort NameOffset; // The offset from the beginning of this structure to the 8-byte aligned name value
         private ushort NameLength;
         public ushort Reserved;
@@ -46,9 +48,10 @@ namespace SMBLibrary.SMB2
             {
                 Name = ByteReader.ReadUTF16String(buffer, offset + NameOffset, NameLength / 2);
             }
+
             if (DataLength > 0)
             {
-                Data = ByteReader.ReadBytes(buffer, offset + DataOffset, (int)DataLength);
+                Data = ByteReader.ReadBytes(buffer, offset + DataOffset, (int) DataLength);
             }
         }
 
@@ -56,21 +59,23 @@ namespace SMBLibrary.SMB2
         {
             LittleEndianWriter.WriteUInt32(buffer, offset + 0, Next);
             NameOffset = 0;
-            NameLength = (ushort)(Name.Length * 2);
+            NameLength = (ushort) (Name.Length * 2);
             if (Name.Length > 0)
             {
-                NameOffset = (ushort)FixedLength;
+                NameOffset = (ushort) FixedLength;
             }
+
             LittleEndianWriter.WriteUInt16(buffer, offset + 4, NameOffset);
             LittleEndianWriter.WriteUInt16(buffer, offset + 6, NameLength);
             LittleEndianWriter.WriteUInt16(buffer, offset + 8, Reserved);
             DataOffset = 0;
-            DataLength = (uint)Data.Length;
+            DataLength = (uint) Data.Length;
             if (Data.Length > 0)
             {
-                int paddedNameLength = (int)Math.Ceiling((double)(Name.Length * 2) / 8) * 8;
-                DataOffset = (ushort)(FixedLength + paddedNameLength);
+                int paddedNameLength = (int) Math.Ceiling((double) (Name.Length * 2) / 8) * 8;
+                DataOffset = (ushort) (FixedLength + paddedNameLength);
             }
+
             LittleEndianWriter.WriteUInt16(buffer, offset + 10, DataOffset);
             ByteWriter.WriteUTF16String(buffer, NameOffset, Name);
             ByteWriter.WriteBytes(buffer, DataOffset, Data);
@@ -82,7 +87,7 @@ namespace SMBLibrary.SMB2
             {
                 if (Data.Length > 0)
                 {
-                    int paddedNameLength = (int)Math.Ceiling((double)(Name.Length * 2) / 8) * 8;
+                    int paddedNameLength = (int) Math.Ceiling((double) (Name.Length * 2) / 8) * 8;
                     return FixedLength + paddedNameLength + Data.Length;
                 }
 
@@ -98,9 +103,8 @@ namespace SMBLibrary.SMB2
             {
                 createContext = new CreateContext(buffer, offset);
                 result.Add(createContext);
-                offset += (int)createContext.Next;
-            }
-            while (createContext.Next != 0);
+                offset += (int) createContext.Next;
+            } while (createContext.Next != 0);
 
             return result;
         }
@@ -111,15 +115,16 @@ namespace SMBLibrary.SMB2
             {
                 CreateContext createContext = createContexts[index];
                 int length = createContext.Length;
-                int paddedLength = (int)Math.Ceiling((double)length / 8) * 8;
+                int paddedLength = (int) Math.Ceiling((double) length / 8) * 8;
                 if (index < createContexts.Count - 1)
                 {
-                    createContext.Next = (uint)paddedLength;
+                    createContext.Next = (uint) paddedLength;
                 }
                 else
                 {
                     createContext.Next = 0;
                 }
+
                 createContext.WriteBytes(buffer, offset);
                 offset += paddedLength;
             }
@@ -128,13 +133,13 @@ namespace SMBLibrary.SMB2
         public static int GetCreateContextListLength(List<CreateContext> createContexts)
         {
             int result = 0;
-            for(int index = 0; index < createContexts.Count; index++)
+            for (int index = 0; index < createContexts.Count; index++)
             {
                 CreateContext createContext = createContexts[index];
                 int length = createContext.Length;
                 if (index < createContexts.Count - 1)
                 {
-                    int paddedLength = (int)Math.Ceiling((double)length / 8) * 8;
+                    int paddedLength = (int) Math.Ceiling((double) length / 8) * 8;
                     result += paddedLength;
                 }
                 else
@@ -142,6 +147,7 @@ namespace SMBLibrary.SMB2
                     result += length;
                 }
             }
+
             return result;
         }
     }

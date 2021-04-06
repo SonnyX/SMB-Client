@@ -22,7 +22,7 @@ namespace SMBLibrary.SMB1
         public ExtendedAttributeNameList(byte[] buffer, int offset)
         {
             // [MS-CIFS] length MUST contain the total size of the GEAList field, plus the size of the SizeOfListInBytes field
-            int length = (int)LittleEndianConverter.ToUInt32(buffer, offset + 0);
+            int length = (int) LittleEndianConverter.ToUInt32(buffer, offset + 0);
             int position = offset + 4;
             int eof = offset + length;
             while (position < eof)
@@ -42,7 +42,7 @@ namespace SMBLibrary.SMB1
 
         public void WriteBytes(byte[] buffer, int offset)
         {
-            LittleEndianWriter.WriteUInt32(buffer, ref offset, (uint)Length);
+            LittleEndianWriter.WriteUInt32(buffer, ref offset, (uint) Length);
             foreach (ExtendedAttributeName entry in this)
             {
                 entry.WriteBytes(buffer, offset);
@@ -59,6 +59,7 @@ namespace SMBLibrary.SMB1
                 {
                     length += entry.Length;
                 }
+
                 return length;
             }
         }

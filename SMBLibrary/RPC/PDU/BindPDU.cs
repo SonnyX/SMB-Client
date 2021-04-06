@@ -42,7 +42,7 @@ namespace SMBLibrary.RPC
 
         public override byte[] GetBytes()
         {
-            AuthLength =(ushort)AuthVerifier.Length;
+            AuthLength = (ushort) AuthVerifier.Length;
             byte[] buffer = new byte[Length];
             WriteCommonFieldsBytes(buffer);
             int offset = CommonFieldsLength;

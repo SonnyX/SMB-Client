@@ -1,4 +1,5 @@
 // Adapted from https://referencesource.microsoft.com/#system.web/Security/Cryptography/SP800_108.cs
+
 using System;
 using System.Security.Cryptography;
 using Utilities;
@@ -21,12 +22,13 @@ namespace SMBLibrary
             {
                 Buffer.BlockCopy(label, 0, buffer, 4, labelLength); // the 4 accounts for the [i]_2 length
             }
+
             if (contextLength != 0)
             {
                 Buffer.BlockCopy(context, 0, buffer, 5 + labelLength, contextLength); // the '5 +' accounts for the [i]_2 length, the label, and the 0x00 byte
             }
 
-            BigEndianWriter.WriteUInt32(buffer, 5 + labelLength + contextLength, (uint)keyLengthInBits); // the '5 +' accounts for the [i]_2 length, the label, the 0x00 byte, and the context
+            BigEndianWriter.WriteUInt32(buffer, 5 + labelLength + contextLength, (uint) keyLengthInBits); // the '5 +' accounts for the [i]_2 length, the label, the 0x00 byte, and the context
 
             // Initialization
             int numBytesWritten = 0;

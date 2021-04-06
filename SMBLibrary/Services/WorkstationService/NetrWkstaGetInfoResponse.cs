@@ -23,14 +23,14 @@ namespace SMBLibrary.Services
             NDRParser parser = new NDRParser(buffer);
             WkstaInfo = new WorkstationInfo(parser);
             // 14.4 - If an operation returns a result, the representation of the result appears after all parameters in
-            Result = (Win32Error)parser.ReadUInt32();
+            Result = (Win32Error) parser.ReadUInt32();
         }
 
         public byte[] GetBytes()
         {
             using NDRWriter writer = new NDRWriter();
             writer.WriteStructure(WkstaInfo);
-            writer.WriteUInt32((uint)Result);
+            writer.WriteUInt32((uint) Result);
 
             return writer.GetBytes();
         }

@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Collections.Generic;
 using Utilities;
@@ -28,7 +29,7 @@ namespace SMBLibrary.SMB2
 
         public NegotiateContext(byte[] buffer, int offset)
         {
-            ContextType = (NegotiateContextType)LittleEndianConverter.ToUInt16(buffer, offset + 0);
+            ContextType = (NegotiateContextType) LittleEndianConverter.ToUInt16(buffer, offset + 0);
             DataLength = LittleEndianConverter.ToUInt16(buffer, offset + 2);
             Reserved = LittleEndianConverter.ToUInt32(buffer, offset + 4);
             ByteReader.ReadBytes(buffer, offset + 8, DataLength);
@@ -36,8 +37,8 @@ namespace SMBLibrary.SMB2
 
         public void WriteBytes(byte[] buffer, int offset)
         {
-            DataLength = (ushort)Data.Length;
-            LittleEndianWriter.WriteUInt16(buffer, offset + 0, (ushort)ContextType);
+            DataLength = (ushort) Data.Length;
+            LittleEndianWriter.WriteUInt16(buffer, offset + 0, (ushort) ContextType);
             LittleEndianWriter.WriteUInt16(buffer, offset + 2, DataLength);
             LittleEndianWriter.WriteUInt32(buffer, offset + 4, Reserved);
             ByteWriter.WriteBytes(buffer, offset + 8, Data);
@@ -54,6 +55,7 @@ namespace SMBLibrary.SMB2
                 result.Add(context);
                 offset += context.Length;
             }
+
             return result;
         }
 
@@ -64,7 +66,7 @@ namespace SMBLibrary.SMB2
             {
                 NegotiateContext context = negotiateContextList[index];
                 int length = context.Length;
-                int paddedLength = (int)Math.Ceiling((double)length / 8) * 8;
+                int paddedLength = (int) Math.Ceiling((double) length / 8) * 8;
                 context.WriteBytes(buffer, offset);
                 offset += paddedLength;
             }
@@ -79,7 +81,7 @@ namespace SMBLibrary.SMB2
                 int length = context.Length;
                 if (index < negotiateContextList.Count - 1)
                 {
-                    int paddedLength = (int)Math.Ceiling((double)length / 8) * 8;
+                    int paddedLength = (int) Math.Ceiling((double) length / 8) * 8;
                     result += paddedLength;
                 }
                 else
@@ -87,6 +89,7 @@ namespace SMBLibrary.SMB2
                     result += length;
                 }
             }
+
             return result;
         }
     }

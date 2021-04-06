@@ -16,45 +16,36 @@ namespace SMBLibrary.SMB1
             switch (information)
             {
                 case SetFileBasicInfo info:
+                {
+                    SetFileBasicInfo basicInfo = info;
+                    FileBasicInformation fileBasicInfo = new FileBasicInformation
                     {
-                        SetFileBasicInfo basicInfo = info;
-                        FileBasicInformation fileBasicInfo = new FileBasicInformation
-                        {
-                            CreationTime = basicInfo.CreationTime,
-                            LastAccessTime = basicInfo.LastAccessTime,
-                            LastWriteTime = basicInfo.LastWriteTime,
-                            ChangeTime = basicInfo.LastChangeTime,
-                            FileAttributes = (FileAttributes)basicInfo.ExtFileAttributes,
-                            Reserved = basicInfo.Reserved
-                        };
-                        return fileBasicInfo;
-                    }
+                        CreationTime = basicInfo.CreationTime,
+                        LastAccessTime = basicInfo.LastAccessTime,
+                        LastWriteTime = basicInfo.LastWriteTime,
+                        ChangeTime = basicInfo.LastChangeTime,
+                        FileAttributes = (FileAttributes) basicInfo.ExtFileAttributes,
+                        Reserved = basicInfo.Reserved
+                    };
+                    return fileBasicInfo;
+                }
                 case SetFileDispositionInfo info:
-                    {
-                        FileDispositionInformation fileDispositionInfo = new FileDispositionInformation
-                        {
-                            DeletePending = info.DeletePending
-                        };
-                        return fileDispositionInfo;
-                    }
+                {
+                    FileDispositionInformation fileDispositionInfo = new FileDispositionInformation {DeletePending = info.DeletePending};
+                    return fileDispositionInfo;
+                }
                 case SetFileAllocationInfo info:
-                    {
-                        // This information level is used to set the file length in bytes.
-                        // Note: the input will NOT be a multiple of the cluster size / bytes per sector.
-                        FileAllocationInformation fileAllocationInfo = new FileAllocationInformation
-                        {
-                            AllocationSize = info.AllocationSize
-                        };
-                        return fileAllocationInfo;
-                    }
+                {
+                    // This information level is used to set the file length in bytes.
+                    // Note: the input will NOT be a multiple of the cluster size / bytes per sector.
+                    FileAllocationInformation fileAllocationInfo = new FileAllocationInformation {AllocationSize = info.AllocationSize};
+                    return fileAllocationInfo;
+                }
                 case SetFileEndOfFileInfo info:
-                    {
-                        FileEndOfFileInformation fileEndOfFileInfo = new FileEndOfFileInformation
-                        {
-                            EndOfFile = info.EndOfFile
-                        };
-                        return fileEndOfFileInfo;
-                    }
+                {
+                    FileEndOfFileInformation fileEndOfFileInfo = new FileEndOfFileInformation {EndOfFile = info.EndOfFile};
+                    return fileEndOfFileInfo;
+                }
                 default:
                     throw new NotImplementedException();
             }

@@ -38,10 +38,11 @@ namespace SMBLibrary.Authentication.GssApi
         {
             _ = DerEncodingHelper.ReadLength(buffer, ref offset);
             byte tag = ByteReader.ReadByte(buffer, ref offset);
-            if (tag != (byte)DerEncodingTag.Sequence)
+            if (tag != (byte) DerEncodingTag.Sequence)
             {
                 throw new InvalidDataException();
             }
+
             int sequenceLength = DerEncodingHelper.ReadLength(buffer, ref offset);
             int sequenceEndOffset = offset + sequenceLength;
             while (offset < sequenceEndOffset)
@@ -85,7 +86,7 @@ namespace SMBLibrary.Authentication.GssApi
             int offset = 0;
             ByteWriter.WriteByte(buffer, ref offset, NegTokenInitTag);
             DerEncodingHelper.WriteLength(buffer, ref offset, constructionLength);
-            ByteWriter.WriteByte(buffer, ref offset, (byte)DerEncodingTag.Sequence);
+            ByteWriter.WriteByte(buffer, ref offset, (byte) DerEncodingTag.Sequence);
             DerEncodingHelper.WriteLength(buffer, ref offset, sequenceLength);
             WriteMechanismTypeList(buffer, ref offset, MechanismTypeList);
             WriteMechanismToken(buffer, ref offset, MechanismToken);
@@ -100,7 +101,8 @@ namespace SMBLibrary.Authentication.GssApi
 
         protected override int GetTokenFieldsLength()
         {
-            int result = base.GetTokenFieldsLength(); ;
+            int result = base.GetTokenFieldsLength();
+            ;
             if (HintAddress == null)
                 return result;
             int hintsSequenceLength = GetHintsSequenceLength(HintName, HintAddress);
@@ -118,10 +120,11 @@ namespace SMBLibrary.Authentication.GssApi
             hintAddress = null;
             _ = DerEncodingHelper.ReadLength(buffer, ref offset);
             byte tag = ByteReader.ReadByte(buffer, ref offset);
-            if (tag != (byte)DerEncodingTag.Sequence)
+            if (tag != (byte) DerEncodingTag.Sequence)
             {
                 throw new InvalidDataException();
             }
+
             int sequenceLength = DerEncodingHelper.ReadLength(buffer, ref offset);
             int sequenceEndOffset = offset + sequenceLength;
             while (offset < sequenceEndOffset)
@@ -139,6 +142,7 @@ namespace SMBLibrary.Authentication.GssApi
                         throw new InvalidDataException();
                 }
             }
+
             return hintName;
         }
 
@@ -146,10 +150,11 @@ namespace SMBLibrary.Authentication.GssApi
         {
             _ = DerEncodingHelper.ReadLength(buffer, ref offset);
             byte tag = ByteReader.ReadByte(buffer, ref offset);
-            if (tag != (byte)DerEncodingTag.GeneralString)
+            if (tag != (byte) DerEncodingTag.GeneralString)
             {
                 throw new InvalidDataException();
             }
+
             int hintLength = DerEncodingHelper.ReadLength(buffer, ref offset);
             byte[] hintNameBytes = ByteReader.ReadBytes(buffer, ref offset, hintLength);
             return DerEncodingHelper.DecodeGeneralString(hintNameBytes);
@@ -159,10 +164,11 @@ namespace SMBLibrary.Authentication.GssApi
         {
             _ = DerEncodingHelper.ReadLength(buffer, ref offset);
             byte tag = ByteReader.ReadByte(buffer, ref offset);
-            if (tag != (byte)DerEncodingTag.ByteArray)
+            if (tag != (byte) DerEncodingTag.ByteArray)
             {
                 throw new InvalidDataException();
             }
+
             int hintLength = DerEncodingHelper.ReadLength(buffer, ref offset);
             return ByteReader.ReadBytes(buffer, ref offset, hintLength);
         }
@@ -179,6 +185,7 @@ namespace SMBLibrary.Authentication.GssApi
                 int entryLength = 1 + constructionLengthFieldSize + 1 + lengthFieldSize + hintNameBytes.Length;
                 sequenceLength += entryLength;
             }
+
             if (hintAddress != null)
             {
                 int lengthFieldSize = DerEncodingHelper.GetLengthFieldSize(hintAddress.Length);
@@ -187,6 +194,7 @@ namespace SMBLibrary.Authentication.GssApi
                 int entryLength = 1 + constructionLengthFieldSize + 1 + lengthFieldSize + hintAddress.Length;
                 sequenceLength += entryLength;
             }
+
             return sequenceLength;
         }
 
@@ -197,12 +205,13 @@ namespace SMBLibrary.Authentication.GssApi
             int constructionLength = 1 + sequenceLengthFieldSize + sequenceLength;
             ByteWriter.WriteByte(buffer, ref offset, NegHintsTag);
             DerEncodingHelper.WriteLength(buffer, ref offset, constructionLength);
-            ByteWriter.WriteByte(buffer, ref offset, (byte)DerEncodingTag.Sequence);
+            ByteWriter.WriteByte(buffer, ref offset, (byte) DerEncodingTag.Sequence);
             DerEncodingHelper.WriteLength(buffer, ref offset, sequenceLength);
             if (hintName != null)
             {
                 WriteHintName(buffer, ref offset, hintName);
             }
+
             if (hintAddress != null)
             {
                 WriteHintAddress(buffer, ref offset, hintAddress);
@@ -215,7 +224,7 @@ namespace SMBLibrary.Authentication.GssApi
             int constructionLength = 1 + DerEncodingHelper.GetLengthFieldSize(hintNameBytes.Length) + hintNameBytes.Length;
             ByteWriter.WriteByte(buffer, ref offset, HintNameTag);
             DerEncodingHelper.WriteLength(buffer, ref offset, constructionLength);
-            ByteWriter.WriteByte(buffer, ref offset, (byte)DerEncodingTag.GeneralString);
+            ByteWriter.WriteByte(buffer, ref offset, (byte) DerEncodingTag.GeneralString);
             DerEncodingHelper.WriteLength(buffer, ref offset, hintNameBytes.Length);
             ByteWriter.WriteBytes(buffer, ref offset, hintNameBytes);
         }
@@ -225,7 +234,7 @@ namespace SMBLibrary.Authentication.GssApi
             int constructionLength = 1 + DerEncodingHelper.GetLengthFieldSize(hintAddress.Length) + hintAddress.Length;
             ByteWriter.WriteByte(buffer, ref offset, HintAddressTag);
             DerEncodingHelper.WriteLength(buffer, ref offset, constructionLength);
-            ByteWriter.WriteByte(buffer, ref offset, (byte)DerEncodingTag.ByteArray);
+            ByteWriter.WriteByte(buffer, ref offset, (byte) DerEncodingTag.ByteArray);
             DerEncodingHelper.WriteLength(buffer, ref offset, hintAddress.Length);
             ByteWriter.WriteBytes(buffer, ref offset, hintAddress);
         }
@@ -235,7 +244,7 @@ namespace SMBLibrary.Authentication.GssApi
             int mechanismListMICLengthFieldSize = DerEncodingHelper.GetLengthFieldSize(mechanismListMIC.Length);
             ByteWriter.WriteByte(buffer, ref offset, MechanismListMICTag);
             DerEncodingHelper.WriteLength(buffer, ref offset, 1 + mechanismListMICLengthFieldSize + mechanismListMIC.Length);
-            ByteWriter.WriteByte(buffer, ref offset, (byte)DerEncodingTag.ByteArray);
+            ByteWriter.WriteByte(buffer, ref offset, (byte) DerEncodingTag.ByteArray);
             DerEncodingHelper.WriteLength(buffer, ref offset, mechanismListMIC.Length);
             ByteWriter.WriteBytes(buffer, ref offset, mechanismListMIC);
         }

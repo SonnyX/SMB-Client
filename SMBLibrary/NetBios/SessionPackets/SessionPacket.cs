@@ -34,7 +34,7 @@ namespace SMBLibrary.NetBios
 
         public SessionPacket(byte[] buffer, int offset)
         {
-            Type = (SessionPacketTypeName)ByteReader.ReadByte(buffer, offset + 0);
+            Type = (SessionPacketTypeName) ByteReader.ReadByte(buffer, offset + 0);
             TrailerLength = ByteReader.ReadByte(buffer, offset + 1) << 16 | BigEndianConverter.ToUInt16(buffer, offset + 2);
             Trailer = ByteReader.ReadBytes(buffer, offset + 4, TrailerLength);
         }
@@ -46,9 +46,9 @@ namespace SMBLibrary.NetBios
             byte flags = Convert.ToByte(TrailerLength >> 16);
 
             byte[] buffer = new byte[HeaderLength + Trailer.Length];
-            ByteWriter.WriteByte(buffer, 0, (byte)Type);
+            ByteWriter.WriteByte(buffer, 0, (byte) Type);
             ByteWriter.WriteByte(buffer, 1, flags);
-            BigEndianWriter.WriteUInt16(buffer, 2, (ushort)(TrailerLength & 0xFFFF));
+            BigEndianWriter.WriteUInt16(buffer, 2, (ushort) (TrailerLength & 0xFFFF));
             ByteWriter.WriteBytes(buffer, 4, Trailer);
 
             return buffer;
@@ -64,7 +64,7 @@ namespace SMBLibrary.NetBios
 
         public static SessionPacket GetSessionPacket(byte[] buffer, int offset)
         {
-            SessionPacketTypeName type = (SessionPacketTypeName)ByteReader.ReadByte(buffer, offset);
+            SessionPacketTypeName type = (SessionPacketTypeName) ByteReader.ReadByte(buffer, offset);
             return type switch
             {
                 SessionPacketTypeName.SessionMessage => new SessionMessagePacket(buffer, offset),
@@ -73,8 +73,7 @@ namespace SMBLibrary.NetBios
                 SessionPacketTypeName.NegativeSessionResponse => new NegativeSessionResponsePacket(buffer, offset),
                 SessionPacketTypeName.RetargetSessionResponse => new SessionRetargetResponsePacket(buffer, offset),
                 SessionPacketTypeName.SessionKeepAlive => new SessionKeepAlivePacket(buffer, offset),
-                _ => throw new InvalidDataException("Invalid NetBIOS session packet type: 0x" +
-                                                    ((byte)type).ToString("X2"))
+                _ => throw new InvalidDataException("Invalid NetBIOS session packet type: 0x" + ((byte) type).ToString("X2"))
             };
         }
     }

@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 
 namespace SMBLibrary
@@ -39,6 +40,7 @@ namespace SMBLibrary
             {
                 return 0;
             }
+
             return Time.Value.ToFileTimeUtc();
         }
 
@@ -72,10 +74,12 @@ namespace SMBLibrary
             {
                 return new SetFileTime(false);
             }
+
             if (span == -1)
             {
                 return new SetFileTime(true);
             }
+
             throw new System.IO.InvalidDataException("Set FILETIME cannot be less than -1");
         }
 

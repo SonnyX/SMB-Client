@@ -11,7 +11,7 @@ namespace SMBLibrary.Authentication.NTLM
 {
     public abstract class NtlmAuthenticationProviderBase : IGssMechanism
     {
-        public static readonly byte[] NtlmsspIdentifier = { 0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0x37, 0x02, 0x02, 0x0a };
+        public static readonly byte[] NtlmsspIdentifier = {0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0x37, 0x02, 0x02, 0x0a};
 
         public NTStatus AcceptSecurityContext(ref object context, byte[] inputToken, out byte[]? outputToken)
         {

@@ -24,12 +24,12 @@ namespace SMBLibrary
 
         public FileModeInformation(byte[] buffer, int offset)
         {
-            FileMode = (CreateOptions)LittleEndianConverter.ToUInt32(buffer, offset + 0);
+            FileMode = (CreateOptions) LittleEndianConverter.ToUInt32(buffer, offset + 0);
         }
 
         public override void WriteBytes(byte[] buffer, int offset)
         {
-            LittleEndianWriter.WriteUInt32(buffer, offset, (uint)FileMode);
+            LittleEndianWriter.WriteUInt32(buffer, offset, (uint) FileMode);
         }
 
         public override FileInformationClass FileInformationClass => FileInformationClass.FileModeInformation;

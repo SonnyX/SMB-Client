@@ -16,6 +16,7 @@ namespace SMBLibrary.SMB1
     public class WriteAndXResponse : SMBAndXCommand
     {
         public const int ParametersLength = 12;
+
         // Parameters:
         //CommandName AndXCommand;
         //byte AndXReserved;
@@ -25,24 +26,25 @@ namespace SMBLibrary.SMB1
         public ushort Reserved;
 
         public WriteAndXResponse()
-        {}
+        {
+        }
 
-        public WriteAndXResponse(byte[] buffer, int offset): base(buffer, offset)
+        public WriteAndXResponse(byte[] buffer, int offset) : base(buffer, offset)
         {
             Count = LittleEndianConverter.ToUInt16(SMBParameters, 4);
             Available = LittleEndianConverter.ToUInt16(SMBParameters, 6);
             ushort countHigh = LittleEndianConverter.ToUInt16(SMBParameters, 8);
             Reserved = LittleEndianConverter.ToUInt16(SMBParameters, 10);
 
-            Count |= (uint)(countHigh << 16);
+            Count |= (uint) (countHigh << 16);
         }
 
         public override byte[] GetBytes(bool isUnicode)
         {
             SMBParameters = new byte[ParametersLength];
-            ushort counthHigh = (ushort)(Count >> 16);
+            ushort counthHigh = (ushort) (Count >> 16);
 
-            LittleEndianWriter.WriteUInt16(SMBParameters, 4, (ushort)(Count & 0xFFFF));
+            LittleEndianWriter.WriteUInt16(SMBParameters, 4, (ushort) (Count & 0xFFFF));
             LittleEndianWriter.WriteUInt16(SMBParameters, 6, Available);
             LittleEndianWriter.WriteUInt16(SMBParameters, 8, counthHigh);
             LittleEndianWriter.WriteUInt16(SMBParameters, 10, Reserved);

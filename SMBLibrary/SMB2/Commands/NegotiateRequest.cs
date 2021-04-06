@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Collections.Generic;
 using Utilities;
@@ -18,6 +19,7 @@ namespace SMBLibrary.SMB2
         public const int DeclaredSize = 36;
 
         private readonly ushort StructureSize;
+
         // ushort DialectCount;
         public SecurityMode SecurityMode;
         public ushort Reserved;
@@ -35,15 +37,15 @@ namespace SMBLibrary.SMB2
         {
             StructureSize = LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 0);
             ushort dialectCount = LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 2);
-            SecurityMode = (SecurityMode)LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 4);
+            SecurityMode = (SecurityMode) LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 4);
             Reserved = LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 6);
-            Capabilities = (Capabilities)LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 8);
+            Capabilities = (Capabilities) LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 8);
             ClientGuid = LittleEndianConverter.ToGuid(buffer, offset + SMB2Header.Length + 12);
             ClientStartTime = DateTime.FromFileTimeUtc(LittleEndianConverter.ToInt64(buffer, offset + SMB2Header.Length + 28));
 
             for (int index = 0; index < dialectCount; index++)
             {
-                SMB2Dialect dialect = (SMB2Dialect)LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 36 + index * 2);
+                SMB2Dialect dialect = (SMB2Dialect) LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 36 + index * 2);
                 Dialects.Add(dialect);
             }
         }
@@ -51,17 +53,17 @@ namespace SMBLibrary.SMB2
         public override void WriteCommandBytes(byte[] buffer, int offset)
         {
             LittleEndianWriter.WriteUInt16(buffer, offset + 0, StructureSize);
-            LittleEndianWriter.WriteUInt16(buffer, offset + 2, (ushort)Dialects.Count);
-            LittleEndianWriter.WriteUInt16(buffer, offset + 4, (ushort)SecurityMode);
+            LittleEndianWriter.WriteUInt16(buffer, offset + 2, (ushort) Dialects.Count);
+            LittleEndianWriter.WriteUInt16(buffer, offset + 4, (ushort) SecurityMode);
             LittleEndianWriter.WriteUInt16(buffer, offset + 6, Reserved);
-            LittleEndianWriter.WriteUInt32(buffer, offset + 8, (uint)Capabilities);
+            LittleEndianWriter.WriteUInt32(buffer, offset + 8, (uint) Capabilities);
             LittleEndianWriter.WriteGuid(buffer, offset + 12, ClientGuid);
             LittleEndianWriter.WriteInt64(buffer, offset + 28, ClientStartTime.ToFileTimeUtc());
-            
+
             for (int index = 0; index < Dialects.Count; index++)
             {
                 SMB2Dialect dialect = Dialects[index];
-                LittleEndianWriter.WriteUInt16(buffer, offset + 36 + index * 2, (ushort)dialect);
+                LittleEndianWriter.WriteUInt16(buffer, offset + 36 + index * 2, (ushort) dialect);
             }
         }
 

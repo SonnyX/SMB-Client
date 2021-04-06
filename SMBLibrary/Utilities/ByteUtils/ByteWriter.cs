@@ -106,7 +106,7 @@ namespace Utilities
         public static void WriteNullTerminatedUTF16String(byte[] buffer, int offset, string value)
         {
             WriteUTF16String(buffer, offset, value);
-            WriteBytes(buffer, offset + value.Length * 2, new byte[] { 0x00, 0x00 });
+            WriteBytes(buffer, offset + value.Length * 2, new byte[] {0x00, 0x00});
         }
 
         public static void WriteNullTerminatedUTF16String(byte[] buffer, ref int offset, string value)

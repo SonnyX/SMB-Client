@@ -18,7 +18,9 @@ namespace SMBLibrary
         public const int FixedLength = 8;
 
         public byte AclRevision;
+
         public byte Sbz1;
+
         // ushort AclSize;
         // ushort AceCount;
         public ushort Sbz2;
@@ -49,8 +51,8 @@ namespace SMBLibrary
         {
             ByteWriter.WriteByte(buffer, ref offset, AclRevision);
             ByteWriter.WriteByte(buffer, ref offset, Sbz1);
-            LittleEndianWriter.WriteUInt16(buffer, ref offset, (ushort)Length);
-            LittleEndianWriter.WriteUInt16(buffer, ref offset, (ushort)Count);
+            LittleEndianWriter.WriteUInt16(buffer, ref offset, (ushort) Length);
+            LittleEndianWriter.WriteUInt16(buffer, ref offset, (ushort) Count);
             LittleEndianWriter.WriteUInt16(buffer, ref offset, Sbz2);
             foreach (ACE ace in this)
             {
@@ -67,6 +69,7 @@ namespace SMBLibrary
                 {
                     length += ace.Length;
                 }
+
                 return length;
             }
         }

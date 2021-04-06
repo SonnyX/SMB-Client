@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using Utilities;
 
@@ -15,11 +16,14 @@ namespace SMBLibrary.SMB1
     public class NTTransactIOCTLRequest : NTTransactSubcommand
     {
         public const int SetupLength = 8;
+
         // Setup:
         public uint FunctionCode;
         public ushort FID;
         public bool IsFsctl;
+
         public bool IsFlags;
+
         // Data:
         public byte[] Data;
 
@@ -48,9 +52,9 @@ namespace SMBLibrary.SMB1
             return setup;
         }
 
-        public override byte[]  GetData()
+        public override byte[] GetData()
         {
- 	        return Data;
+            return Data;
         }
 
         public override NTTransactSubcommandName SubcommandName => NTTransactSubcommandName.NT_TRANSACT_IOCTL;

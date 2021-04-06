@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System.IO;
 using Utilities;
 
@@ -15,6 +16,7 @@ namespace SMBLibrary.SMB1
     public class CheckDirectoryRequest : SMB1Command
     {
         public const byte SupportedBufferFormat = 0x04;
+
         // Data:
         public byte BufferFormat;
         public string DirectoryName; // SMB_STRING
@@ -32,6 +34,7 @@ namespace SMBLibrary.SMB1
             {
                 throw new InvalidDataException("Unsupported Buffer Format");
             }
+
             DirectoryName = SMB1Helper.ReadSMBString(SMBData, 1, isUnicode);
         }
 
@@ -46,6 +49,7 @@ namespace SMBLibrary.SMB1
             {
                 length += DirectoryName.Length + 1;
             }
+
             SMBData = new byte[1 + length];
             ByteWriter.WriteByte(SMBData, 0, BufferFormat);
             SMB1Helper.WriteSMBString(SMBData, 1, isUnicode, DirectoryName);

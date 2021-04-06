@@ -27,16 +27,13 @@ namespace SMBLibrary.SMB1
             return new byte[0];
         }
 
-        public abstract TransactionSubcommandName SubcommandName
-        {
-            get;
-        }
+        public abstract TransactionSubcommandName SubcommandName { get; }
 
         public static TransactionSubcommand GetSubcommandRequest(byte[] setup, byte[] parameters, byte[] data)
         {
             if (setup.Length == 4)
             {
-                TransactionSubcommandName subcommandName = (TransactionSubcommandName)LittleEndianConverter.ToUInt16(setup, 0);
+                TransactionSubcommandName subcommandName = (TransactionSubcommandName) LittleEndianConverter.ToUInt16(setup, 0);
                 switch (subcommandName)
                 {
                     case TransactionSubcommandName.TRANS_SET_NMPIPE_STATE:
@@ -73,6 +70,7 @@ namespace SMBLibrary.SMB1
                         return new TransactionCallNamedPipeRequest(setup, data);
                 }
             }
+
             throw new InvalidDataException();
         }
     }

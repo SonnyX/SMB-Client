@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.IO;
 using Utilities;
@@ -18,14 +19,19 @@ namespace SMBLibrary.SMB1
     public class WriteRequest : SMB1Command
     {
         public const int ParametersLength = 8;
+
         public const int SupportedBufferFormat = 0x01;
+
         // Parameters:
         public ushort FID;
         public ushort CountOfBytesToWrite;
         public ushort WriteOffsetInBytes;
+
         public ushort EstimateOfRemainingBytesToBeWritten;
+
         // Data:
         public byte BufferFormat;
+
         // ushort DataLength;
         public byte[] Data;
 
@@ -47,6 +53,7 @@ namespace SMBLibrary.SMB1
             {
                 throw new InvalidDataException("Unsupported Buffer Format");
             }
+
             ushort dataLength = LittleEndianConverter.ToUInt16(SMBData, 1);
             Data = ByteReader.ReadBytes(SMBData, 3, dataLength);
         }
@@ -57,6 +64,7 @@ namespace SMBLibrary.SMB1
             {
                 throw new ArgumentException("Invalid Data length");
             }
+
             SMBParameters = new byte[ParametersLength];
             LittleEndianWriter.WriteUInt16(SMBParameters, 0, FID);
             LittleEndianWriter.WriteUInt16(SMBParameters, 2, CountOfBytesToWrite);
@@ -65,7 +73,7 @@ namespace SMBLibrary.SMB1
 
             SMBData = new byte[3 + Data.Length];
             ByteWriter.WriteByte(SMBData, 0, BufferFormat);
-            LittleEndianWriter.WriteUInt16(SMBData, 1, (ushort)Data.Length);
+            LittleEndianWriter.WriteUInt16(SMBData, 1, (ushort) Data.Length);
             ByteWriter.WriteBytes(SMBData, 3, Data);
 
             return base.GetBytes(isUnicode);

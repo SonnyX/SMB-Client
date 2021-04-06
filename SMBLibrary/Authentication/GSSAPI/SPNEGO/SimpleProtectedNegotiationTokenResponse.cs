@@ -45,10 +45,11 @@ namespace SMBLibrary.Authentication.GssApi
         {
             _ = DerEncodingHelper.ReadLength(buffer, ref offset);
             byte tag = ByteReader.ReadByte(buffer, ref offset);
-            if (tag != (byte)DerEncodingTag.Sequence)
+            if (tag != (byte) DerEncodingTag.Sequence)
             {
                 throw new InvalidDataException();
             }
+
             int sequenceLength = DerEncodingHelper.ReadLength(buffer, ref offset);
             int sequenceEndOffset = offset + sequenceLength;
             while (offset < sequenceEndOffset)
@@ -88,24 +89,28 @@ namespace SMBLibrary.Authentication.GssApi
             int offset = 0;
             ByteWriter.WriteByte(buffer, ref offset, NegTokenRespTag);
             DerEncodingHelper.WriteLength(buffer, ref offset, constructionLength);
-            ByteWriter.WriteByte(buffer, ref offset, (byte)DerEncodingTag.Sequence);
+            ByteWriter.WriteByte(buffer, ref offset, (byte) DerEncodingTag.Sequence);
             DerEncodingHelper.WriteLength(buffer, ref offset, sequenceLength);
             if (NegState.HasValue)
             {
                 WriteNegState(buffer, ref offset, NegState.Value);
             }
+
             if (SupportedMechanism != null)
             {
                 WriteSupportedMechanism(buffer, ref offset, SupportedMechanism);
             }
+
             if (ResponseToken != null)
             {
                 WriteResponseToken(buffer, ref offset, ResponseToken);
             }
+
             if (MechanismListMic != null)
             {
                 WriteMechanismListMIC(buffer, ref offset, MechanismListMic);
             }
+
             return buffer;
         }
 
@@ -117,6 +122,7 @@ namespace SMBLibrary.Authentication.GssApi
                 int negStateLength = 5;
                 result += negStateLength;
             }
+
             if (SupportedMechanism != null)
             {
                 int supportedMechanismBytesLengthFieldSize = DerEncodingHelper.GetLengthFieldSize(SupportedMechanism.Length);
@@ -125,6 +131,7 @@ namespace SMBLibrary.Authentication.GssApi
                 int supportedMechanismLength = 1 + supportedMechanismConstructionLengthFieldSize + 1 + supportedMechanismBytesLengthFieldSize + SupportedMechanism.Length;
                 result += supportedMechanismLength;
             }
+
             if (ResponseToken != null)
             {
                 int responseTokenBytesLengthFieldSize = DerEncodingHelper.GetLengthFieldSize(ResponseToken.Length);
@@ -133,6 +140,7 @@ namespace SMBLibrary.Authentication.GssApi
                 int responseTokenLength = 1 + responseTokenConstructionLengthFieldSize + 1 + responseTokenBytesLengthFieldSize + ResponseToken.Length;
                 result += responseTokenLength;
             }
+
             if (MechanismListMic != null)
             {
                 int mechanismListMICBytesLengthFieldSize = DerEncodingHelper.GetLengthFieldSize(MechanismListMic.Length);
@@ -141,6 +149,7 @@ namespace SMBLibrary.Authentication.GssApi
                 int responseTokenLength = 1 + mechanismListMICConstructionLengthFieldSize + 1 + mechanismListMICBytesLengthFieldSize + MechanismListMic.Length;
                 result += responseTokenLength;
             }
+
             return result;
         }
 
@@ -148,22 +157,24 @@ namespace SMBLibrary.Authentication.GssApi
         {
             _ = DerEncodingHelper.ReadLength(buffer, ref offset);
             byte tag = ByteReader.ReadByte(buffer, ref offset);
-            if (tag != (byte)DerEncodingTag.Enum)
+            if (tag != (byte) DerEncodingTag.Enum)
             {
                 throw new InvalidDataException();
             }
+
             _ = DerEncodingHelper.ReadLength(buffer, ref offset);
-            return (NegState)ByteReader.ReadByte(buffer, ref offset);
+            return (NegState) ByteReader.ReadByte(buffer, ref offset);
         }
 
         private static byte[] ReadSupportedMechanism(byte[] buffer, ref int offset)
         {
             _ = DerEncodingHelper.ReadLength(buffer, ref offset);
             byte tag = ByteReader.ReadByte(buffer, ref offset);
-            if (tag != (byte)DerEncodingTag.ObjectIdentifier)
+            if (tag != (byte) DerEncodingTag.ObjectIdentifier)
             {
                 throw new InvalidDataException();
             }
+
             int length = DerEncodingHelper.ReadLength(buffer, ref offset);
             return ByteReader.ReadBytes(buffer, ref offset, length);
         }
@@ -172,10 +183,11 @@ namespace SMBLibrary.Authentication.GssApi
         {
             _ = DerEncodingHelper.ReadLength(buffer, ref offset);
             byte tag = ByteReader.ReadByte(buffer, ref offset);
-            if (tag != (byte)DerEncodingTag.ByteArray)
+            if (tag != (byte) DerEncodingTag.ByteArray)
             {
                 throw new InvalidDataException();
             }
+
             int length = DerEncodingHelper.ReadLength(buffer, ref offset);
             return ByteReader.ReadBytes(buffer, ref offset, length);
         }
@@ -184,10 +196,11 @@ namespace SMBLibrary.Authentication.GssApi
         {
             _ = DerEncodingHelper.ReadLength(buffer, ref offset);
             byte tag = ByteReader.ReadByte(buffer, ref offset);
-            if (tag != (byte)DerEncodingTag.ByteArray)
+            if (tag != (byte) DerEncodingTag.ByteArray)
             {
                 throw new InvalidDataException();
             }
+
             int length = DerEncodingHelper.ReadLength(buffer, ref offset);
             return ByteReader.ReadBytes(buffer, ref offset, length);
         }
@@ -196,9 +209,9 @@ namespace SMBLibrary.Authentication.GssApi
         {
             ByteWriter.WriteByte(buffer, ref offset, NegStateTag);
             DerEncodingHelper.WriteLength(buffer, ref offset, 3);
-            ByteWriter.WriteByte(buffer, ref offset, (byte)DerEncodingTag.Enum);
+            ByteWriter.WriteByte(buffer, ref offset, (byte) DerEncodingTag.Enum);
             DerEncodingHelper.WriteLength(buffer, ref offset, 1);
-            ByteWriter.WriteByte(buffer, ref offset, (byte)negState);
+            ByteWriter.WriteByte(buffer, ref offset, (byte) negState);
         }
 
         private static void WriteSupportedMechanism(byte[] buffer, ref int offset, byte[] supportedMechanism)
@@ -206,7 +219,7 @@ namespace SMBLibrary.Authentication.GssApi
             int supportedMechanismLengthFieldSize = DerEncodingHelper.GetLengthFieldSize(supportedMechanism.Length);
             ByteWriter.WriteByte(buffer, ref offset, SupportedMechanismTag);
             DerEncodingHelper.WriteLength(buffer, ref offset, 1 + supportedMechanismLengthFieldSize + supportedMechanism.Length);
-            ByteWriter.WriteByte(buffer, ref offset, (byte)DerEncodingTag.ObjectIdentifier);
+            ByteWriter.WriteByte(buffer, ref offset, (byte) DerEncodingTag.ObjectIdentifier);
             DerEncodingHelper.WriteLength(buffer, ref offset, supportedMechanism.Length);
             ByteWriter.WriteBytes(buffer, ref offset, supportedMechanism);
         }
@@ -216,7 +229,7 @@ namespace SMBLibrary.Authentication.GssApi
             int responseTokenLengthFieldSize = DerEncodingHelper.GetLengthFieldSize(responseToken.Length);
             ByteWriter.WriteByte(buffer, ref offset, ResponseTokenTag);
             DerEncodingHelper.WriteLength(buffer, ref offset, 1 + responseTokenLengthFieldSize + responseToken.Length);
-            ByteWriter.WriteByte(buffer, ref offset, (byte)DerEncodingTag.ByteArray);
+            ByteWriter.WriteByte(buffer, ref offset, (byte) DerEncodingTag.ByteArray);
             DerEncodingHelper.WriteLength(buffer, ref offset, responseToken.Length);
             ByteWriter.WriteBytes(buffer, ref offset, responseToken);
         }
@@ -226,7 +239,7 @@ namespace SMBLibrary.Authentication.GssApi
             int mechanismListMICLengthFieldSize = DerEncodingHelper.GetLengthFieldSize(mechanismListMIC.Length);
             ByteWriter.WriteByte(buffer, ref offset, MechanismListMICTag);
             DerEncodingHelper.WriteLength(buffer, ref offset, 1 + mechanismListMICLengthFieldSize + mechanismListMIC.Length);
-            ByteWriter.WriteByte(buffer, ref offset, (byte)DerEncodingTag.ByteArray);
+            ByteWriter.WriteByte(buffer, ref offset, (byte) DerEncodingTag.ByteArray);
             DerEncodingHelper.WriteLength(buffer, ref offset, mechanismListMIC.Length);
             ByteWriter.WriteBytes(buffer, ref offset, mechanismListMIC);
         }

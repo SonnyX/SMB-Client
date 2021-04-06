@@ -13,7 +13,7 @@ namespace SMBLibrary.Authentication.GssApi
 {
     public enum DerEncodingTag : byte
     {
-        ByteArray = 0x04,        // Octet String
+        ByteArray = 0x04, // Octet String
         ObjectIdentifier = 0x06,
         Enum = 0x0A,
         GeneralString = 0x1B,
@@ -36,6 +36,7 @@ namespace SMBLibrary.Authentication.GssApi
                     length += value;
                 }
             }
+
             return length;
         }
 
@@ -46,19 +47,19 @@ namespace SMBLibrary.Authentication.GssApi
                 List<byte> values = new List<byte>();
                 do
                 {
-                    byte value = (byte)(length % 256);
+                    byte value = (byte) (length % 256);
                     values.Add(value);
                     length /= 256;
-                }
-                while (length > 0);
+                } while (length > 0);
+
                 values.Reverse();
                 byte[] lengthField = values.ToArray();
-                ByteWriter.WriteByte(buffer, ref offset, (byte)(0x80 | lengthField.Length));
+                ByteWriter.WriteByte(buffer, ref offset, (byte) (0x80 | lengthField.Length));
                 ByteWriter.WriteBytes(buffer, ref offset, lengthField);
             }
             else
             {
-                ByteWriter.WriteByte(buffer, ref offset, (byte)length);
+                ByteWriter.WriteByte(buffer, ref offset, (byte) length);
             }
         }
 
@@ -71,8 +72,8 @@ namespace SMBLibrary.Authentication.GssApi
                 {
                     length /= 256;
                     result++;
-                }
-                while (length > 0);
+                } while (length > 0);
+
                 return result;
             }
 

@@ -15,6 +15,7 @@ namespace SMBLibrary.SMB1
     public class NTTransactQuerySecurityDescriptorRequest : NTTransactSubcommand
     {
         public const int ParametersLength = 8;
+
         // Parameters:
         public ushort FID;
         public ushort Reserved;
@@ -28,7 +29,7 @@ namespace SMBLibrary.SMB1
         {
             FID = LittleEndianConverter.ToUInt16(parameters, 0);
             Reserved = LittleEndianConverter.ToUInt16(parameters, 2);
-            SecurityInfoFields = (SecurityInformation)LittleEndianConverter.ToUInt32(parameters, 4);
+            SecurityInfoFields = (SecurityInformation) LittleEndianConverter.ToUInt32(parameters, 4);
         }
 
         public override byte[] GetParameters(bool isUnicode)
@@ -36,7 +37,7 @@ namespace SMBLibrary.SMB1
             byte[] parameters = new byte[ParametersLength];
             LittleEndianWriter.WriteUInt16(parameters, 0, FID);
             LittleEndianWriter.WriteUInt16(parameters, 2, Reserved);
-            LittleEndianWriter.WriteUInt32(parameters, 4, (uint)SecurityInfoFields);
+            LittleEndianWriter.WriteUInt32(parameters, 4, (uint) SecurityInfoFields);
             return parameters;
         }
 

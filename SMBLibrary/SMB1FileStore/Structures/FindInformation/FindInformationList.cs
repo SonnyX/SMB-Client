@@ -26,19 +26,20 @@ namespace SMBLibrary.SMB1
                 {
                     break;
                 }
-                offset += (int)entry.NextEntryOffset;
+
+                offset += (int) entry.NextEntryOffset;
             }
         }
 
         public byte[] GetBytes(bool isUnicode)
         {
-            for(int index = 0; index < Count - 1; index++)
+            for (int index = 0; index < Count - 1; index++)
             {
                 FindInformation entry = this[index];
                 int entryLength = entry.GetLength(isUnicode);
-                entry.NextEntryOffset = (uint)entryLength;
-
+                entry.NextEntryOffset = (uint) entryLength;
             }
+
             int length = GetLength(isUnicode);
             byte[] buffer = new byte[length];
             int offset = 0;
@@ -46,6 +47,7 @@ namespace SMBLibrary.SMB1
             {
                 entry.WriteBytes(buffer, ref offset, isUnicode);
             }
+
             return buffer;
         }
 
@@ -58,6 +60,7 @@ namespace SMBLibrary.SMB1
                 int entryLength = entry.GetLength(isUnicode);
                 length += entryLength;
             }
+
             return length;
         }
     }

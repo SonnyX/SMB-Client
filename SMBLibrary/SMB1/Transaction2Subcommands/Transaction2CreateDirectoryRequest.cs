@@ -16,12 +16,15 @@ namespace SMBLibrary.SMB1
     {
         // Parameters
         public uint Reserved;
+
         public string? DirectoryName; // SMB_STRING
+
         // Data
         public FullExtendedAttributeList? ExtendedAttributeList;
 
         public Transaction2CreateDirectoryRequest()
-        {}
+        {
+        }
 
         public Transaction2CreateDirectoryRequest(byte[] parameters, byte[] data, bool isUnicode)
         {
@@ -32,7 +35,7 @@ namespace SMBLibrary.SMB1
 
         public override byte[] GetSetup()
         {
-            return LittleEndianConverter.GetBytes((ushort)SubcommandName);
+            return LittleEndianConverter.GetBytes((ushort) SubcommandName);
         }
 
         public override byte[] GetParameters(bool isUnicode)

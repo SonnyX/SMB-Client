@@ -11,15 +11,9 @@ namespace SMBLibrary.SMB1
     {
         public abstract byte[] GetBytes(bool isUnicode);
 
-        public abstract int Length
-        {
-            get;
-        }
+        public abstract int Length { get; }
 
-        public abstract QueryFSInformationLevel InformationLevel
-        {
-            get;
-        }
+        public abstract QueryFSInformationLevel InformationLevel { get; }
 
         public static QueryFSInformation GetQueryFSInformation(byte[] buffer, QueryFSInformationLevel informationLevel)
         {

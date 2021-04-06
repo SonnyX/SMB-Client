@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using SMBLibrary.RPC;
 
 namespace SMBLibrary.Services
@@ -50,7 +51,7 @@ namespace SMBLibrary.Services
             parser.ReadEmbeddedStructureFullPointer(ref NetName);
             ShareType = new ShareTypeExtended(parser);
             parser.ReadEmbeddedStructureFullPointer(ref Remark);
-            Permissions = (Permissions)parser.ReadUInt32();
+            Permissions = (Permissions) parser.ReadUInt32();
             MaxUses = parser.ReadUInt32();
             CurrentUses = parser.ReadUInt32();
             parser.ReadEmbeddedStructureFullPointer(ref Path);
@@ -64,7 +65,7 @@ namespace SMBLibrary.Services
             writer.WriteEmbeddedStructureFullPointer(NetName);
             ShareType.Write(writer);
             writer.WriteEmbeddedStructureFullPointer(Remark);
-            writer.WriteUInt32((uint)Permissions);
+            writer.WriteUInt32((uint) Permissions);
             writer.WriteUInt32(MaxUses);
             writer.WriteUInt32(CurrentUses);
             writer.WriteEmbeddedStructureFullPointer(Path);

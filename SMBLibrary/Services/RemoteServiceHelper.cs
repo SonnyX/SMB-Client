@@ -32,12 +32,7 @@ namespace SMBLibrary.Services
 
         public static BindAckPDU GetRPCBindResponse(BindPDU bindPDU, RemoteService service)
         {
-            BindAckPDU bindAckPDU = new BindAckPDU
-            {
-                Flags = PacketFlags.FirstFragment | PacketFlags.LastFragment,
-                DataRepresentation = bindPDU.DataRepresentation,
-                CallID = bindPDU.CallID
-            };
+            BindAckPDU bindAckPDU = new BindAckPDU {Flags = PacketFlags.FirstFragment | PacketFlags.LastFragment, DataRepresentation = bindPDU.DataRepresentation, CallID = bindPDU.CallID};
             // See DCE 1.1: Remote Procedure Call - 12.6.3.6
             // The client should set the assoc_group_id field either to 0 (zero), to indicate a new association group,
             // or to the known value. When the server receives a value of 0, this indicates that the client
@@ -55,6 +50,7 @@ namespace SMBLibrary.Services
             {
                 bindAckPDU.AssociationGroupID = bindPDU.AssociationGroupID;
             }
+
             bindAckPDU.SecondaryAddress = @"\PIPE\" + service.PipeName;
             bindAckPDU.MaxTransmitFragmentSize = bindPDU.MaxReceiveFragmentSize;
             bindAckPDU.MaxReceiveFragmentSize = bindPDU.MaxTransmitFragmentSize;
@@ -88,6 +84,7 @@ namespace SMBLibrary.Services
                     resultElement.Result = NegotiationResult.ProviderRejection;
                     resultElement.Reason = RejectionReason.AbstractSyntaxNotSupported;
                 }
+
                 bindAckPDU.ResultList.Add(resultElement);
             }
 
@@ -110,6 +107,7 @@ namespace SMBLibrary.Services
                     return index;
                 }
             }
+
             return -1;
         }
 
@@ -144,20 +142,21 @@ namespace SMBLibrary.Services
                 int pduDataLength = Math.Min(responseBytes.Length - offset, maxPDUDataLength);
                 responsePDU.DataRepresentation = requestPDU.DataRepresentation;
                 responsePDU.CallID = requestPDU.CallID;
-                responsePDU.AllocationHint = (uint)(responseBytes.Length - offset);
+                responsePDU.AllocationHint = (uint) (responseBytes.Length - offset);
                 responsePDU.Data = ByteReader.ReadBytes(responseBytes, offset, pduDataLength);
                 if (offset == 0)
                 {
                     responsePDU.Flags |= PacketFlags.FirstFragment;
                 }
+
                 if (offset + pduDataLength == responseBytes.Length)
                 {
                     responsePDU.Flags |= PacketFlags.LastFragment;
                 }
+
                 result.Add(responsePDU);
                 offset += pduDataLength;
-            }
-            while (offset < responseBytes.Length);
+            } while (offset < responseBytes.Length);
 
             return result;
         }

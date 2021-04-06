@@ -26,13 +26,7 @@ namespace SMBLibrary.NetBios
 
         public NameRegistrationRequest()
         {
-            Header = new NameServicePacketHeader
-            {
-                OpCode = NameServiceOperation.RegistrationRequest,
-                QDCount = 1,
-                ARCount = 1,
-                Flags = OperationFlags.Broadcast | OperationFlags.RecursionDesired
-            };
+            Header = new NameServicePacketHeader {OpCode = NameServiceOperation.RegistrationRequest, QDCount = 1, ARCount = 1, Flags = OperationFlags.Broadcast | OperationFlags.RecursionDesired};
             Question = new QuestionSection();
             Resource = new ResourceRecord(NameRecordType.NB);
             Address = new byte[4];
@@ -58,7 +52,7 @@ namespace SMBLibrary.NetBios
         private byte[] GetData()
         {
             byte[] data = new byte[DataLength];
-            BigEndianWriter.WriteUInt16(data, 0, (ushort)NameFlags);
+            BigEndianWriter.WriteUInt16(data, 0, (ushort) NameFlags);
             ByteWriter.WriteBytes(data, 2, Address, 4);
             return data;
         }

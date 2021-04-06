@@ -37,7 +37,7 @@ namespace SMBLibrary.SMB1
             LastAccessTime = FileTimeHelper.ReadSetFileTime(buffer, offset + 8);
             LastWriteTime = FileTimeHelper.ReadSetFileTime(buffer, offset + 16);
             LastChangeTime = FileTimeHelper.ReadSetFileTime(buffer, offset + 24);
-            ExtFileAttributes = (ExtendedFileAttributes)LittleEndianConverter.ToUInt32(buffer, offset + 32);
+            ExtFileAttributes = (ExtendedFileAttributes) LittleEndianConverter.ToUInt32(buffer, offset + 32);
             Reserved = LittleEndianConverter.ToUInt32(buffer, offset + 36);
         }
 
@@ -48,7 +48,7 @@ namespace SMBLibrary.SMB1
             FileTimeHelper.WriteSetFileTime(buffer, 8, LastAccessTime);
             FileTimeHelper.WriteSetFileTime(buffer, 16, LastWriteTime);
             FileTimeHelper.WriteSetFileTime(buffer, 24, LastChangeTime);
-            LittleEndianWriter.WriteUInt32(buffer, 32, (uint)ExtFileAttributes);
+            LittleEndianWriter.WriteUInt32(buffer, 32, (uint) ExtFileAttributes);
             LittleEndianWriter.WriteUInt32(buffer, 36, Reserved);
             return buffer;
         }

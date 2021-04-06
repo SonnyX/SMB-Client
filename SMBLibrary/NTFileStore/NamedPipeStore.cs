@@ -24,9 +24,7 @@ namespace SMBLibrary
             m_services = services;
         }
 
-        public void CreateFile(out NtHandle handle, out FileStatus fileStatus, string path,
-            AccessMask desiredAccess, FileAttributes fileAttributes, ShareAccess shareAccess,
-            CreateDisposition createDisposition, CreateOptions createOptions, SecurityContext? securityContext)
+        public void CreateFile(out NtHandle handle, out FileStatus fileStatus, string path, AccessMask desiredAccess, FileAttributes fileAttributes, ShareAccess shareAccess, CreateDisposition createDisposition, CreateOptions createOptions, SecurityContext? securityContext)
         {
             fileStatus = FileStatus.FILE_DOES_NOT_EXIST;
             // It is possible to have a named pipe that does not use RPC (e.g. MS-WSP),
@@ -44,7 +42,7 @@ namespace SMBLibrary
 
         public void CloseFile(NtHandle handle)
         {
-            FileHandle fileHandle = (FileHandle)handle;
+            FileHandle fileHandle = (FileHandle) handle;
             fileHandle.Stream.Close();
         }
 
@@ -62,7 +60,7 @@ namespace SMBLibrary
         {
             data = new byte[maxCount];
 
-            Stream stream = ((FileHandle)handle).Stream;
+            Stream stream = ((FileHandle) handle).Stream;
             int bytesRead = stream.Read(data, 0, maxCount);
             if (bytesRead < maxCount)
             {
@@ -75,14 +73,14 @@ namespace SMBLibrary
         {
             numberOfBytesWritten = 0;
 
-            Stream stream = ((FileHandle)handle).Stream;
+            Stream stream = ((FileHandle) handle).Stream;
             stream.Write(data, 0, data.Length);
             numberOfBytesWritten = data.Length;
         }
 
         public void FlushFileBuffers(NtHandle handle)
         {
-            FileHandle fileHandle = (FileHandle)handle;
+            FileHandle fileHandle = (FileHandle) handle;
             fileHandle.Stream?.Flush();
         }
 
@@ -102,41 +100,41 @@ namespace SMBLibrary
 
             switch (ctlCode)
             {
-                case (uint)IoControlCode.FSCTL_PIPE_WAIT:
+                case (uint) IoControlCode.FSCTL_PIPE_WAIT:
+                {
+                    PipeWaitRequest request;
+                    try
                     {
-                        PipeWaitRequest request;
-                        try
-                        {
-                            request = new PipeWaitRequest(input, 0);
-                        }
-                        catch
-                        {
-                            throw new NtStatusException(NTStatus.STATUS_INVALID_PARAMETER);
-                        }
-
-                        RemoteService? service = GetService(request.Name);
-                        if (service == null)
-                        {
-                            throw new NtStatusException(NTStatus.STATUS_OBJECT_NAME_NOT_FOUND);
-                        }
-
-                        output = new byte[0];
-                        return;
+                        request = new PipeWaitRequest(input, 0);
                     }
-                case (uint)IoControlCode.FSCTL_PIPE_TRANSCEIVE:
+                    catch
                     {
-                        WriteFile(out _, handle, 0, input);
-
-                        int messageLength = ((RPCPipeStream)((FileHandle)handle).Stream).MessageLength;
-                        ReadFile(out output, handle, 0, maxOutputLength);
-
-                        if (output.Length < messageLength)
-                        {
-                            throw new NtStatusException(NTStatus.STATUS_BUFFER_OVERFLOW);
-                        }
-
-                        return;
+                        throw new NtStatusException(NTStatus.STATUS_INVALID_PARAMETER);
                     }
+
+                    RemoteService? service = GetService(request.Name);
+                    if (service == null)
+                    {
+                        throw new NtStatusException(NTStatus.STATUS_OBJECT_NAME_NOT_FOUND);
+                    }
+
+                    output = new byte[0];
+                    return;
+                }
+                case (uint) IoControlCode.FSCTL_PIPE_TRANSCEIVE:
+                {
+                    WriteFile(out _, handle, 0, input);
+
+                    int messageLength = ((RPCPipeStream) ((FileHandle) handle).Stream).MessageLength;
+                    ReadFile(out output, handle, 0, maxOutputLength);
+
+                    if (output.Length < messageLength)
+                    {
+                        throw new NtStatusException(NTStatus.STATUS_BUFFER_OVERFLOW);
+                    }
+
+                    return;
+                }
                 default:
                     throw new NtStatusException(NTStatus.STATUS_NOT_SUPPORTED);
             }
@@ -147,38 +145,28 @@ namespace SMBLibrary
             throw new NtStatusException(NTStatus.STATUS_NOT_SUPPORTED);
         }
 
-        public void GetFileInformation(out FileInformation? result, NtHandle handle,
-            FileInformationClass informationClass)
+        public void GetFileInformation(out FileInformation? result, NtHandle handle, FileInformationClass informationClass)
         {
             switch (informationClass)
             {
                 case FileInformationClass.FileBasicInformation:
-                    {
-                        FileBasicInformation information = new FileBasicInformation
-                        {
-                            FileAttributes = FileAttributes.Temporary
-                        };
-                        result = information;
-                        return;
-                    }
+                {
+                    FileBasicInformation information = new FileBasicInformation {FileAttributes = FileAttributes.Temporary};
+                    result = information;
+                    return;
+                }
                 case FileInformationClass.FileStandardInformation:
-                    {
-                        FileStandardInformation information = new FileStandardInformation
-                        {
-                            DeletePending = false
-                        };
-                        result = information;
-                        return;
-                    }
+                {
+                    FileStandardInformation information = new FileStandardInformation {DeletePending = false};
+                    result = information;
+                    return;
+                }
                 case FileInformationClass.FileNetworkOpenInformation:
-                    {
-                        FileNetworkOpenInformation information = new FileNetworkOpenInformation
-                        {
-                            FileAttributes = FileAttributes.Temporary
-                        };
-                        result = information;
-                        return;
-                    }
+                {
+                    FileNetworkOpenInformation information = new FileNetworkOpenInformation {FileAttributes = FileAttributes.Temporary};
+                    result = information;
+                    return;
+                }
                 default:
                     result = null;
                     throw new NtStatusException(NTStatus.STATUS_INVALID_INFO_CLASS);
@@ -190,8 +178,7 @@ namespace SMBLibrary
             throw new NtStatusException(NTStatus.STATUS_NOT_SUPPORTED);
         }
 
-        public void GetFileSystemInformation(out FileSystemInformation? result,
-            FileSystemInformationClass informationClass)
+        public void GetFileSystemInformation(out FileSystemInformation? result, FileSystemInformationClass informationClass)
         {
             result = null;
             throw new NtStatusException(NTStatus.STATUS_NOT_SUPPORTED);

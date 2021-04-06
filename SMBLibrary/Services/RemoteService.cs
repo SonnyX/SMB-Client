@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 
 namespace SMBLibrary.Services
@@ -12,14 +13,8 @@ namespace SMBLibrary.Services
     {
         public abstract byte[] GetResponseBytes(ushort opNum, byte[] requestBytes);
 
-        public abstract Guid InterfaceGuid
-        {
-            get;
-        }
+        public abstract Guid InterfaceGuid { get; }
 
-        public abstract string PipeName
-        {
-            get;
-        }
+        public abstract string PipeName { get; }
     }
 }

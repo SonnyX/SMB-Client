@@ -26,7 +26,7 @@ namespace SMBLibrary.SMB1
 
         public FullExtendedAttribute(byte[] buffer, int offset)
         {
-            ExtendedAttributeFlag = (ExtendedAttributeFlags)ByteReader.ReadByte(buffer, offset);
+            ExtendedAttributeFlag = (ExtendedAttributeFlags) ByteReader.ReadByte(buffer, offset);
             AttributeNameLengthInBytes = ByteReader.ReadByte(buffer, offset + 1);
             AttributeValueLengthInBytes = LittleEndianConverter.ToUInt16(buffer, offset + 2);
             AttributeName = ByteReader.ReadAnsiString(buffer, offset + 4, AttributeNameLengthInBytes);
@@ -35,9 +35,9 @@ namespace SMBLibrary.SMB1
 
         public void WriteBytes(byte[] buffer, int offset)
         {
-            AttributeNameLengthInBytes = (byte)AttributeName.Length;
-            AttributeValueLengthInBytes = (ushort)AttributeValue.Length;
-            ByteWriter.WriteByte(buffer, offset, (byte)ExtendedAttributeFlag);
+            AttributeNameLengthInBytes = (byte) AttributeName.Length;
+            AttributeValueLengthInBytes = (ushort) AttributeValue.Length;
+            ByteWriter.WriteByte(buffer, offset, (byte) ExtendedAttributeFlag);
             ByteWriter.WriteByte(buffer, offset + 1, AttributeNameLengthInBytes);
             LittleEndianWriter.WriteUInt16(buffer, offset + 2, AttributeValueLengthInBytes);
             ByteWriter.WriteAnsiString(buffer, offset + 4, AttributeName, AttributeName.Length);

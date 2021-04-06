@@ -16,6 +16,7 @@ namespace SMBLibrary.SMB1
     {
         // Setup:
         public ushort Priority;
+
         // Data:
         public byte[]? WriteData;
 
@@ -33,7 +34,7 @@ namespace SMBLibrary.SMB1
         public override byte[] GetSetup()
         {
             byte[] setup = new byte[4];
-            LittleEndianWriter.WriteUInt16(setup, 0, (ushort)SubcommandName);
+            LittleEndianWriter.WriteUInt16(setup, 0, (ushort) SubcommandName);
             LittleEndianWriter.WriteUInt16(setup, 2, Priority);
             return setup;
         }

@@ -40,12 +40,9 @@ namespace SMBLibrary
                 FileInformationClass.FileFullDirectoryInformation => new FileFullDirectoryInformation(buffer, offset),
                 FileInformationClass.FileBothDirectoryInformation => new FileBothDirectoryInformation(buffer, offset),
                 FileInformationClass.FileNamesInformation => new FileNamesInformation(buffer, offset),
-                FileInformationClass.FileIdBothDirectoryInformation => new FileIdBothDirectoryInformation(buffer,
-                    offset),
-                FileInformationClass.FileIdFullDirectoryInformation => new FileIdFullDirectoryInformation(buffer,
-                    offset),
-                _ => throw new NotImplementedException(
-                    $"File information class {(int)fileInformationClass} is not supported.")
+                FileInformationClass.FileIdBothDirectoryInformation => new FileIdBothDirectoryInformation(buffer, offset),
+                FileInformationClass.FileIdFullDirectoryInformation => new FileIdFullDirectoryInformation(buffer, offset),
+                _ => throw new NotImplementedException($"File information class {(int) fileInformationClass} is not supported.")
             };
         }
 
@@ -57,9 +54,9 @@ namespace SMBLibrary
             {
                 entry = ReadFileInformation(buffer, offset, fileInformationClass);
                 result.Add(entry);
-                offset += (int)entry.NextEntryOffset;
-            }
-            while (entry.NextEntryOffset != 0);
+                offset += (int) entry.NextEntryOffset;
+            } while (entry.NextEntryOffset != 0);
+
             return result;
         }
 
@@ -72,18 +69,20 @@ namespace SMBLibrary
             {
                 QueryDirectoryFileInformation entry = fileInformationList[index];
                 int length = entry.Length;
-                int paddedLength = (int)Math.Ceiling((double)length / 8) * 8;
+                int paddedLength = (int) Math.Ceiling((double) length / 8) * 8;
                 if (index < fileInformationList.Count - 1)
                 {
-                    entry.NextEntryOffset = (uint)paddedLength;
+                    entry.NextEntryOffset = (uint) paddedLength;
                 }
                 else
                 {
                     entry.NextEntryOffset = 0;
                 }
+
                 entry.WriteBytes(buffer, offset);
                 offset += paddedLength;
             }
+
             return buffer;
         }
 
@@ -98,7 +97,7 @@ namespace SMBLibrary
                 if (index < fileInformationList.Count - 1)
                 {
                     // No padding is required following the last data element.
-                    int paddedLength = (int)Math.Ceiling((double)length / 8) * 8;
+                    int paddedLength = (int) Math.Ceiling((double) length / 8) * 8;
                     result += paddedLength;
                 }
                 else
@@ -106,6 +105,7 @@ namespace SMBLibrary
                     result += length;
                 }
             }
+
             return result;
         }
     }

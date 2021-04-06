@@ -29,7 +29,7 @@ namespace SMBLibrary.SMB1
 
         public void WriteBytes(byte[] buffer, int offset)
         {
-            AttributeNameLengthInBytes = (byte)AttributeName.Length;
+            AttributeNameLengthInBytes = (byte) AttributeName.Length;
             ByteWriter.WriteByte(buffer, offset + 0, AttributeNameLengthInBytes);
             ByteWriter.WriteAnsiString(buffer, offset + 1, AttributeName, AttributeName.Length);
         }

@@ -38,11 +38,11 @@ namespace SMBLibrary.Services
             // pointer is deferred to a position in the octet stream that follows the representation of the
             // embedding construction
             parser.BeginStructure();
-            PlatformID = (PlatformName)parser.ReadUInt32();
+            PlatformID = (PlatformName) parser.ReadUInt32();
             parser.ReadEmbeddedStructureFullPointer(ref ServerName);
             VerMajor = parser.ReadUInt32();
             VerMinor = parser.ReadUInt32();
-            Type = (ServerType)parser.ReadUInt32();
+            Type = (ServerType) parser.ReadUInt32();
             parser.ReadEmbeddedStructureFullPointer(ref Comment);
             parser.EndStructure();
         }
@@ -50,11 +50,11 @@ namespace SMBLibrary.Services
         public override void Write(NDRWriter writer)
         {
             writer.BeginStructure();
-            writer.WriteUInt32((uint)PlatformID);
+            writer.WriteUInt32((uint) PlatformID);
             writer.WriteEmbeddedStructureFullPointer(ServerName);
             writer.WriteUInt32(VerMajor);
             writer.WriteUInt32(VerMinor);
-            writer.WriteUInt32((uint)Type);
+            writer.WriteUInt32((uint) Type);
             writer.WriteEmbeddedStructureFullPointer(Comment);
             writer.EndStructure();
         }

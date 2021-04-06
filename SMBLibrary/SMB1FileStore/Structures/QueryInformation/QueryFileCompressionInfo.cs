@@ -31,7 +31,7 @@ namespace SMBLibrary.SMB1
         public QueryFileCompressionInfo(byte[] buffer, int offset)
         {
             CompressedFileSize = LittleEndianReader.ReadInt64(buffer, ref offset);
-            CompressionFormat = (CompressionFormat)LittleEndianReader.ReadUInt16(buffer, ref offset);
+            CompressionFormat = (CompressionFormat) LittleEndianReader.ReadUInt16(buffer, ref offset);
             CompressionUnitShift = ByteReader.ReadByte(buffer, ref offset);
             ChunkShift = ByteReader.ReadByte(buffer, ref offset);
             ClusterShift = ByteReader.ReadByte(buffer, ref offset);
@@ -43,7 +43,7 @@ namespace SMBLibrary.SMB1
             byte[] buffer = new byte[Length];
             int offset = 0;
             LittleEndianWriter.WriteInt64(buffer, ref offset, CompressedFileSize);
-            LittleEndianWriter.WriteUInt16(buffer, ref offset, (ushort)CompressionFormat);
+            LittleEndianWriter.WriteUInt16(buffer, ref offset, (ushort) CompressionFormat);
             ByteWriter.WriteByte(buffer, ref offset, CompressionUnitShift);
             ByteWriter.WriteByte(buffer, ref offset, ChunkShift);
             ByteWriter.WriteByte(buffer, ref offset, ClusterShift);

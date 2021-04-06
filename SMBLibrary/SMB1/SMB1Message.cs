@@ -37,6 +37,7 @@ namespace SMBLibrary.SMB1
                 {
                     break;
                 }
+
                 command = SMB1Command.ReadCommand(buffer, smbAndXCommand.AndXOffset, smbAndXCommand.AndXCommand, Header);
                 Commands.Add(command);
             }
@@ -68,10 +69,10 @@ namespace SMBLibrary.SMB1
             byte[] commandBytes;
             for (int index = 0; index < Commands.Count - 1; index++)
             {
-                SMBAndXCommand andXCommand = (SMBAndXCommand)Commands[index];
+                SMBAndXCommand andXCommand = (SMBAndXCommand) Commands[index];
                 andXCommand.AndXCommand = Commands[index + 1].CommandName;
                 commandBytes = Commands[index].GetBytes(Header.UnicodeFlag);
-                ushort nextOffset = (ushort)(length + commandBytes.Length);
+                ushort nextOffset = (ushort) (length + commandBytes.Length);
                 SMBAndXCommand.WriteAndXOffset(commandBytes, 0, nextOffset);
                 sequence.Add(commandBytes);
                 length += commandBytes.Length;
@@ -100,6 +101,7 @@ namespace SMBLibrary.SMB1
             {
                 throw new InvalidDataException("Invalid SMB header signature");
             }
+
             return new SMB1Message(buffer);
         }
     }

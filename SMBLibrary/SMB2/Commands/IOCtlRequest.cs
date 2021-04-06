@@ -49,26 +49,28 @@ namespace SMBLibrary.SMB2
             OutputOffset = LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 36);
             OutputCount = LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 40);
             MaxOutputResponse = LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 44);
-            Flags = (IOCtlRequestFlags)LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 48);
+            Flags = (IOCtlRequestFlags) LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 48);
             Reserved2 = LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 52);
-            Input = ByteReader.ReadBytes(buffer, offset + (int)InputOffset, (int)InputCount);
-            Output = ByteReader.ReadBytes(buffer, offset + (int)OutputOffset, (int)OutputCount);
+            Input = ByteReader.ReadBytes(buffer, offset + (int) InputOffset, (int) InputCount);
+            Output = ByteReader.ReadBytes(buffer, offset + (int) OutputOffset, (int) OutputCount);
         }
 
         public override void WriteCommandBytes(byte[] buffer, int offset)
         {
             InputOffset = 0;
-            InputCount = (uint)Input.Length;
+            InputCount = (uint) Input.Length;
             OutputOffset = 0;
-            OutputCount = (uint)Output.Length;
+            OutputCount = (uint) Output.Length;
             if (Input.Length > 0)
             {
                 InputOffset = SMB2Header.Length + FixedLength;
             }
+
             if (Output.Length > 0)
             {
-                OutputOffset = SMB2Header.Length + FixedLength + (uint)Input.Length;
+                OutputOffset = SMB2Header.Length + FixedLength + (uint) Input.Length;
             }
+
             LittleEndianWriter.WriteUInt16(buffer, offset + 0, StructureSize);
             LittleEndianWriter.WriteUInt16(buffer, offset + 2, Reserved);
             LittleEndianWriter.WriteUInt32(buffer, offset + 4, CtlCode);
@@ -79,12 +81,13 @@ namespace SMBLibrary.SMB2
             LittleEndianWriter.WriteUInt32(buffer, offset + 36, OutputOffset);
             LittleEndianWriter.WriteUInt32(buffer, offset + 40, OutputCount);
             LittleEndianWriter.WriteUInt32(buffer, offset + 44, MaxOutputResponse);
-            LittleEndianWriter.WriteUInt32(buffer, offset + 48, (uint)Flags);
+            LittleEndianWriter.WriteUInt32(buffer, offset + 48, (uint) Flags);
             LittleEndianWriter.WriteUInt32(buffer, offset + 52, Reserved2);
             if (Input.Length > 0)
             {
                 ByteWriter.WriteBytes(buffer, offset + FixedLength, Input);
             }
+
             if (Output.Length > 0)
             {
                 ByteWriter.WriteBytes(buffer, offset + FixedLength + Input.Length, Output);

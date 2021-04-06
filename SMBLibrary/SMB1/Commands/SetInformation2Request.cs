@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using Utilities;
 
@@ -15,6 +16,7 @@ namespace SMBLibrary.SMB1
     public class SetInformation2Request : SMB1Command
     {
         public const int ParametersLength = 14;
+
         // Parameters:
         public ushort FID;
         public DateTime? CreationDateTime; // A date and time value of 0 indicates to the server that the values MUST NOT be changed

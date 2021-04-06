@@ -1,4 +1,3 @@
-
 namespace SMBLibrary
 {
     public enum NTStatus : uint
@@ -69,12 +68,12 @@ namespace SMBLibrary
         STATUS_PASSWORD_MUST_CHANGE = 0xC0000244,
         STATUS_NOT_A_REPARSE_POINT = 0xC0000275,
 
-        STATUS_INVALID_SMB = 0x00010002,        // SMB1/CIFS: A corrupt or invalid SMB request was received
-        STATUS_SMB_BAD_COMMAND = 0x00160002,    // SMB1/CIFS: An unknown SMB command code was received by the server
-        STATUS_SMB_BAD_FID = 0x00060001,        // SMB1/CIFS
-        STATUS_SMB_BAD_TID = 0x00050002,        // SMB1/CIFS
+        STATUS_INVALID_SMB = 0x00010002, // SMB1/CIFS: A corrupt or invalid SMB request was received
+        STATUS_SMB_BAD_COMMAND = 0x00160002, // SMB1/CIFS: An unknown SMB command code was received by the server
+        STATUS_SMB_BAD_FID = 0x00060001, // SMB1/CIFS
+        STATUS_SMB_BAD_TID = 0x00050002, // SMB1/CIFS
         STATUS_OS2_INVALID_ACCESS = 0x000C0001, // SMB1/CIFS
-        STATUS_OS2_NO_MORE_SIDS = 0x00710001,   // SMB1/CIFS
-        STATUS_OS2_INVALID_LEVEL = 0x007C0001,  // SMB1/CIFS
+        STATUS_OS2_NO_MORE_SIDS = 0x00710001, // SMB1/CIFS
+        STATUS_OS2_INVALID_LEVEL = 0x007C0001, // SMB1/CIFS
     }
 }

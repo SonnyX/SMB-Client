@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using Utilities;
 
@@ -15,6 +16,7 @@ namespace SMBLibrary.SMB1
     public class WriteRawRequest : SMB1Command
     {
         public const int ParametersFixedLength = 24; // + 4 optional bytes
+
         // Parameters:
         public ushort FID;
         public ushort CountOfBytes;
@@ -22,10 +24,13 @@ namespace SMBLibrary.SMB1
         public uint Offset;
         public uint Timeout;
         public WriteMode WriteMode;
+
         public uint Reserved2;
+
         //ushort DataLength;
         //ushort DataOffset;
         public uint OffsetHigh; // Optional
+
         // Data:
         public byte[] Data;
 
@@ -41,7 +46,7 @@ namespace SMBLibrary.SMB1
             Reserved1 = LittleEndianConverter.ToUInt16(SMBParameters, 4);
             Offset = LittleEndianConverter.ToUInt32(SMBParameters, 6);
             Timeout = LittleEndianConverter.ToUInt32(SMBParameters, 10);
-            WriteMode = (WriteMode)LittleEndianConverter.ToUInt16(SMBParameters, 14);
+            WriteMode = (WriteMode) LittleEndianConverter.ToUInt16(SMBParameters, 14);
             Reserved2 = LittleEndianConverter.ToUInt32(SMBParameters, 16);
             ushort dataLength = LittleEndianConverter.ToUInt16(SMBParameters, 20);
             ushort dataOffset = LittleEndianConverter.ToUInt16(SMBParameters, 22);

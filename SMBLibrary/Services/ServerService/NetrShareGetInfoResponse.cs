@@ -25,14 +25,14 @@ namespace SMBLibrary.Services
         {
             NDRParser parser = new NDRParser(buffer);
             InfoStruct = new ShareInfo(parser);
-            Result = (Win32Error)parser.ReadUInt32();
+            Result = (Win32Error) parser.ReadUInt32();
         }
 
         public byte[] GetBytes()
         {
             using NDRWriter writer = new NDRWriter();
             writer.WriteStructure(InfoStruct);
-            writer.WriteUInt32((uint)Result);
+            writer.WriteUInt32((uint) Result);
 
             return writer.GetBytes();
         }

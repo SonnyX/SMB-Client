@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using Utilities;
 
@@ -50,12 +51,12 @@ namespace SMBLibrary.SMB2
             ErrorContextCount = ByteReader.ReadByte(buffer, offset + SMB2Header.Length + 2);
             Reserved = ByteReader.ReadByte(buffer, offset + SMB2Header.Length + 3);
             ByteCount = LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 4);
-            ErrorData = ByteReader.ReadBytes(buffer, offset + SMB2Header.Length + 8, (int)ByteCount);
+            ErrorData = ByteReader.ReadBytes(buffer, offset + SMB2Header.Length + 8, (int) ByteCount);
         }
 
         public override void WriteCommandBytes(byte[] buffer, int offset)
         {
-            ByteCount = (uint)ErrorData.Length;
+            ByteCount = (uint) ErrorData.Length;
             LittleEndianWriter.WriteUInt16(buffer, offset + 0, StructureSize);
             ByteWriter.WriteByte(buffer, offset + 2, ErrorContextCount);
             ByteWriter.WriteByte(buffer, offset + 3, Reserved);
@@ -69,7 +70,6 @@ namespace SMBLibrary.SMB2
                 // If the ByteCount field is zero then the server MUST supply an ErrorData field that is one byte in length, and SHOULD set that byte to zero
                 ByteWriter.WriteBytes(buffer, offset + 8, new byte[1]);
             }
-            
         }
 
         public override int CommandLength =>

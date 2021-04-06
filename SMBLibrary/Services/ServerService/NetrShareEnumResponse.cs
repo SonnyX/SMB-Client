@@ -29,7 +29,7 @@ namespace SMBLibrary.Services
             InfoStruct = new ShareEnum(parser);
             TotalEntries = parser.ReadUInt32();
             ResumeHandle = parser.ReadUInt32();
-            Result = (Win32Error)parser.ReadUInt32();
+            Result = (Win32Error) parser.ReadUInt32();
         }
 
         public byte[] GetBytes()
@@ -38,7 +38,7 @@ namespace SMBLibrary.Services
             writer.WriteStructure(InfoStruct);
             writer.WriteUInt32(TotalEntries);
             writer.WriteUInt32(ResumeHandle);
-            writer.WriteUInt32((uint)Result);
+            writer.WriteUInt32((uint) Result);
 
             return writer.GetBytes();
         }

@@ -15,13 +15,15 @@ namespace SMBLibrary.SMB1
     public class TreeConnectAndXResponse : SMBAndXCommand
     {
         public const int ParametersLength = 6;
+
         // Parameters:
         //CommandName AndXCommand;
         //byte AndXReserved;
         //ushort AndXOffset;
         public OptionalSupportFlags OptionalSupport;
+
         // Data:
-        public ServiceName Service;     // OEM String
+        public ServiceName Service; // OEM String
         public string NativeFileSystem; // SMB_STRING
 
         public TreeConnectAndXResponse()
@@ -30,7 +32,7 @@ namespace SMBLibrary.SMB1
 
         public TreeConnectAndXResponse(byte[] buffer, int offset, bool isUnicode) : base(buffer, offset)
         {
-            OptionalSupport = (OptionalSupportFlags)LittleEndianConverter.ToUInt16(SMBParameters, 4);
+            OptionalSupport = (OptionalSupportFlags) LittleEndianConverter.ToUInt16(SMBParameters, 4);
 
             int dataOffset = 0;
             string serviceString = ByteReader.ReadNullTerminatedAnsiString(SMBData, ref dataOffset);
@@ -42,7 +44,7 @@ namespace SMBLibrary.SMB1
         public override byte[] GetBytes(bool isUnicode)
         {
             SMBParameters = new byte[ParametersLength];
-            LittleEndianWriter.WriteUInt16(SMBParameters, 4, (ushort)OptionalSupport);
+            LittleEndianWriter.WriteUInt16(SMBParameters, 4, (ushort) OptionalSupport);
 
             // Should be written as OEM string but it doesn't really matter
             string serviceString = ServiceNameHelper.GetServiceString(Service);

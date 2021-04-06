@@ -45,11 +45,12 @@ namespace SMBLibrary.SMB2
         public override void WriteCommandBytes(byte[] buffer, int offset)
         {
             WriteChannelInfoOffset = 0;
-            WriteChannelInfoLength = (ushort)WriteChannelInfo.Length;
+            WriteChannelInfoLength = (ushort) WriteChannelInfo.Length;
             if (WriteChannelInfo.Length > 0)
             {
                 WriteChannelInfoOffset = SMB2Header.Length + FixedSize;
             }
+
             LittleEndianWriter.WriteUInt16(buffer, offset + 0, StructureSize);
             LittleEndianWriter.WriteUInt16(buffer, offset + 2, Reserved);
             LittleEndianWriter.WriteUInt32(buffer, offset + 4, Count);

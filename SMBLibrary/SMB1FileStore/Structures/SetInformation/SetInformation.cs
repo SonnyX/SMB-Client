@@ -11,10 +11,7 @@ namespace SMBLibrary.SMB1
     {
         public abstract byte[] GetBytes();
 
-        public abstract SetInformationLevel InformationLevel
-        {
-            get;
-        }
+        public abstract SetInformationLevel InformationLevel { get; }
 
         public static SetInformation GetSetInformation(byte[] buffer, SetInformationLevel informationLevel)
         {

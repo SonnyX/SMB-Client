@@ -30,7 +30,7 @@ namespace SMBLibrary
         public FileFullEAEntry(byte[] buffer, int offset)
         {
             NextEntryOffset = LittleEndianReader.ReadUInt32(buffer, ref offset);
-            Flags = (ExtendedAttributeFlags)ByteReader.ReadByte(buffer, ref offset);
+            Flags = (ExtendedAttributeFlags) ByteReader.ReadByte(buffer, ref offset);
             EaNameLength = ByteReader.ReadByte(buffer, ref offset);
             EaValueLength = LittleEndianReader.ReadUInt16(buffer, ref offset);
             EaName = ByteReader.ReadAnsiString(buffer, ref offset, EaNameLength);
@@ -40,10 +40,10 @@ namespace SMBLibrary
 
         public void WriteBytes(byte[] buffer, int offset)
         {
-            EaNameLength = (byte)EaName.Length;
-            EaValueLength = (ushort)EaValue.Length;
+            EaNameLength = (byte) EaName.Length;
+            EaValueLength = (ushort) EaValue.Length;
             LittleEndianWriter.WriteUInt32(buffer, ref offset, NextEntryOffset);
-            ByteWriter.WriteByte(buffer, ref offset, (byte)Flags);
+            ByteWriter.WriteByte(buffer, ref offset, (byte) Flags);
             ByteWriter.WriteByte(buffer, ref offset, EaNameLength);
             LittleEndianWriter.WriteUInt16(buffer, ref offset, EaValueLength);
             ByteWriter.WriteAnsiString(buffer, ref offset, EaName);

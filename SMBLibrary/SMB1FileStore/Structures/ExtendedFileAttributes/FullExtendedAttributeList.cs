@@ -26,14 +26,14 @@ namespace SMBLibrary.SMB1
         public FullExtendedAttributeList(byte[] buffer, ref int offset) : this(buffer, offset)
         {
             // [MS-CIFS] length MUST contain the total size of the FEAList field, plus the size of the SizeOfListInBytes field
-            int length = (int)LittleEndianConverter.ToUInt32(buffer, offset + 0);
+            int length = (int) LittleEndianConverter.ToUInt32(buffer, offset + 0);
             offset += length;
         }
 
         public FullExtendedAttributeList(byte[] buffer, int offset)
         {
             // [MS-CIFS] length MUST contain the total size of the FEAList field, plus the size of the SizeOfListInBytes field
-            int length = (int)LittleEndianConverter.ToUInt32(buffer, offset);
+            int length = (int) LittleEndianConverter.ToUInt32(buffer, offset);
             int position = offset + 4;
             int eof = offset + length;
             while (position < eof)
@@ -59,7 +59,7 @@ namespace SMBLibrary.SMB1
 
         public void WriteBytes(byte[] buffer, int offset)
         {
-            LittleEndianWriter.WriteUInt32(buffer, ref offset, (uint)Length);
+            LittleEndianWriter.WriteUInt32(buffer, ref offset, (uint) Length);
             foreach (FullExtendedAttribute entry in this)
             {
                 entry.WriteBytes(buffer, offset);
@@ -76,6 +76,7 @@ namespace SMBLibrary.SMB1
                 {
                     length += entry.Length;
                 }
+
                 return length;
             }
         }

@@ -30,10 +30,7 @@ namespace SMBLibrary.SMB1
             return new byte[0];
         }
 
-        public abstract NTTransactSubcommandName SubcommandName
-        {
-            get;
-        }
+        public abstract NTTransactSubcommandName SubcommandName { get; }
 
         public static NTTransactSubcommand GetSubcommandRequest(NTTransactSubcommandName subcommandName, byte[] setup, byte[] parameters, byte[] data, bool isUnicode)
         {
@@ -41,11 +38,9 @@ namespace SMBLibrary.SMB1
             {
                 NTTransactSubcommandName.NT_TRANSACT_CREATE => new NTTransactCreateRequest(parameters, data, isUnicode),
                 NTTransactSubcommandName.NT_TRANSACT_IOCTL => new NTTransactIOCTLRequest(setup, data),
-                NTTransactSubcommandName.NT_TRANSACT_SET_SECURITY_DESC => new NTTransactSetSecurityDescriptorRequest(
-                    parameters, data),
+                NTTransactSubcommandName.NT_TRANSACT_SET_SECURITY_DESC => new NTTransactSetSecurityDescriptorRequest(parameters, data),
                 NTTransactSubcommandName.NT_TRANSACT_NOTIFY_CHANGE => new NTTransactNotifyChangeRequest(setup),
-                NTTransactSubcommandName.NT_TRANSACT_QUERY_SECURITY_DESC =>
-                    new NTTransactQuerySecurityDescriptorRequest(parameters),
+                NTTransactSubcommandName.NT_TRANSACT_QUERY_SECURITY_DESC => new NTTransactQuerySecurityDescriptorRequest(parameters),
                 _ => throw new InvalidDataException()
             };
         }

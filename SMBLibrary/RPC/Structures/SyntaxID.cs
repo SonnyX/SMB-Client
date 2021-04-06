@@ -44,6 +44,7 @@ namespace SMBLibrary.RPC
             {
                 return InterfaceUUID.Equals(syntaxId.InterfaceUUID) && InterfaceVersion.Equals(syntaxId.InterfaceVersion);
             }
+
             return false;
         }
 

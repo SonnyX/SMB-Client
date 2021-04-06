@@ -25,14 +25,7 @@ namespace SMBLibrary.Client
 
         public string? GetServerName()
         {
-            NodeStatusRequest request = new NodeStatusRequest
-            {
-                Header = {QDCount = 1},
-                Question =
-                {
-                    Name = "*".PadRight(16, '\0')
-                }
-            };
+            NodeStatusRequest request = new NodeStatusRequest {Header = {QDCount = 1}, Question = {Name = "*".PadRight(16, '\0')}};
             NodeStatusResponse response = SendNodeStatusRequest(request);
             return (from entry in response.Names let suffix = NetBiosUtils.GetSuffixFromMSNetBiosName(entry.Key) where suffix == NetBiosSuffix.FileServiceService select entry.Key).FirstOrDefault();
         }

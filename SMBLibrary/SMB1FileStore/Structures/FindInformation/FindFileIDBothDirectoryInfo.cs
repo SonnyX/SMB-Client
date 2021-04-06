@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using Utilities;
 
@@ -24,14 +25,18 @@ namespace SMBLibrary.SMB1
         public DateTime? LastChangeTime;
         public long EndOfFile;
         public long AllocationSize;
+
         public ExtendedFileAttributes ExtFileAttributes;
+
         //uint FileNameLength; // In bytes, MUST exclude the null termination.
         public uint EASize;
+
         //byte ShortNameLength; // In bytes
         public byte Reserved;
         public string ShortName; // 24 bytes, 8.3 name of the file in Unicode format
         public ushort Reserved2;
         public ulong FileID;
+
         public string FileName; // OEM / Unicode character array. MUST be written as SMB_STRING, and read as fixed length string.
         // Omitting the NULL termination from the FileName field in a single SMB_FIND_FILE_BOTH_DIRECTORY_INFO structure
         // (as a response to TRANS2_QUERY_PATH_INFORMATION on a single directory)
@@ -52,7 +57,7 @@ namespace SMBLibrary.SMB1
             LastChangeTime = FileTimeHelper.ReadNullableFileTime(buffer, ref offset);
             EndOfFile = LittleEndianReader.ReadInt64(buffer, ref offset);
             AllocationSize = LittleEndianReader.ReadInt64(buffer, ref offset);
-            ExtFileAttributes = (ExtendedFileAttributes)LittleEndianReader.ReadUInt32(buffer, ref offset);
+            ExtFileAttributes = (ExtendedFileAttributes) LittleEndianReader.ReadUInt32(buffer, ref offset);
             uint fileNameLength = LittleEndianReader.ReadUInt32(buffer, ref offset);
             EASize = LittleEndianReader.ReadUInt32(buffer, ref offset);
             byte shortNameLength = ByteReader.ReadByte(buffer, ref offset);
@@ -61,13 +66,13 @@ namespace SMBLibrary.SMB1
             ShortName = ShortName.Substring(0, shortNameLength);
             Reserved2 = LittleEndianReader.ReadUInt16(buffer, ref offset);
             FileID = LittleEndianReader.ReadUInt64(buffer, ref offset);
-            FileName = SMB1Helper.ReadFixedLengthString(buffer, ref offset, isUnicode, (int)fileNameLength);
+            FileName = SMB1Helper.ReadFixedLengthString(buffer, ref offset, isUnicode, (int) fileNameLength);
         }
 
         public override void WriteBytes(byte[] buffer, ref int offset, bool isUnicode)
         {
-            uint fileNameLength = (uint)(isUnicode ? FileName.Length * 2 : FileName.Length);
-            byte shortNameLength = (byte)(ShortName.Length * 2);
+            uint fileNameLength = (uint) (isUnicode ? FileName.Length * 2 : FileName.Length);
+            byte shortNameLength = (byte) (ShortName.Length * 2);
 
             LittleEndianWriter.WriteUInt32(buffer, ref offset, NextEntryOffset);
             LittleEndianWriter.WriteUInt32(buffer, ref offset, FileIndex);
@@ -77,7 +82,7 @@ namespace SMBLibrary.SMB1
             FileTimeHelper.WriteFileTime(buffer, ref offset, LastChangeTime);
             LittleEndianWriter.WriteInt64(buffer, ref offset, EndOfFile);
             LittleEndianWriter.WriteInt64(buffer, ref offset, AllocationSize);
-            LittleEndianWriter.WriteUInt32(buffer, ref offset, (uint)ExtFileAttributes);
+            LittleEndianWriter.WriteUInt32(buffer, ref offset, (uint) ExtFileAttributes);
             LittleEndianWriter.WriteUInt32(buffer, ref offset, fileNameLength);
             LittleEndianWriter.WriteUInt32(buffer, ref offset, EASize);
             ByteWriter.WriteByte(buffer, ref offset, shortNameLength);
@@ -100,6 +105,7 @@ namespace SMBLibrary.SMB1
             {
                 length += FileName.Length + 1;
             }
+
             return length;
         }
 

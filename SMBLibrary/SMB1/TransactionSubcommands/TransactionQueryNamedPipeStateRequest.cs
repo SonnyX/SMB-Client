@@ -24,7 +24,7 @@ namespace SMBLibrary.SMB1
 
         public override byte[] GetSetup()
         {
-            return LittleEndianConverter.GetBytes((ushort)SubcommandName);
+            return LittleEndianConverter.GetBytes((ushort) SubcommandName);
         }
 
         public override TransactionSubcommandName SubcommandName => TransactionSubcommandName.TRANS_QUERY_NMPIPE_STATE;

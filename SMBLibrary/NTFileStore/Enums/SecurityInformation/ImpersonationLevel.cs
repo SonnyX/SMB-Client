@@ -1,4 +1,3 @@
-
 namespace SMBLibrary
 {
     /// <summary>
@@ -7,9 +6,9 @@ namespace SMBLibrary
     /// </summary>
     public enum ImpersonationLevel : uint
     {
-        Anonymous = 0x00000000,      // SECURITY_ANONYMOUS
+        Anonymous = 0x00000000, // SECURITY_ANONYMOUS
         Identification = 0x00000001, // SECURITY_IDENTIFICATION
-        Impersonation = 0x00000002,  // SECURITY_IMPERSONATION
-        Delegation = 0x00000003,     // SECURITY_DELEGATION (This impersonation level is supported starting with Windows 2000)
+        Impersonation = 0x00000002, // SECURITY_IMPERSONATION
+        Delegation = 0x00000003, // SECURITY_DELEGATION (This impersonation level is supported starting with Windows 2000)
     }
 }

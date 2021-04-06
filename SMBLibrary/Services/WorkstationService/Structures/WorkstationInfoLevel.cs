@@ -15,9 +15,6 @@ namespace SMBLibrary.Services
 
         public abstract void Write(NDRWriter writer);
 
-        public abstract uint Level
-        {
-            get;
-        }
+        public abstract uint Level { get; }
     }
 }

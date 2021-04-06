@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Collections.Generic;
 
@@ -41,26 +42,26 @@ namespace SMBLibrary.Services
 
         public override byte[] GetResponseBytes(ushort opNum, byte[] requestBytes)
         {
-            switch ((ServerServiceOpName)opNum)
+            switch ((ServerServiceOpName) opNum)
             {
                 case ServerServiceOpName.NetrShareEnum:
-                    {
-                        NetrShareEnumRequest request = new NetrShareEnumRequest(requestBytes);
-                        NetrShareEnumResponse response = GetNetrShareEnumResponse(request);
-                        return response.GetBytes();
-                    }
+                {
+                    NetrShareEnumRequest request = new NetrShareEnumRequest(requestBytes);
+                    NetrShareEnumResponse response = GetNetrShareEnumResponse(request);
+                    return response.GetBytes();
+                }
                 case ServerServiceOpName.NetrShareGetInfo:
-                    {
-                        NetrShareGetInfoRequest request = new NetrShareGetInfoRequest(requestBytes);
-                        NetrShareGetInfoResponse response = GetNetrShareGetInfoResponse(request);
-                        return response.GetBytes();
-                    }
+                {
+                    NetrShareGetInfoRequest request = new NetrShareGetInfoRequest(requestBytes);
+                    NetrShareGetInfoResponse response = GetNetrShareGetInfoResponse(request);
+                    return response.GetBytes();
+                }
                 case ServerServiceOpName.NetrServerGetInfo:
-                    {
-                        NetrServerGetInfoRequest request = new NetrServerGetInfoRequest(requestBytes);
-                        NetrServerGetInfoResponse response = GetNetrWkstaGetInfoResponse(request);
-                        return response.GetBytes();
-                    }
+                {
+                    NetrServerGetInfoRequest request = new NetrServerGetInfoRequest(requestBytes);
+                    NetrServerGetInfoResponse response = GetNetrWkstaGetInfoResponse(request);
+                    return response.GetBytes();
+                }
                 default:
                     throw new UnsupportedOpNumException();
             }
@@ -72,53 +73,55 @@ namespace SMBLibrary.Services
             switch (request.InfoStruct.Level)
             {
                 case 0:
+                {
+                    // We ignore request.PreferedMaximumLength
+                    ShareInfo0Container info = new ShareInfo0Container();
+                    foreach (string shareName in m_shares)
                     {
-                        // We ignore request.PreferedMaximumLength
-                        ShareInfo0Container info = new ShareInfo0Container();
-                        foreach (string shareName in m_shares)
-                        {
-                            info.Add(new ShareInfo0Entry(shareName));
-                        }
-                        response.InfoStruct = new ShareEnum(info);
-                        response.TotalEntries = (uint)m_shares.Count;
-                        response.Result = Win32Error.ERROR_SUCCESS;
-                        return response;
+                        info.Add(new ShareInfo0Entry(shareName));
                     }
+
+                    response.InfoStruct = new ShareEnum(info);
+                    response.TotalEntries = (uint) m_shares.Count;
+                    response.Result = Win32Error.ERROR_SUCCESS;
+                    return response;
+                }
                 case 1:
+                {
+                    // We ignore request.PreferedMaximumLength
+                    ShareInfo1Container info = new ShareInfo1Container();
+                    foreach (string shareName in m_shares)
                     {
-                        // We ignore request.PreferedMaximumLength
-                        ShareInfo1Container info = new ShareInfo1Container();
-                        foreach (string shareName in m_shares)
-                        {
-                            info.Add(new ShareInfo1Entry(shareName, new ShareTypeExtended(ShareType.DiskDrive)));
-                        }
-                        response.InfoStruct = new ShareEnum(info);
-                        response.TotalEntries = (uint)m_shares.Count;
-                        response.Result = Win32Error.ERROR_SUCCESS;
-                        return response;
+                        info.Add(new ShareInfo1Entry(shareName, new ShareTypeExtended(ShareType.DiskDrive)));
                     }
+
+                    response.InfoStruct = new ShareEnum(info);
+                    response.TotalEntries = (uint) m_shares.Count;
+                    response.Result = Win32Error.ERROR_SUCCESS;
+                    return response;
+                }
                 case 2:
                 case 501:
                 case 502:
                 case 503:
-                    {
-                        response.InfoStruct = new ShareEnum(request.InfoStruct.Level);
-                        response.Result = Win32Error.ERROR_NOT_SUPPORTED;
-                        return response;
-                    }
+                {
+                    response.InfoStruct = new ShareEnum(request.InfoStruct.Level);
+                    response.Result = Win32Error.ERROR_NOT_SUPPORTED;
+                    return response;
+                }
                 default:
-                    {
-                        response.InfoStruct = new ShareEnum(request.InfoStruct.Level);
-                        response.Result = Win32Error.ERROR_INVALID_LEVEL;
-                        return response;
-                    }
+                {
+                    response.InfoStruct = new ShareEnum(request.InfoStruct.Level);
+                    response.Result = Win32Error.ERROR_INVALID_LEVEL;
+                    return response;
+                }
             }
         }
 
         public NetrShareGetInfoResponse GetNetrShareGetInfoResponse(NetrShareGetInfoRequest request)
         {
             int shareIndex = IndexOfShare(request.NetName);
-            
+
             NetrShareGetInfoResponse response = new NetrShareGetInfoResponse();
             if (shareIndex == -1)
             {
@@ -130,41 +133,41 @@ namespace SMBLibrary.Services
             switch (request.Level)
             {
                 case 0:
-                    {
-                        ShareInfo0Entry info = new ShareInfo0Entry(m_shares[shareIndex]);
-                        response.InfoStruct = new ShareInfo(info);
-                        response.Result = Win32Error.ERROR_SUCCESS;
-                        return response;
-                    }
+                {
+                    ShareInfo0Entry info = new ShareInfo0Entry(m_shares[shareIndex]);
+                    response.InfoStruct = new ShareInfo(info);
+                    response.Result = Win32Error.ERROR_SUCCESS;
+                    return response;
+                }
                 case 1:
-                    {
-                        ShareInfo1Entry info = new ShareInfo1Entry(m_shares[shareIndex], new ShareTypeExtended(ShareType.DiskDrive));
-                        response.InfoStruct = new ShareInfo(info);
-                        response.Result = Win32Error.ERROR_SUCCESS;
-                        return response;
-                    }
+                {
+                    ShareInfo1Entry info = new ShareInfo1Entry(m_shares[shareIndex], new ShareTypeExtended(ShareType.DiskDrive));
+                    response.InfoStruct = new ShareInfo(info);
+                    response.Result = Win32Error.ERROR_SUCCESS;
+                    return response;
+                }
                 case 2:
-                    {
-                        ShareInfo2Entry info = new ShareInfo2Entry(m_shares[shareIndex], new ShareTypeExtended(ShareType.DiskDrive));
-                        response.InfoStruct = new ShareInfo(info);
-                        response.Result = Win32Error.ERROR_SUCCESS;
-                        return response;
-                    }
+                {
+                    ShareInfo2Entry info = new ShareInfo2Entry(m_shares[shareIndex], new ShareTypeExtended(ShareType.DiskDrive));
+                    response.InfoStruct = new ShareInfo(info);
+                    response.Result = Win32Error.ERROR_SUCCESS;
+                    return response;
+                }
                 case 501:
                 case 502:
                 case 503:
                 case 1005:
-                    {
-                        response.InfoStruct = new ShareInfo(request.Level);
-                        response.Result = Win32Error.ERROR_NOT_SUPPORTED;
-                        return response;
-                    }
+                {
+                    response.InfoStruct = new ShareInfo(request.Level);
+                    response.Result = Win32Error.ERROR_NOT_SUPPORTED;
+                    return response;
+                }
                 default:
-                    {
-                        response.InfoStruct = new ShareInfo(request.Level);
-                        response.Result = Win32Error.ERROR_INVALID_LEVEL;
-                        return response;
-                    }
+                {
+                    response.InfoStruct = new ShareInfo(request.Level);
+                    response.Result = Win32Error.ERROR_INVALID_LEVEL;
+                    return response;
+                }
             }
         }
 
@@ -174,57 +177,41 @@ namespace SMBLibrary.Services
             switch (request.Level)
             {
                 case 100:
-                    {
-                        response.InfoStruct = new ServerInfo
-                        {
-                            Info = new ServerInfo100
-                            {
-                                PlatformID = m_platformID,
-                                ServerName =
-                                {
-                                    Value = m_serverName
-                                }
-                            }
-                        };
-                        response.Result = Win32Error.ERROR_SUCCESS;
-                        return response;
-                    }
+                {
+                    response.InfoStruct = new ServerInfo {Info = new ServerInfo100 {PlatformID = m_platformID, ServerName = {Value = m_serverName}}};
+                    response.Result = Win32Error.ERROR_SUCCESS;
+                    return response;
+                }
                 case 101:
+                {
+                    ServerInfo101 info = new ServerInfo101
                     {
-                        ServerInfo101 info = new ServerInfo101
-                        {
-                            PlatformID = m_platformID,
-                            ServerName =
-                            {
-                                Value = m_serverName
-                            },
-                            VerMajor = m_verMajor,
-                            VerMinor = m_verMinor,
-                            Type = m_serverType,
-                            Comment =
-                            {
-                                Value = string.Empty
-                            }
-                        };
-                        response.InfoStruct = new ServerInfo(info);
-                        response.Result = Win32Error.ERROR_SUCCESS;
-                        return response;
-                    }
+                        PlatformID = m_platformID,
+                        ServerName = {Value = m_serverName},
+                        VerMajor = m_verMajor,
+                        VerMinor = m_verMinor,
+                        Type = m_serverType,
+                        Comment = {Value = string.Empty}
+                    };
+                    response.InfoStruct = new ServerInfo(info);
+                    response.Result = Win32Error.ERROR_SUCCESS;
+                    return response;
+                }
                 case 102:
                 case 103:
                 case 502:
                 case 503:
-                    {
-                        response.InfoStruct = new ServerInfo(request.Level);
-                        response.Result = Win32Error.ERROR_NOT_SUPPORTED;
-                        return response;
-                    }
+                {
+                    response.InfoStruct = new ServerInfo(request.Level);
+                    response.Result = Win32Error.ERROR_NOT_SUPPORTED;
+                    return response;
+                }
                 default:
-                    {
-                        response.InfoStruct = new ServerInfo(request.Level);
-                        response.Result = Win32Error.ERROR_INVALID_LEVEL;
-                        return response;
-                    }
+                {
+                    response.InfoStruct = new ServerInfo(request.Level);
+                    response.Result = Win32Error.ERROR_INVALID_LEVEL;
+                    return response;
+                }
             }
         }
 

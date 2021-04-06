@@ -13,10 +13,7 @@ namespace SMBLibrary.SMB1
     {
         public abstract byte[] GetBytes();
 
-        public abstract QueryInformationLevel InformationLevel
-        {
-            get;
-        }
+        public abstract QueryInformationLevel InformationLevel { get; }
 
         public static QueryInformation GetQueryInformation(byte[]? buffer, QueryInformationLevel informationLevel)
         {

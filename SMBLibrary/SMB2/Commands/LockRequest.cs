@@ -18,6 +18,7 @@ namespace SMBLibrary.SMB2
         public const int DeclaredSize = 48;
 
         private readonly ushort StructureSize;
+
         // ushort LockCount;
         public byte LSN; // 4 bits
         public uint LockSequenceIndex; // 28 bits
@@ -34,17 +35,17 @@ namespace SMBLibrary.SMB2
             StructureSize = LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 0);
             ushort lockCount = LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 2);
             uint temp = LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 4);
-            LSN = (byte)(temp >> 28);
+            LSN = (byte) (temp >> 28);
             LockSequenceIndex = (temp & 0x0FFFFFFF);
             FileId = new FileID(buffer, offset + SMB2Header.Length + 8);
-            Locks = LockElement.ReadLockList(buffer, offset + SMB2Header.Length + 24, (int)lockCount);
+            Locks = LockElement.ReadLockList(buffer, offset + SMB2Header.Length + 24, (int) lockCount);
         }
 
         public override void WriteCommandBytes(byte[] buffer, int offset)
         {
             LittleEndianWriter.WriteUInt16(buffer, offset + 0, StructureSize);
-            LittleEndianWriter.WriteUInt16(buffer, offset + 2, (ushort)Locks.Count);
-            LittleEndianWriter.WriteUInt32(buffer, offset + 4, (uint)(LSN & 0x0F) << 28 | (uint)(LockSequenceIndex & 0x0FFFFFFF));
+            LittleEndianWriter.WriteUInt16(buffer, offset + 2, (ushort) Locks.Count);
+            LittleEndianWriter.WriteUInt32(buffer, offset + 4, (uint) (LSN & 0x0F) << 28 | (uint) (LockSequenceIndex & 0x0FFFFFFF));
             FileId.WriteBytes(buffer, offset + 8);
             LockElement.WriteLockList(buffer, offset + 24, Locks);
         }

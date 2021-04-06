@@ -15,7 +15,7 @@ namespace SMBLibrary.SMB1
         public TreeDisconnectResponse()
         {
         }
-        
+
         public TreeDisconnectResponse(byte[] buffer, int offset) : base(buffer, offset)
         {
         }

@@ -60,7 +60,7 @@ namespace SMBLibrary.SMB2
             return SP800_1008.DeriveKey(hmac, label, context, 128);
         }
 
-        public static byte[] GenerateClientDecryptionKey(byte[] sessionKey, SMB2Dialect dialect, byte[] preauthIntegrityHashValue)
+        public static byte[] GenerateClientDecryptionKey(byte[] sessionKey, SMB2Dialect dialect, byte[]? preauthIntegrityHashValue)
         {
             if (dialect == SMB2Dialect.SMB311 && preauthIntegrityHashValue == null)
             {
@@ -69,7 +69,7 @@ namespace SMBLibrary.SMB2
 
             string labelString = (dialect == SMB2Dialect.SMB311) ? "SMBS2CCipherKey" : "SMB2AESCCM";
             byte[] label = GetNullTerminatedAnsiString(labelString);
-            byte[] context = (dialect == SMB2Dialect.SMB311) ? preauthIntegrityHashValue : GetNullTerminatedAnsiString("ServerOut");
+            byte[] context = (dialect == SMB2Dialect.SMB311) ? preauthIntegrityHashValue! : GetNullTerminatedAnsiString("ServerOut");
 
             using HMACSHA256 hmac = new HMACSHA256(sessionKey);
             return SP800_1008.DeriveKey(hmac, label, context, 128);
@@ -110,13 +110,7 @@ namespace SMBLibrary.SMB2
             byte[] nonceWithPadding = new byte[SMB2TransformHeader.NonceLength];
             Array.Copy(nonce, nonceWithPadding, nonce.Length);
 
-            SMB2TransformHeader transformHeader = new SMB2TransformHeader
-            {
-                Nonce = nonceWithPadding,
-                OriginalMessageSize = (uint)originalMessageLength,
-                Flags = SMB2TransformHeaderFlags.Encrypted,
-                SessionId = sessionID
-            };
+            SMB2TransformHeader transformHeader = new SMB2TransformHeader {Nonce = nonceWithPadding, OriginalMessageSize = (uint) originalMessageLength, Flags = SMB2TransformHeaderFlags.Encrypted, SessionId = sessionID};
 
             return transformHeader;
         }

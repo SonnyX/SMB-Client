@@ -14,13 +14,13 @@ namespace SMBLibrary.Authentication.GssApi
 {
     public class GssProvider
     {
-        public static readonly byte[] NtlmSspIdentifier = { 0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0x37, 0x02, 0x02, 0x0a };
+        public static readonly byte[] NtlmSspIdentifier = {0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0x37, 0x02, 0x02, 0x0a};
 
         private readonly List<IGssMechanism> m_mechanisms;
 
         public GssProvider(IGssMechanism mechanism)
         {
-            m_mechanisms = new List<IGssMechanism> { mechanism };
+            m_mechanisms = new List<IGssMechanism> {mechanism};
         }
 
         public GssProvider(List<IGssMechanism> mechanisms)
@@ -30,14 +30,12 @@ namespace SMBLibrary.Authentication.GssApi
 
         public byte[] GetSpnegoTokenInitBytes()
         {
-            SimpleProtectedNegotiationTokenInit token = new SimpleProtectedNegotiationTokenInit
-            {
-                MechanismTypeList = new List<byte[]>()
-            };
+            SimpleProtectedNegotiationTokenInit token = new SimpleProtectedNegotiationTokenInit {MechanismTypeList = new List<byte[]>()};
             foreach (IGssMechanism mechanism in m_mechanisms)
             {
                 token.MechanismTypeList.Add(mechanism.Identifier);
             }
+
             return token.GetBytes(true);
         }
 
@@ -87,6 +85,7 @@ namespace SMBLibrary.Authentication.GssApi
                         status = NTStatus.SEC_I_CONTINUE_NEEDED;
                         outputToken = GetSpnegoTokenResponseBytes(null, status, mechanism.Identifier);
                     }
+
                     return status;
                 }
                 else // SimpleProtectedNegotiationTokenResponse
@@ -95,8 +94,9 @@ namespace SMBLibrary.Authentication.GssApi
                     {
                         return NTStatus.SEC_E_INVALID_TOKEN;
                     }
+
                     IGssMechanism mechanism = context.Mechanism;
-                    SimpleProtectedNegotiationTokenResponse tokenResponse = (SimpleProtectedNegotiationTokenResponse)spnegoToken;
+                    SimpleProtectedNegotiationTokenResponse tokenResponse = (SimpleProtectedNegotiationTokenResponse) spnegoToken;
                     NTStatus status = mechanism.AcceptSecurityContext(ref context.MechanismContext, tokenResponse.ResponseToken, out byte[] mechanismOutput);
                     outputToken = GetSpnegoTokenResponseBytes(mechanismOutput, status, null);
                     return status;
@@ -122,9 +122,8 @@ namespace SMBLibrary.Authentication.GssApi
             {
                 return NTStatus.SEC_E_INVALID_TOKEN;
             }
-            
-            return ntlmAuthenticationProvider.AcceptSecurityContext(ref context.MechanismContext, inputToken, out outputToken);
 
+            return ntlmAuthenticationProvider.AcceptSecurityContext(ref context.MechanismContext, inputToken, out outputToken);
         }
 
         public virtual object? GetContextAttribute(GssContext? context, GssAttributeName attributeName)
@@ -198,6 +197,7 @@ namespace SMBLibrary.Authentication.GssApi
             {
                 tokenResponse.NegState = NegState.Reject;
             }
+
             tokenResponse.SupportedMechanism = mechanismIdentifier;
             tokenResponse.ResponseToken = mechanismOutput;
             return tokenResponse.GetBytes();

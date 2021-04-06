@@ -19,15 +19,8 @@ namespace SMBLibrary.NetBios
 
         public NameQueryRequest()
         {
-            Header = new NameServicePacketHeader
-            {
-                OpCode = NameServiceOperation.QueryRequest,
-                Flags = OperationFlags.RecursionDesired
-            };
-            Question = new QuestionSection
-            {
-                Type = NameRecordType.NB
-            };
+            Header = new NameServicePacketHeader {OpCode = NameServiceOperation.QueryRequest, Flags = OperationFlags.RecursionDesired};
+            Question = new QuestionSection {Type = NameRecordType.NB};
         }
 
         public NameQueryRequest(byte[] buffer, int offset)

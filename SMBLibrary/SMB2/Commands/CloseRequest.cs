@@ -29,7 +29,7 @@ namespace SMBLibrary.SMB2
         public CloseRequest(byte[] buffer, int offset) : base(buffer, offset)
         {
             StructureSize = LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 0);
-            Flags = (CloseFlags)LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 2);
+            Flags = (CloseFlags) LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 2);
             Reserved = LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 4);
             FileId = new FileID(buffer, offset + SMB2Header.Length + 8);
         }
@@ -37,7 +37,7 @@ namespace SMBLibrary.SMB2
         public override void WriteCommandBytes(byte[] buffer, int offset)
         {
             LittleEndianWriter.WriteUInt16(buffer, offset + 0, StructureSize);
-            LittleEndianWriter.WriteUInt16(buffer, offset + 2, (ushort)Flags);
+            LittleEndianWriter.WriteUInt16(buffer, offset + 2, (ushort) Flags);
             LittleEndianWriter.WriteUInt32(buffer, offset + 4, Reserved);
             FileId?.WriteBytes(buffer, offset + 8);
         }

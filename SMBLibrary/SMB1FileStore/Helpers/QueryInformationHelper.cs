@@ -23,8 +23,7 @@ namespace SMBLibrary.SMB1
                 QueryInformationLevel.SMB_QUERY_FILE_ALL_INFO => FileInformationClass.FileAllInformation,
                 QueryInformationLevel.SMB_QUERY_FILE_ALT_NAME_INFO => FileInformationClass.FileAlternateNameInformation,
                 QueryInformationLevel.SMB_QUERY_FILE_STREAM_INFO => FileInformationClass.FileStreamInformation,
-                QueryInformationLevel.SMB_QUERY_FILE_COMPRESSION_INFO =>
-                    FileInformationClass.FileCompressionInformation,
+                QueryInformationLevel.SMB_QUERY_FILE_COMPRESSION_INFO => FileInformationClass.FileCompressionInformation,
                 _ => throw new UnsupportedInformationLevelException()
             };
         }
@@ -34,97 +33,82 @@ namespace SMBLibrary.SMB1
             switch (fileInformation)
             {
                 case FileAlternateNameInformation information:
-                    {
-                        FileAlternateNameInformation fileAltNameInfo = information;
-                        QueryFileAltNameInfo result = new QueryFileAltNameInfo
-                        {
-                            FileName = fileAltNameInfo.FileName
-                        };
-                        return result;
-                    }
+                {
+                    FileAlternateNameInformation fileAltNameInfo = information;
+                    QueryFileAltNameInfo result = new QueryFileAltNameInfo {FileName = fileAltNameInfo.FileName};
+                    return result;
+                }
                 case FileBasicInformation information:
+                {
+                    FileBasicInformation fileBasicInfo = information;
+                    QueryFileBasicInfo result = new QueryFileBasicInfo
                     {
-                        FileBasicInformation fileBasicInfo = information;
-                        QueryFileBasicInfo result = new QueryFileBasicInfo
-                        {
-                            CreationTime = fileBasicInfo.CreationTime,
-                            LastAccessTime = fileBasicInfo.LastAccessTime,
-                            LastWriteTime = fileBasicInfo.LastWriteTime,
-                            LastChangeTime = fileBasicInfo.ChangeTime,
-                            ExtFileAttributes = (ExtendedFileAttributes)fileBasicInfo.FileAttributes
-                        };
-                        return result;
-                    }
+                        CreationTime = fileBasicInfo.CreationTime,
+                        LastAccessTime = fileBasicInfo.LastAccessTime,
+                        LastWriteTime = fileBasicInfo.LastWriteTime,
+                        LastChangeTime = fileBasicInfo.ChangeTime,
+                        ExtFileAttributes = (ExtendedFileAttributes) fileBasicInfo.FileAttributes
+                    };
+                    return result;
+                }
                 case FileStandardInformation information:
-                    {
-                        FileStandardInformation fileStandardInfo = information;
-                        QueryFileStandardInfo result = new QueryFileStandardInfo
-                        {
-                            AllocationSize = fileStandardInfo.AllocationSize,
-                            EndOfFile = fileStandardInfo.EndOfFile,
-                            DeletePending = fileStandardInfo.DeletePending,
-                            Directory = fileStandardInfo.Directory
-                        };
-                        return result;
-                    }
+                {
+                    FileStandardInformation fileStandardInfo = information;
+                    QueryFileStandardInfo result = new QueryFileStandardInfo {AllocationSize = fileStandardInfo.AllocationSize, EndOfFile = fileStandardInfo.EndOfFile, DeletePending = fileStandardInfo.DeletePending, Directory = fileStandardInfo.Directory};
+                    return result;
+                }
                 case FileEaInformation information:
-                    {
-                        FileEaInformation fileEAInfo = information;
-                        QueryFileEaInfo result = new QueryFileEaInfo
-                        {
-                            EaSize = fileEAInfo.EaSize
-                        };
-                        return result;
-                    }
+                {
+                    FileEaInformation fileEAInfo = information;
+                    QueryFileEaInfo result = new QueryFileEaInfo {EaSize = fileEAInfo.EaSize};
+                    return result;
+                }
                 case FileNameInformation information:
-                    {
-                        FileNameInformation fileNameInfo = information;
-                        QueryFileNameInfo result = new QueryFileNameInfo
-                        {
-                            FileName = fileNameInfo.FileName
-                        };
-                        return result;
-                    }
+                {
+                    FileNameInformation fileNameInfo = information;
+                    QueryFileNameInfo result = new QueryFileNameInfo {FileName = fileNameInfo.FileName};
+                    return result;
+                }
                 case FileAllInformation information:
+                {
+                    FileAllInformation fileAllInfo = information;
+                    QueryFileAllInfo result = new QueryFileAllInfo
                     {
-                        FileAllInformation fileAllInfo = information;
-                        QueryFileAllInfo result = new QueryFileAllInfo
-                        {
-                            CreationTime = fileAllInfo.BasicInformation.CreationTime,
-                            LastAccessTime = fileAllInfo.BasicInformation.LastAccessTime,
-                            LastWriteTime = fileAllInfo.BasicInformation.LastWriteTime,
-                            LastChangeTime = fileAllInfo.BasicInformation.ChangeTime,
-                            ExtFileAttributes = (ExtendedFileAttributes)fileAllInfo.BasicInformation.FileAttributes,
-                            AllocationSize = fileAllInfo.StandardInformation.AllocationSize,
-                            EndOfFile = fileAllInfo.StandardInformation.EndOfFile,
-                            DeletePending = fileAllInfo.StandardInformation.DeletePending,
-                            Directory = fileAllInfo.StandardInformation.Directory,
-                            EaSize = fileAllInfo.EaInformation.EaSize,
-                            FileName = fileAllInfo.NameInformation.FileName
-                        };
-                        return result;
-                    }
+                        CreationTime = fileAllInfo.BasicInformation.CreationTime,
+                        LastAccessTime = fileAllInfo.BasicInformation.LastAccessTime,
+                        LastWriteTime = fileAllInfo.BasicInformation.LastWriteTime,
+                        LastChangeTime = fileAllInfo.BasicInformation.ChangeTime,
+                        ExtFileAttributes = (ExtendedFileAttributes) fileAllInfo.BasicInformation.FileAttributes,
+                        AllocationSize = fileAllInfo.StandardInformation.AllocationSize,
+                        EndOfFile = fileAllInfo.StandardInformation.EndOfFile,
+                        DeletePending = fileAllInfo.StandardInformation.DeletePending,
+                        Directory = fileAllInfo.StandardInformation.Directory,
+                        EaSize = fileAllInfo.EaInformation.EaSize,
+                        FileName = fileAllInfo.NameInformation.FileName
+                    };
+                    return result;
+                }
                 case FileStreamInformation information:
-                    {
-                        FileStreamInformation fileStreamInfo = information;
-                        QueryFileStreamInfo result = new QueryFileStreamInfo();
-                        result.Entries.AddRange(fileStreamInfo.Entries);
-                        return result;
-                    }
+                {
+                    FileStreamInformation fileStreamInfo = information;
+                    QueryFileStreamInfo result = new QueryFileStreamInfo();
+                    result.Entries.AddRange(fileStreamInfo.Entries);
+                    return result;
+                }
                 case FileCompressionInformation information:
+                {
+                    FileCompressionInformation fileCompressionInfo = information;
+                    QueryFileCompressionInfo result = new QueryFileCompressionInfo
                     {
-                        FileCompressionInformation fileCompressionInfo = information;
-                        QueryFileCompressionInfo result = new QueryFileCompressionInfo
-                        {
-                            CompressedFileSize = fileCompressionInfo.CompressedFileSize,
-                            CompressionFormat = fileCompressionInfo.CompressionFormat,
-                            CompressionUnitShift = fileCompressionInfo.CompressionUnitShift,
-                            ChunkShift = fileCompressionInfo.ChunkShift,
-                            ClusterShift = fileCompressionInfo.ClusterShift,
-                            Reserved = fileCompressionInfo.Reserved
-                        };
-                        return result;
-                    }
+                        CompressedFileSize = fileCompressionInfo.CompressedFileSize,
+                        CompressionFormat = fileCompressionInfo.CompressionFormat,
+                        CompressionUnitShift = fileCompressionInfo.CompressionUnitShift,
+                        ChunkShift = fileCompressionInfo.ChunkShift,
+                        ClusterShift = fileCompressionInfo.ClusterShift,
+                        Reserved = fileCompressionInfo.Reserved
+                    };
+                    return result;
+                }
                 default:
                     throw new NotImplementedException();
             }
@@ -142,8 +126,7 @@ namespace SMBLibrary.SMB1
                 FileInformationClass.FileAllInformation => QueryInformationLevel.SMB_QUERY_FILE_ALL_INFO,
                 FileInformationClass.FileAlternateNameInformation => QueryInformationLevel.SMB_QUERY_FILE_ALT_NAME_INFO,
                 FileInformationClass.FileStreamInformation => QueryInformationLevel.SMB_QUERY_FILE_STREAM_INFO,
-                FileInformationClass.FileCompressionInformation =>
-                    QueryInformationLevel.SMB_QUERY_FILE_COMPRESSION_INFO,
+                FileInformationClass.FileCompressionInformation => QueryInformationLevel.SMB_QUERY_FILE_COMPRESSION_INFO,
                 _ => throw new UnsupportedInformationLevelException()
             };
         }
@@ -153,95 +136,80 @@ namespace SMBLibrary.SMB1
             switch (queryInformation)
             {
                 case QueryFileBasicInfo info:
+                {
+                    QueryFileBasicInfo queryFileBasicInfo = info;
+                    FileBasicInformation result = new FileBasicInformation
                     {
-                        QueryFileBasicInfo queryFileBasicInfo = info;
-                        FileBasicInformation result = new FileBasicInformation
-                        {
-                            CreationTime = queryFileBasicInfo.CreationTime,
-                            LastAccessTime = queryFileBasicInfo.LastAccessTime,
-                            LastWriteTime = queryFileBasicInfo.LastWriteTime,
-                            ChangeTime = queryFileBasicInfo.LastChangeTime,
-                            FileAttributes = (FileAttributes)queryFileBasicInfo.ExtFileAttributes
-                        };
-                        return result;
-                    }
+                        CreationTime = queryFileBasicInfo.CreationTime,
+                        LastAccessTime = queryFileBasicInfo.LastAccessTime,
+                        LastWriteTime = queryFileBasicInfo.LastWriteTime,
+                        ChangeTime = queryFileBasicInfo.LastChangeTime,
+                        FileAttributes = (FileAttributes) queryFileBasicInfo.ExtFileAttributes
+                    };
+                    return result;
+                }
                 case QueryFileStandardInfo info:
-                    {
-                        QueryFileStandardInfo queryFileStandardInfo = info;
-                        FileStandardInformation result = new FileStandardInformation
-                        {
-                            AllocationSize = queryFileStandardInfo.AllocationSize,
-                            EndOfFile = queryFileStandardInfo.EndOfFile,
-                            DeletePending = queryFileStandardInfo.DeletePending,
-                            Directory = queryFileStandardInfo.Directory
-                        };
-                        return result;
-                    }
+                {
+                    QueryFileStandardInfo queryFileStandardInfo = info;
+                    FileStandardInformation result = new FileStandardInformation {AllocationSize = queryFileStandardInfo.AllocationSize, EndOfFile = queryFileStandardInfo.EndOfFile, DeletePending = queryFileStandardInfo.DeletePending, Directory = queryFileStandardInfo.Directory};
+                    return result;
+                }
                 case QueryFileEaInfo info:
-                    {
-                        QueryFileEaInfo queryFileEaInfo = info;
-                        FileEaInformation result = new FileEaInformation
-                        {
-                            EaSize = queryFileEaInfo.EaSize
-                        };
-                        return result;
-                    }
+                {
+                    QueryFileEaInfo queryFileEaInfo = info;
+                    FileEaInformation result = new FileEaInformation {EaSize = queryFileEaInfo.EaSize};
+                    return result;
+                }
                 case QueryFileNameInfo info:
-                    {
-                        QueryFileNameInfo queryFileNameInfo = info;
-                        FileNameInformation result = new FileNameInformation
-                        {
-                            FileName = queryFileNameInfo.FileName
-                        };
-                        return result;
-                    }
+                {
+                    QueryFileNameInfo queryFileNameInfo = info;
+                    FileNameInformation result = new FileNameInformation {FileName = queryFileNameInfo.FileName};
+                    return result;
+                }
                 case QueryFileAllInfo info:
-                    {
-                        QueryFileAllInfo queryFileAllInfo = info;
-                        FileAllInformation result = new FileAllInformation();
-                        result.BasicInformation.CreationTime = queryFileAllInfo.CreationTime;
-                        result.BasicInformation.LastAccessTime = queryFileAllInfo.LastAccessTime;
-                        result.BasicInformation.LastWriteTime = queryFileAllInfo.LastWriteTime;
-                        result.BasicInformation.ChangeTime = queryFileAllInfo.LastChangeTime;
-                        result.BasicInformation.FileAttributes = (FileAttributes)queryFileAllInfo.ExtFileAttributes;
-                        result.StandardInformation.AllocationSize = queryFileAllInfo.AllocationSize;
-                        result.StandardInformation.EndOfFile = queryFileAllInfo.EndOfFile;
-                        result.StandardInformation.DeletePending = queryFileAllInfo.DeletePending;
-                        result.StandardInformation.Directory = queryFileAllInfo.Directory;
-                        result.EaInformation.EaSize = queryFileAllInfo.EaSize;
-                        result.NameInformation.FileName = queryFileAllInfo.FileName;
-                        return result;
-                    }
+                {
+                    QueryFileAllInfo queryFileAllInfo = info;
+                    FileAllInformation result = new FileAllInformation();
+                    result.BasicInformation.CreationTime = queryFileAllInfo.CreationTime;
+                    result.BasicInformation.LastAccessTime = queryFileAllInfo.LastAccessTime;
+                    result.BasicInformation.LastWriteTime = queryFileAllInfo.LastWriteTime;
+                    result.BasicInformation.ChangeTime = queryFileAllInfo.LastChangeTime;
+                    result.BasicInformation.FileAttributes = (FileAttributes) queryFileAllInfo.ExtFileAttributes;
+                    result.StandardInformation.AllocationSize = queryFileAllInfo.AllocationSize;
+                    result.StandardInformation.EndOfFile = queryFileAllInfo.EndOfFile;
+                    result.StandardInformation.DeletePending = queryFileAllInfo.DeletePending;
+                    result.StandardInformation.Directory = queryFileAllInfo.Directory;
+                    result.EaInformation.EaSize = queryFileAllInfo.EaSize;
+                    result.NameInformation.FileName = queryFileAllInfo.FileName;
+                    return result;
+                }
                 case QueryFileAltNameInfo info:
-                    {
-                        QueryFileAltNameInfo queryFileAltNameInfo = info;
-                        FileAlternateNameInformation result = new FileAlternateNameInformation
-                        {
-                            FileName = queryFileAltNameInfo.FileName
-                        };
-                        return result;
-                    }
+                {
+                    QueryFileAltNameInfo queryFileAltNameInfo = info;
+                    FileAlternateNameInformation result = new FileAlternateNameInformation {FileName = queryFileAltNameInfo.FileName};
+                    return result;
+                }
                 case QueryFileStreamInfo info:
-                    {
-                        QueryFileStreamInfo queryFileStreamInfo = info;
-                        FileStreamInformation result = new FileStreamInformation();
-                        result.Entries.AddRange(queryFileStreamInfo.Entries);
-                        return result;
-                    }
+                {
+                    QueryFileStreamInfo queryFileStreamInfo = info;
+                    FileStreamInformation result = new FileStreamInformation();
+                    result.Entries.AddRange(queryFileStreamInfo.Entries);
+                    return result;
+                }
                 case QueryFileCompressionInfo info:
+                {
+                    QueryFileCompressionInfo queryFileCompressionInfo = info;
+                    FileCompressionInformation result = new FileCompressionInformation
                     {
-                        QueryFileCompressionInfo queryFileCompressionInfo = info;
-                        FileCompressionInformation result = new FileCompressionInformation
-                        {
-                            CompressedFileSize = queryFileCompressionInfo.CompressedFileSize,
-                            CompressionFormat = queryFileCompressionInfo.CompressionFormat,
-                            CompressionUnitShift = queryFileCompressionInfo.CompressionUnitShift,
-                            ChunkShift = queryFileCompressionInfo.ChunkShift,
-                            ClusterShift = queryFileCompressionInfo.ClusterShift,
-                            Reserved = queryFileCompressionInfo.Reserved
-                        };
-                        return result;
-                    }
+                        CompressedFileSize = queryFileCompressionInfo.CompressedFileSize,
+                        CompressionFormat = queryFileCompressionInfo.CompressionFormat,
+                        CompressionUnitShift = queryFileCompressionInfo.CompressionUnitShift,
+                        ChunkShift = queryFileCompressionInfo.ChunkShift,
+                        ClusterShift = queryFileCompressionInfo.ClusterShift,
+                        Reserved = queryFileCompressionInfo.Reserved
+                    };
+                    return result;
+                }
                 default:
                     throw new NotImplementedException();
             }

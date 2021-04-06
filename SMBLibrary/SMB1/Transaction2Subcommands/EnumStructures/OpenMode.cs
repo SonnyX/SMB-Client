@@ -29,14 +29,14 @@ namespace SMBLibrary.SMB1
 
         public OpenMode(byte[] buffer, int offset)
         {
-            FileExistsOpts = (FileExistsOpts)(buffer[offset + 0] & 0x3);
-            CreateFile = (CreateFile)((buffer[offset + 0] & 0x10) >> 4);
+            FileExistsOpts = (FileExistsOpts) (buffer[offset + 0] & 0x3);
+            CreateFile = (CreateFile) ((buffer[offset + 0] & 0x10) >> 4);
         }
 
         public void WriteBytes(byte[] buffer, int offset)
         {
-            buffer[offset + 0] = (byte)FileExistsOpts;
-            buffer[offset + 0] |= (byte)((byte)CreateFile << 4);
+            buffer[offset + 0] = (byte) FileExistsOpts;
+            buffer[offset + 0] |= (byte) ((byte) CreateFile << 4);
         }
 
         public void WriteBytes(byte[] buffer, ref int offset)

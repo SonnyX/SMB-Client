@@ -106,7 +106,7 @@ namespace SMBLibrary.RPC
         // 14.2.2 - Alignment of Primitive Types
         public void WriteUInt16(ushort value)
         {
-            uint padding = (uint)(2 - (m_stream.Position % 2)) % 2;
+            uint padding = (uint) (2 - (m_stream.Position % 2)) % 2;
             m_stream.Position += padding;
             LittleEndianWriter.WriteUInt16(m_stream, value);
         }
@@ -114,7 +114,7 @@ namespace SMBLibrary.RPC
         // 14.2.2 - Alignment of Primitive Types
         public void WriteUInt32(uint value)
         {
-            uint padding = (uint)(4 - (m_stream.Position % 4)) % 4;
+            uint padding = (uint) (4 - (m_stream.Position % 4)) % 4;
             m_stream.Position += padding;
             LittleEndianWriter.WriteUInt32(m_stream, value);
         }

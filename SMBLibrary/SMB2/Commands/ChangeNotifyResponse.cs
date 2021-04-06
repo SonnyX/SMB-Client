@@ -34,17 +34,18 @@ namespace SMBLibrary.SMB2
             StructureSize = LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 0);
             OutputBufferOffset = LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 2);
             OutputBufferLength = LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 4);
-            OutputBuffer = ByteReader.ReadBytes(buffer, offset + OutputBufferOffset, (int)OutputBufferLength);
+            OutputBuffer = ByteReader.ReadBytes(buffer, offset + OutputBufferOffset, (int) OutputBufferLength);
         }
 
         public override void WriteCommandBytes(byte[] buffer, int offset)
         {
             OutputBufferOffset = 0;
-            OutputBufferLength = (uint)OutputBuffer.Length;
+            OutputBufferLength = (uint) OutputBuffer.Length;
             if (OutputBuffer.Length > 0)
             {
                 OutputBufferOffset = SMB2Header.Length + FixedSize;
             }
+
             LittleEndianWriter.WriteUInt16(buffer, offset + 0, StructureSize);
             LittleEndianWriter.WriteUInt16(buffer, offset + 2, OutputBufferOffset);
             LittleEndianWriter.WriteUInt32(buffer, offset + 4, OutputBufferLength);

@@ -57,7 +57,7 @@ namespace Utilities
             uint[] createTable = new uint[256];
             for (int i = 0; i < 256; i++)
             {
-                uint entry = (uint)i;
+                uint entry = (uint) i;
                 for (int j = 0; j < 8; j++)
                     if ((entry & 1) == 1)
                         entry = (entry >> 1) ^ polynomial;
@@ -80,17 +80,13 @@ namespace Utilities
                 {
                     crc = (crc >> 8) ^ table[buffer[i] ^ crc & 0xff];
                 }
+
             return crc;
         }
 
         private byte[] UInt32ToBigEndianBytes(uint x)
         {
-            return new byte[] {
-                (byte)((x >> 24) & 0xff),
-                (byte)((x >> 16) & 0xff),
-                (byte)((x >> 8) & 0xff),
-                (byte)(x & 0xff)
-            };
+            return new byte[] {(byte) ((x >> 24) & 0xff), (byte) ((x >> 16) & 0xff), (byte) ((x >> 8) & 0xff), (byte) (x & 0xff)};
         }
     }
 }

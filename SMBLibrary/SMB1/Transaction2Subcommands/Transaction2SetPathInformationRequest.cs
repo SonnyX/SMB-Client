@@ -15,11 +15,15 @@ namespace SMBLibrary.SMB1
     public class Transaction2SetPathInformationRequest : Transaction2Subcommand
     {
         private const ushort SMB_INFO_PASSTHROUGH = 0x03E8;
+
         public const int ParametersFixedLength = 6;
+
         // Parameters:
         public ushort InformationLevel;
         public uint Reserved;
+
         public string? FileName; // SMB_STRING
+
         // Data:
         public byte[]? InformationBytes;
 
@@ -38,7 +42,7 @@ namespace SMBLibrary.SMB1
 
         public override byte[] GetSetup()
         {
-            return LittleEndianConverter.GetBytes((ushort)SubcommandName);
+            return LittleEndianConverter.GetBytes((ushort) SubcommandName);
         }
 
         public override byte[] GetParameters(bool isUnicode)
@@ -69,14 +73,14 @@ namespace SMBLibrary.SMB1
 
         public SetInformationLevel SetInformationLevel
         {
-            get => (SetInformationLevel)InformationLevel;
-            set => InformationLevel = (ushort)value;
+            get => (SetInformationLevel) InformationLevel;
+            set => InformationLevel = (ushort) value;
         }
 
         public FileInformationClass FileInformationClass
         {
-            get => (FileInformationClass)(InformationLevel - SMB_INFO_PASSTHROUGH);
-            set => InformationLevel = (ushort)((ushort)value + SMB_INFO_PASSTHROUGH);
+            get => (FileInformationClass) (InformationLevel - SMB_INFO_PASSTHROUGH);
+            set => InformationLevel = (ushort) ((ushort) value + SMB_INFO_PASSTHROUGH);
         }
 
         public void SetInformation(SetInformation information)

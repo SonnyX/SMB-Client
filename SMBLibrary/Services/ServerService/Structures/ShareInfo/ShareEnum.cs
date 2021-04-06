@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using SMBLibrary.RPC;
 
@@ -66,6 +67,7 @@ namespace SMBLibrary.Services
                 default:
                     break;
             }
+
             parser.EndStructure(); // SHARE_ENUM_UNION
             parser.EndStructure(); // SHARE_ENUM_STRUCT
         }

@@ -20,7 +20,7 @@ namespace SMBLibrary.SMB2
 
         private const int NonceStartOffset = 20;
 
-        public static readonly byte[] ProtocolSignature = { 0xFD, 0x53, 0x4D, 0x42 };
+        public static readonly byte[] ProtocolSignature = {0xFD, 0x53, 0x4D, 0x42};
 
         private readonly byte[] ProtocolId; // 4 bytes, 0xFD followed by "SMB"
         public byte[]? Signature; // 16 bytes
@@ -42,7 +42,7 @@ namespace SMBLibrary.SMB2
             Nonce = ByteReader.ReadBytes(buffer, offset + 20, NonceLength);
             OriginalMessageSize = LittleEndianConverter.ToUInt32(buffer, offset + 36);
             Reserved = LittleEndianConverter.ToUInt16(buffer, offset + 40);
-            Flags = (SMB2TransformHeaderFlags)LittleEndianConverter.ToUInt16(buffer, offset + 42);
+            Flags = (SMB2TransformHeaderFlags) LittleEndianConverter.ToUInt16(buffer, offset + 42);
             SessionId = LittleEndianConverter.ToUInt64(buffer, offset + 44);
         }
 
@@ -58,7 +58,7 @@ namespace SMBLibrary.SMB2
             ByteWriter.WriteBytes(buffer, offset + 0, Nonce);
             LittleEndianWriter.WriteUInt32(buffer, offset + 16, OriginalMessageSize);
             LittleEndianWriter.WriteUInt16(buffer, offset + 20, Reserved);
-            LittleEndianWriter.WriteUInt16(buffer, offset + 22, (ushort)Flags);
+            LittleEndianWriter.WriteUInt16(buffer, offset + 22, (ushort) Flags);
             LittleEndianWriter.WriteUInt64(buffer, offset + 24, SessionId);
         }
 

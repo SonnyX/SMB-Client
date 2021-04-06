@@ -1,4 +1,3 @@
-
 namespace SMBLibrary.Authentication.NTLM
 {
     public enum AVPairKey : ushort

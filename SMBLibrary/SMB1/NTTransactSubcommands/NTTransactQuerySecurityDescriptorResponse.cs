@@ -15,8 +15,10 @@ namespace SMBLibrary.SMB1
     public class NTTransactQuerySecurityDescriptorResponse : NTTransactSubcommand
     {
         public const int ParametersLength = 4;
+
         // Parameters:
         public uint LengthNeeded;
+
         // Data
         public SecurityDescriptor SecurityDescriptor; // We might return STATUS_BUFFER_TOO_SMALL without the SecurityDescriptor field
 

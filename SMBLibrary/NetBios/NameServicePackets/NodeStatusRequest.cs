@@ -19,14 +19,8 @@ namespace SMBLibrary.NetBios
 
         public NodeStatusRequest()
         {
-            Header = new NameServicePacketHeader
-            {
-                OpCode = NameServiceOperation.QueryRequest
-            };
-            Question = new QuestionSection
-            {
-                Type = NameRecordType.NBStat
-            };
+            Header = new NameServicePacketHeader {OpCode = NameServiceOperation.QueryRequest};
+            Question = new QuestionSection {Type = NameRecordType.NBStat};
         }
 
         public NodeStatusRequest(byte[] buffer, int offset)

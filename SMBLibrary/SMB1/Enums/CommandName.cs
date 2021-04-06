@@ -1,4 +1,3 @@
-
 namespace SMBLibrary.SMB1
 {
     public enum CommandName : byte

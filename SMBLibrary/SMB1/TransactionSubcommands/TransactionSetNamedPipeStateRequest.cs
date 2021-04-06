@@ -16,6 +16,7 @@ namespace SMBLibrary.SMB1
     {
         // Setup:
         public ushort FID;
+
         // Parameters:
         public PipeState PipeState;
 
@@ -27,20 +28,20 @@ namespace SMBLibrary.SMB1
         {
             FID = LittleEndianConverter.ToUInt16(setup, 2);
 
-            PipeState = (PipeState)LittleEndianConverter.ToUInt16(parameters, 0);
+            PipeState = (PipeState) LittleEndianConverter.ToUInt16(parameters, 0);
         }
 
         public override byte[] GetSetup()
         {
             byte[] setup = new byte[4];
-            LittleEndianWriter.WriteUInt16(setup, 0, (ushort)SubcommandName);
+            LittleEndianWriter.WriteUInt16(setup, 0, (ushort) SubcommandName);
             LittleEndianWriter.WriteUInt16(setup, 2, FID);
             return setup;
         }
 
         public override byte[] GetParameters()
         {
-            return LittleEndianConverter.GetBytes((ushort)PipeState);
+            return LittleEndianConverter.GetBytes((ushort) PipeState);
         }
 
         public override TransactionSubcommandName SubcommandName => TransactionSubcommandName.TRANS_SET_NMPIPE_STATE;

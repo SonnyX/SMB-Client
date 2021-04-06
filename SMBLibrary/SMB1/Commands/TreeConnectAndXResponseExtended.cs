@@ -15,15 +15,18 @@ namespace SMBLibrary.SMB1
     public class TreeConnectAndXResponseExtended : SMBAndXCommand
     {
         public const int ParametersLength = 14;
+
         // Parameters:
         // CommandName AndXCommand;
         // byte AndXReserved;
         // ushort AndXOffset;
         public OptionalSupportFlags OptionalSupport;
         public AccessMask MaximalShareAccessRights;
+
         public AccessMask GuestMaximalShareAccessRights;
+
         // Data:
-        public ServiceName Service;     // OEM String
+        public ServiceName Service; // OEM String
         public string NativeFileSystem; // SMB_STRING
 
         public TreeConnectAndXResponseExtended()
@@ -33,9 +36,9 @@ namespace SMBLibrary.SMB1
         public TreeConnectAndXResponseExtended(byte[] buffer, int offset, bool isUnicode) : base(buffer, offset)
         {
             int parametersOffset = 4;
-            OptionalSupport = (OptionalSupportFlags)LittleEndianReader.ReadUInt16(SMBParameters, ref parametersOffset);
-            MaximalShareAccessRights = (AccessMask)LittleEndianReader.ReadUInt32(SMBParameters, ref parametersOffset);
-            GuestMaximalShareAccessRights = (AccessMask)LittleEndianReader.ReadUInt32(SMBParameters, ref parametersOffset);
+            OptionalSupport = (OptionalSupportFlags) LittleEndianReader.ReadUInt16(SMBParameters, ref parametersOffset);
+            MaximalShareAccessRights = (AccessMask) LittleEndianReader.ReadUInt32(SMBParameters, ref parametersOffset);
+            GuestMaximalShareAccessRights = (AccessMask) LittleEndianReader.ReadUInt32(SMBParameters, ref parametersOffset);
 
             int dataOffset = 0;
             string serviceString = ByteReader.ReadNullTerminatedAnsiString(SMBData, ref dataOffset);
@@ -48,9 +51,9 @@ namespace SMBLibrary.SMB1
         {
             SMBParameters = new byte[ParametersLength];
             int parametersOffset = 4;
-            LittleEndianWriter.WriteUInt16(SMBParameters, ref parametersOffset, (ushort)OptionalSupport);
-            LittleEndianWriter.WriteUInt32(SMBParameters, ref parametersOffset, (uint)MaximalShareAccessRights);
-            LittleEndianWriter.WriteUInt32(SMBParameters, ref parametersOffset, (uint)GuestMaximalShareAccessRights);
+            LittleEndianWriter.WriteUInt16(SMBParameters, ref parametersOffset, (ushort) OptionalSupport);
+            LittleEndianWriter.WriteUInt32(SMBParameters, ref parametersOffset, (uint) MaximalShareAccessRights);
+            LittleEndianWriter.WriteUInt32(SMBParameters, ref parametersOffset, (uint) GuestMaximalShareAccessRights);
 
             // Should be written as OEM string but it doesn't really matter
             string serviceString = ServiceNameHelper.GetServiceString(Service);

@@ -16,13 +16,13 @@ namespace SMBLibrary.SMB1
 
         public OpenResults(byte[] buffer, int offset)
         {
-            OpenResult = (OpenResult)(buffer[offset + 0] & 0x3);
+            OpenResult = (OpenResult) (buffer[offset + 0] & 0x3);
             OpLockGranted = (buffer[offset + 1] & 0x80) > 0;
         }
 
         public void WriteBytes(byte[] buffer, int offset)
         {
-            buffer[offset + 0] = (byte)OpenResult;
+            buffer[offset + 0] = (byte) OpenResult;
             if (OpLockGranted)
             {
                 buffer[offset + 1] = 0x80;

@@ -35,26 +35,27 @@ namespace SMBLibrary.SMB2
         public SetInfoRequest(byte[] buffer, int offset) : base(buffer, offset)
         {
             StructureSize = LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 0);
-            InfoType = (InfoType)ByteReader.ReadByte(buffer, offset + SMB2Header.Length + 2);
+            InfoType = (InfoType) ByteReader.ReadByte(buffer, offset + SMB2Header.Length + 2);
             FileInfoClass = ByteReader.ReadByte(buffer, offset + SMB2Header.Length + 3);
             BufferLength = LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 4);
             BufferOffset = LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 8);
             Reserved = LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 10);
             AdditionalInformation = LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 12);
             FileId = new FileID(buffer, offset + SMB2Header.Length + 16);
-            Buffer = ByteReader.ReadBytes(buffer, offset + BufferOffset, (int)BufferLength);
+            Buffer = ByteReader.ReadBytes(buffer, offset + BufferOffset, (int) BufferLength);
         }
 
         public override void WriteCommandBytes(byte[] buffer, int offset)
         {
             BufferOffset = 0;
-            BufferLength = (uint)Buffer.Length;
+            BufferLength = (uint) Buffer.Length;
             if (Buffer.Length > 0)
             {
                 BufferOffset = SMB2Header.Length + FixedSize;
             }
+
             LittleEndianWriter.WriteUInt16(buffer, offset + 0, StructureSize);
-            ByteWriter.WriteByte(buffer, offset + 2, (byte)InfoType);
+            ByteWriter.WriteByte(buffer, offset + 2, (byte) InfoType);
             ByteWriter.WriteByte(buffer, offset + 3, FileInfoClass);
             LittleEndianWriter.WriteUInt32(buffer, offset + 4, BufferLength);
             LittleEndianWriter.WriteUInt16(buffer, offset + 8, BufferOffset);
@@ -66,20 +67,20 @@ namespace SMBLibrary.SMB2
 
         public FileInformationClass FileInformationClass
         {
-            get => (FileInformationClass)FileInfoClass;
-            set => FileInfoClass = (byte)value;
+            get => (FileInformationClass) FileInfoClass;
+            set => FileInfoClass = (byte) value;
         }
 
         public FileSystemInformationClass FileSystemInformationClass
         {
-            get => (FileSystemInformationClass)FileInfoClass;
-            set => FileInfoClass = (byte)value;
+            get => (FileSystemInformationClass) FileInfoClass;
+            set => FileInfoClass = (byte) value;
         }
 
         public SecurityInformation SecurityInformation
         {
-            get => (SecurityInformation)AdditionalInformation;
-            set => AdditionalInformation = (uint)value;
+            get => (SecurityInformation) AdditionalInformation;
+            set => AdditionalInformation = (uint) value;
         }
 
         public void SetFileInformation(FileInformation fileInformation)

@@ -35,9 +35,9 @@ namespace SMBLibrary.SMB2
         public SessionSetupRequest(byte[] buffer, int offset) : base(buffer, offset)
         {
             StructureSize = LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 0);
-            Flags = (SessionSetupFlags)ByteReader.ReadByte(buffer, offset + SMB2Header.Length + 2);
-            SecurityMode = (SecurityMode)ByteReader.ReadByte(buffer, offset + SMB2Header.Length + 3);
-            Capabilities = (Capabilities)LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 4);
+            Flags = (SessionSetupFlags) ByteReader.ReadByte(buffer, offset + SMB2Header.Length + 2);
+            SecurityMode = (SecurityMode) ByteReader.ReadByte(buffer, offset + SMB2Header.Length + 3);
+            Capabilities = (Capabilities) LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 4);
             Channel = LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 8);
             SecurityBufferOffset = LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 12);
             SecurityBufferLength = LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 14);
@@ -51,15 +51,16 @@ namespace SMBLibrary.SMB2
         public override void WriteCommandBytes(byte[] buffer, int offset)
         {
             SecurityBufferOffset = 0;
-            SecurityBufferLength = (ushort)SecurityBuffer.Length;
+            SecurityBufferLength = (ushort) SecurityBuffer.Length;
             if (SecurityBuffer.Length > 0)
             {
                 SecurityBufferOffset = SMB2Header.Length + FixedSize;
             }
+
             LittleEndianWriter.WriteUInt16(buffer, offset + 0, StructureSize);
-            ByteWriter.WriteByte(buffer, offset + 2, (byte)Flags);
-            ByteWriter.WriteByte(buffer, offset + 3, (byte)SecurityMode);
-            LittleEndianWriter.WriteUInt32(buffer, offset + 4, (uint)Capabilities);
+            ByteWriter.WriteByte(buffer, offset + 2, (byte) Flags);
+            ByteWriter.WriteByte(buffer, offset + 3, (byte) SecurityMode);
+            LittleEndianWriter.WriteUInt32(buffer, offset + 4, (uint) Capabilities);
             LittleEndianWriter.WriteUInt32(buffer, offset + 8, Channel);
             LittleEndianWriter.WriteUInt16(buffer, offset + 12, SecurityBufferOffset);
             LittleEndianWriter.WriteUInt16(buffer, offset + 14, SecurityBufferLength);

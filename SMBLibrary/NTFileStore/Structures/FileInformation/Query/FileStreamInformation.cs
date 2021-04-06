@@ -29,9 +29,8 @@ namespace SMBLibrary
                 {
                     entry = new FileStreamEntry(buffer, offset);
                     m_entries.Add(entry);
-                    offset += (int)entry.NextEntryOffset;
-                }
-                while (entry.NextEntryOffset != 0);
+                    offset += (int) entry.NextEntryOffset;
+                } while (entry.NextEntryOffset != 0);
             }
         }
 
@@ -41,7 +40,7 @@ namespace SMBLibrary
             {
                 FileStreamEntry entry = m_entries[index];
                 int entryLength = entry.PaddedLength;
-                entry.NextEntryOffset = (index < m_entries.Count - 1) ? (uint)entryLength : 0;
+                entry.NextEntryOffset = (index < m_entries.Count - 1) ? (uint) entryLength : 0;
                 entry.WriteBytes(buffer, offset);
                 offset += entryLength;
             }
@@ -62,6 +61,7 @@ namespace SMBLibrary
                     int entryLength = (index < m_entries.Count - 1) ? entry.PaddedLength : entry.Length;
                     length += entryLength;
                 }
+
                 return length;
             }
         }

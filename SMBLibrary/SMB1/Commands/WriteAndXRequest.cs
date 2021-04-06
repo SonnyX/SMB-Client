@@ -36,14 +36,15 @@ namespace SMBLibrary.SMB1
         public byte[] Data;
 
         public WriteAndXRequest()
-        { }
+        {
+        }
 
         public WriteAndXRequest(byte[] buffer, int offset) : base(buffer, offset)
         {
             FID = LittleEndianConverter.ToUInt16(SMBParameters, 4);
             Offset = LittleEndianConverter.ToUInt32(SMBParameters, 6);
             Timeout = LittleEndianConverter.ToUInt32(SMBParameters, 10);
-            WriteMode = (WriteMode)LittleEndianConverter.ToUInt16(SMBParameters, 14);
+            WriteMode = (WriteMode) LittleEndianConverter.ToUInt16(SMBParameters, 14);
             Remaining = LittleEndianConverter.ToUInt16(SMBParameters, 16);
             ushort dataLengthHigh = LittleEndianConverter.ToUInt16(SMBParameters, 18);
             uint DataLength = LittleEndianConverter.ToUInt16(SMBParameters, 20);
@@ -51,24 +52,25 @@ namespace SMBLibrary.SMB1
             if (SMBParameters.Length == ParametersFixedLength + 4)
             {
                 uint offsetHigh = LittleEndianConverter.ToUInt32(SMBParameters, 24);
-                Offset |= ((ulong)offsetHigh << 32);
+                Offset |= ((ulong) offsetHigh << 32);
             }
 
-            DataLength |= (uint)(dataLengthHigh << 16);
+            DataLength |= (uint) (dataLengthHigh << 16);
 
-            Data = ByteReader.ReadBytes(buffer, (int)DataOffset, (int)DataLength);
+            Data = ByteReader.ReadBytes(buffer, (int) DataOffset, (int) DataLength);
         }
 
         public override byte[] GetBytes(bool isUnicode)
         {
-            uint DataLength = (uint)Data.Length;
+            uint DataLength = (uint) Data.Length;
             // WordCount + ByteCount are additional 3 bytes
             ushort DataOffset = SMB1Header.Length + 3 + ParametersFixedLength;
             if (isUnicode)
             {
                 DataOffset++;
             }
-            ushort dataLengthHigh = (ushort)(DataLength >> 16);
+
+            ushort dataLengthHigh = (ushort) (DataLength >> 16);
 
             int parametersLength = ParametersFixedLength;
             if (Offset > uint.MaxValue)
@@ -79,16 +81,16 @@ namespace SMBLibrary.SMB1
 
             SMBParameters = new byte[parametersLength];
             LittleEndianWriter.WriteUInt16(SMBParameters, 4, FID);
-            LittleEndianWriter.WriteUInt32(SMBParameters, 6, (uint)(Offset & 0xFFFFFFFF));
+            LittleEndianWriter.WriteUInt32(SMBParameters, 6, (uint) (Offset & 0xFFFFFFFF));
             LittleEndianWriter.WriteUInt32(SMBParameters, 10, Timeout);
-            LittleEndianWriter.WriteUInt16(SMBParameters, 14, (ushort)WriteMode);
+            LittleEndianWriter.WriteUInt16(SMBParameters, 14, (ushort) WriteMode);
             LittleEndianWriter.WriteUInt16(SMBParameters, 16, Remaining);
             LittleEndianWriter.WriteUInt16(SMBParameters, 18, dataLengthHigh);
-            LittleEndianWriter.WriteUInt16(SMBParameters, 20, (ushort)(DataLength & 0xFFFF));
+            LittleEndianWriter.WriteUInt16(SMBParameters, 20, (ushort) (DataLength & 0xFFFF));
             LittleEndianWriter.WriteUInt16(SMBParameters, 22, DataOffset);
             if (Offset > uint.MaxValue)
             {
-                uint offsetHigh = (uint)(Offset >> 32);
+                uint offsetHigh = (uint) (Offset >> 32);
                 LittleEndianWriter.WriteUInt32(SMBParameters, 24, offsetHigh);
             }
 
@@ -97,12 +99,14 @@ namespace SMBLibrary.SMB1
             {
                 smbDataLength++;
             }
+
             SMBData = new byte[smbDataLength];
             int offset = 0;
             if (isUnicode)
             {
                 offset++;
             }
+
             ByteWriter.WriteBytes(SMBData, ref offset, Data);
 
             return base.GetBytes(isUnicode);

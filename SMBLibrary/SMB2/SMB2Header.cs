@@ -14,7 +14,7 @@ namespace SMBLibrary.SMB2
         public const int Length = 64;
         public const int SignatureOffset = 48;
 
-        public static readonly byte[] ProtocolSignature = { 0xFE, 0x53, 0x4D, 0x42 };
+        public static readonly byte[] ProtocolSignature = {0xFE, 0x53, 0x4D, 0x42};
 
         private readonly byte[] ProtocolId; // 4 bytes, 0xFE followed by "SMB"
         private readonly ushort StructureSize;
@@ -26,7 +26,7 @@ namespace SMBLibrary.SMB2
         public uint NextCommand; // offset in bytes
         public ulong MessageID;
         public uint Reserved; // Sync
-        public uint TreeID;   // Sync
+        public uint TreeID; // Sync
         public ulong AsyncID; // Async
         public ulong SessionID;
         public byte[]? Signature; // 16 bytes (present if SMB2_FLAGS_SIGNED is set)
@@ -44,10 +44,10 @@ namespace SMBLibrary.SMB2
             ProtocolId = ByteReader.ReadBytes(buffer, offset + 0, 4);
             StructureSize = LittleEndianConverter.ToUInt16(buffer, offset + 4);
             CreditCharge = LittleEndianConverter.ToUInt16(buffer, offset + 6);
-            Status = (NTStatus)LittleEndianConverter.ToUInt32(buffer, offset + 8);
-            Command = (SMB2CommandName)LittleEndianConverter.ToUInt16(buffer, offset + 12);
+            Status = (NTStatus) LittleEndianConverter.ToUInt32(buffer, offset + 8);
+            Command = (SMB2CommandName) LittleEndianConverter.ToUInt16(buffer, offset + 12);
             Credits = LittleEndianConverter.ToUInt16(buffer, offset + 14);
-            Flags = (SMB2PacketHeaderFlags)LittleEndianConverter.ToUInt32(buffer, offset + 16);
+            Flags = (SMB2PacketHeaderFlags) LittleEndianConverter.ToUInt32(buffer, offset + 16);
             NextCommand = LittleEndianConverter.ToUInt32(buffer, offset + 20);
             MessageID = LittleEndianConverter.ToUInt64(buffer, offset + 24);
             if ((Flags & SMB2PacketHeaderFlags.AsyncCommand) > 0)
@@ -59,6 +59,7 @@ namespace SMBLibrary.SMB2
                 Reserved = LittleEndianConverter.ToUInt32(buffer, offset + 32);
                 TreeID = LittleEndianConverter.ToUInt32(buffer, offset + 36);
             }
+
             SessionID = LittleEndianConverter.ToUInt64(buffer, offset + 40);
             if ((Flags & SMB2PacketHeaderFlags.Signed) > 0)
             {
@@ -71,10 +72,10 @@ namespace SMBLibrary.SMB2
             ByteWriter.WriteBytes(buffer, offset + 0, ProtocolId);
             LittleEndianWriter.WriteUInt16(buffer, offset + 4, StructureSize);
             LittleEndianWriter.WriteUInt16(buffer, offset + 6, CreditCharge);
-            LittleEndianWriter.WriteUInt32(buffer, offset + 8, (uint)Status);
-            LittleEndianWriter.WriteUInt16(buffer, offset + 12, (ushort)Command);
+            LittleEndianWriter.WriteUInt32(buffer, offset + 8, (uint) Status);
+            LittleEndianWriter.WriteUInt16(buffer, offset + 12, (ushort) Command);
             LittleEndianWriter.WriteUInt16(buffer, offset + 14, Credits);
-            LittleEndianWriter.WriteUInt32(buffer, offset + 16, (uint)Flags);
+            LittleEndianWriter.WriteUInt32(buffer, offset + 16, (uint) Flags);
             LittleEndianWriter.WriteUInt32(buffer, offset + 20, NextCommand);
             LittleEndianWriter.WriteUInt64(buffer, offset + 24, MessageID);
             if ((Flags & SMB2PacketHeaderFlags.AsyncCommand) > 0)
@@ -86,6 +87,7 @@ namespace SMBLibrary.SMB2
                 LittleEndianWriter.WriteUInt32(buffer, offset + 32, Reserved);
                 LittleEndianWriter.WriteUInt32(buffer, offset + 36, TreeID);
             }
+
             LittleEndianWriter.WriteUInt64(buffer, offset + 40, SessionID);
             if ((Flags & SMB2PacketHeaderFlags.Signed) > 0)
             {

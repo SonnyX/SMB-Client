@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using Utilities;
 
@@ -15,6 +16,7 @@ namespace SMBLibrary.SMB1
     public class NTCreateAndXResponse : SMBAndXCommand
     {
         public const int ParametersLength = 68;
+
         // Parameters:
         //CommandName AndXCommand;
         //byte AndXReserved;
@@ -40,17 +42,17 @@ namespace SMBLibrary.SMB1
         public NTCreateAndXResponse(byte[] buffer, int offset) : base(buffer, offset)
         {
             int parametersOffset = 4;
-            OpLockLevel = (OpLockLevel)ByteReader.ReadByte(SMBParameters, ref parametersOffset);
+            OpLockLevel = (OpLockLevel) ByteReader.ReadByte(SMBParameters, ref parametersOffset);
             FID = LittleEndianReader.ReadUInt16(SMBParameters, ref parametersOffset);
-            CreateDisposition = (CreateDisposition)LittleEndianReader.ReadUInt32(SMBParameters, ref parametersOffset);
+            CreateDisposition = (CreateDisposition) LittleEndianReader.ReadUInt32(SMBParameters, ref parametersOffset);
             CreateTime = SMB1Helper.ReadNullableFileTime(SMBParameters, ref parametersOffset);
             LastAccessTime = SMB1Helper.ReadNullableFileTime(SMBParameters, ref parametersOffset);
             LastWriteTime = SMB1Helper.ReadNullableFileTime(SMBParameters, ref parametersOffset);
             LastChangeTime = SMB1Helper.ReadNullableFileTime(SMBParameters, ref parametersOffset);
-            ExtFileAttributes = (ExtendedFileAttributes)LittleEndianReader.ReadUInt32(SMBParameters, ref parametersOffset);
+            ExtFileAttributes = (ExtendedFileAttributes) LittleEndianReader.ReadUInt32(SMBParameters, ref parametersOffset);
             AllocationSize = LittleEndianReader.ReadInt64(SMBParameters, ref parametersOffset);
             EndOfFile = LittleEndianReader.ReadInt64(SMBParameters, ref parametersOffset);
-            ResourceType = (ResourceType)LittleEndianReader.ReadUInt16(SMBParameters, ref parametersOffset);
+            ResourceType = (ResourceType) LittleEndianReader.ReadUInt16(SMBParameters, ref parametersOffset);
             NMPipeStatus = NamedPipeStatus.Read(SMBParameters, ref parametersOffset);
             Directory = (ByteReader.ReadByte(SMBParameters, ref parametersOffset) > 0);
         }
@@ -59,17 +61,17 @@ namespace SMBLibrary.SMB1
         {
             SMBParameters = new byte[ParametersLength];
             int parametersOffset = 4;
-            ByteWriter.WriteByte(SMBParameters, ref parametersOffset, (byte)OpLockLevel);
+            ByteWriter.WriteByte(SMBParameters, ref parametersOffset, (byte) OpLockLevel);
             LittleEndianWriter.WriteUInt16(SMBParameters, ref parametersOffset, FID);
-            LittleEndianWriter.WriteUInt32(SMBParameters, ref parametersOffset, (uint)CreateDisposition);
+            LittleEndianWriter.WriteUInt32(SMBParameters, ref parametersOffset, (uint) CreateDisposition);
             FileTimeHelper.WriteFileTime(SMBParameters, ref parametersOffset, CreateTime);
             FileTimeHelper.WriteFileTime(SMBParameters, ref parametersOffset, LastAccessTime);
             FileTimeHelper.WriteFileTime(SMBParameters, ref parametersOffset, LastWriteTime);
             FileTimeHelper.WriteFileTime(SMBParameters, ref parametersOffset, LastChangeTime);
-            LittleEndianWriter.WriteUInt32(SMBParameters, ref parametersOffset, (uint)ExtFileAttributes);
+            LittleEndianWriter.WriteUInt32(SMBParameters, ref parametersOffset, (uint) ExtFileAttributes);
             LittleEndianWriter.WriteInt64(SMBParameters, ref parametersOffset, AllocationSize);
             LittleEndianWriter.WriteInt64(SMBParameters, ref parametersOffset, EndOfFile);
-            LittleEndianWriter.WriteUInt16(SMBParameters, ref parametersOffset, (ushort)ResourceType);
+            LittleEndianWriter.WriteUInt16(SMBParameters, ref parametersOffset, (ushort) ResourceType);
             NMPipeStatus.WriteBytes(SMBParameters, ref parametersOffset);
             ByteWriter.WriteByte(SMBParameters, ref parametersOffset, Convert.ToByte(Directory));
             return base.GetBytes(isUnicode);

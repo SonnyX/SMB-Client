@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using Utilities;
 
 namespace SMBLibrary.SMB2
@@ -42,11 +43,12 @@ namespace SMBLibrary.SMB2
         public override void WriteCommandBytes(byte[] buffer, int offset)
         {
             PathOffset = 0;
-            PathLength = (ushort)(Path.Length * 2);
+            PathLength = (ushort) (Path.Length * 2);
             if (Path.Length > 0)
             {
                 PathOffset = SMB2Header.Length + 8;
             }
+
             LittleEndianWriter.WriteUInt16(buffer, offset + 0, StructureSize);
             LittleEndianWriter.WriteUInt16(buffer, offset + 2, Reserved);
             LittleEndianWriter.WriteUInt16(buffer, offset + 4, PathOffset);

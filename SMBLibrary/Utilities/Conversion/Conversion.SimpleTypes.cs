@@ -26,8 +26,10 @@ namespace Utilities
                     result = Convert.ToBoolean(obj);
                 }
                 catch
-                { }
+                {
+                }
             }
+
             return result;
         }
     }

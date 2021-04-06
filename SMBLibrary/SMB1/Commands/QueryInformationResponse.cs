@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using Utilities;
 
@@ -17,6 +18,7 @@ namespace SMBLibrary.SMB1
     public class QueryInformationResponse : SMB1Command
     {
         public const int ParameterLength = 20;
+
         // Parameters:
         public SMBFileAttributes FileAttributes;
         public DateTime? LastWriteTime;
@@ -30,7 +32,7 @@ namespace SMBLibrary.SMB1
 
         public QueryInformationResponse(byte[] buffer, int offset) : base(buffer, offset)
         {
-            FileAttributes = (SMBFileAttributes)LittleEndianConverter.ToUInt16(SMBParameters, 0);
+            FileAttributes = (SMBFileAttributes) LittleEndianConverter.ToUInt16(SMBParameters, 0);
             LastWriteTime = UTimeHelper.ReadNullableUTime(SMBParameters, 2);
             FileSize = LittleEndianConverter.ToUInt32(SMBParameters, 6);
             Reserved = ByteReader.ReadBytes(SMBParameters, 10, 10);
@@ -39,11 +41,11 @@ namespace SMBLibrary.SMB1
         public override byte[] GetBytes(bool isUnicode)
         {
             SMBParameters = new byte[ParameterLength];
-            LittleEndianWriter.WriteUInt16(SMBParameters, 0, (ushort)FileAttributes);
+            LittleEndianWriter.WriteUInt16(SMBParameters, 0, (ushort) FileAttributes);
             UTimeHelper.WriteUTime(SMBParameters, 2, LastWriteTime);
             LittleEndianWriter.WriteUInt32(SMBParameters, 6, FileSize);
             ByteWriter.WriteBytes(SMBParameters, 10, Reserved, 10);
-            
+
             return base.GetBytes(isUnicode);
         }
 

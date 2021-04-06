@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -14,15 +15,18 @@ namespace SMBLibrary.SMB1
     public class SessionSetupAndXResponseExtended : SMBAndXCommand
     {
         public const int ParametersLength = 8;
+
         // Parameters:
         // CommandName AndXCommand;
         // byte AndXReserved;
         // ushort AndXOffset;
         public SessionSetupAction Action;
+
         private readonly ushort SecurityBlobLength;
+
         // Data:
         public byte[] SecurityBlob;
-        public string NativeOS;     // SMB_STRING (If Unicode, this field MUST be aligned to start on a 2-byte boundary from the start of the SMB header)
+        public string NativeOS; // SMB_STRING (If Unicode, this field MUST be aligned to start on a 2-byte boundary from the start of the SMB header)
         public string NativeLanMan; // SMB_STRING (this field WILL be aligned to start on a 2-byte boundary from the start of the SMB header)
 
         public SessionSetupAndXResponseExtended()
@@ -34,7 +38,7 @@ namespace SMBLibrary.SMB1
 
         public SessionSetupAndXResponseExtended(byte[] buffer, int offset, bool isUnicode) : base(buffer, offset)
         {
-            Action = (SessionSetupAction)LittleEndianConverter.ToUInt16(SMBParameters, 4);
+            Action = (SessionSetupAction) LittleEndianConverter.ToUInt16(SMBParameters, 4);
             SecurityBlobLength = LittleEndianConverter.ToUInt16(SMBParameters, 6);
 
             SecurityBlob = ByteReader.ReadBytes(SMBData, 0, SecurityBlobLength);
@@ -47,21 +51,23 @@ namespace SMBLibrary.SMB1
                 int padding = (1 + SecurityBlobLength) % 2;
                 dataOffset += padding;
             }
+
             NativeOS = SMB1Helper.ReadSMBString(SMBData, ref dataOffset, isUnicode);
             if ((SMBData.Length - dataOffset) % 2 == 1)
             {
                 // Workaround for a single terminating null byte
                 SMBData = ByteUtils.Concatenate(SMBData, new byte[1]);
             }
+
             NativeLanMan = SMB1Helper.ReadSMBString(SMBData, ref dataOffset, isUnicode);
         }
 
         public override byte[] GetBytes(bool isUnicode)
         {
-            ushort securityBlobLength = (ushort)SecurityBlob.Length;
+            ushort securityBlobLength = (ushort) SecurityBlob.Length;
 
             SMBParameters = new byte[ParametersLength];
-            LittleEndianWriter.WriteUInt16(SMBParameters, 4, (ushort)Action);
+            LittleEndianWriter.WriteUInt16(SMBParameters, 4, (ushort) Action);
             LittleEndianWriter.WriteUInt16(SMBParameters, 6, securityBlobLength);
 
             int padding = 0;
@@ -76,6 +82,7 @@ namespace SMBLibrary.SMB1
             {
                 SMBData = new byte[SecurityBlob.Length + NativeOS.Length + NativeLanMan.Length + 2];
             }
+
             int offset = 0;
             ByteWriter.WriteBytes(SMBData, ref offset, SecurityBlob);
             offset += padding;

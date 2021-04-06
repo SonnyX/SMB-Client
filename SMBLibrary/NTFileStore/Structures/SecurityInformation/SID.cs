@@ -15,10 +15,10 @@ namespace SMBLibrary
     /// </summary>
     public class SID
     {
-        public static readonly byte[] WORLD_SID_AUTHORITY = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x01 };
-        public static readonly byte[] LOCAL_SID_AUTHORITY = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x02 };
-        public static readonly byte[] CREATOR_SID_AUTHORITY = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x02 };
-        public static readonly byte[] SECURITY_NT_AUTHORITY = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x05 };
+        public static readonly byte[] WORLD_SID_AUTHORITY = {0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
+        public static readonly byte[] LOCAL_SID_AUTHORITY = {0x00, 0x00, 0x00, 0x00, 0x00, 0x02};
+        public static readonly byte[] CREATOR_SID_AUTHORITY = {0x00, 0x00, 0x00, 0x00, 0x00, 0x02};
+        public static readonly byte[] SECURITY_NT_AUTHORITY = {0x00, 0x00, 0x00, 0x00, 0x00, 0x05};
 
         public const int FixedLength = 8;
 
@@ -48,7 +48,7 @@ namespace SMBLibrary
 
         public void WriteBytes(byte[] buffer, ref int offset)
         {
-            byte subAuthorityCount = (byte)SubAuthority.Count;
+            byte subAuthorityCount = (byte) SubAuthority.Count;
             ByteWriter.WriteByte(buffer, ref offset, Revision);
             ByteWriter.WriteByte(buffer, ref offset, subAuthorityCount);
             ByteWriter.WriteBytes(buffer, ref offset, IdentifierAuthority, 6);
@@ -64,10 +64,7 @@ namespace SMBLibrary
         {
             get
             {
-                SID sid = new SID
-                {
-                    IdentifierAuthority = WORLD_SID_AUTHORITY
-                };
+                SID sid = new SID {IdentifierAuthority = WORLD_SID_AUTHORITY};
                 sid.SubAuthority.Add(0);
                 return sid;
             }
@@ -77,10 +74,7 @@ namespace SMBLibrary
         {
             get
             {
-                SID sid = new SID
-                {
-                    IdentifierAuthority = SECURITY_NT_AUTHORITY
-                };
+                SID sid = new SID {IdentifierAuthority = SECURITY_NT_AUTHORITY};
                 sid.SubAuthority.Add(18);
                 return sid;
             }

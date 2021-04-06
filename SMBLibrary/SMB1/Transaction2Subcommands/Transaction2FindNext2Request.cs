@@ -20,7 +20,9 @@ namespace SMBLibrary.SMB1
         public FindInformationLevel InformationLevel;
         public uint ResumeKey;
         public FindFlags Flags;
+
         public string? FileName; // SMB_STRING
+
         // Data:
         public ExtendedAttributeNameList GetExtendedAttributeList; // Used with FindInformationLevel.SMB_INFO_QUERY_EAS_FROM_LIST
 
@@ -33,9 +35,9 @@ namespace SMBLibrary.SMB1
         {
             SID = LittleEndianConverter.ToUInt16(parameters, 0);
             SearchCount = LittleEndianConverter.ToUInt16(parameters, 2);
-            InformationLevel = (FindInformationLevel)LittleEndianConverter.ToUInt16(parameters, 4);
+            InformationLevel = (FindInformationLevel) LittleEndianConverter.ToUInt16(parameters, 4);
             ResumeKey = LittleEndianConverter.ToUInt32(parameters, 6);
-            Flags = (FindFlags)LittleEndianConverter.ToUInt16(parameters, 10);
+            Flags = (FindFlags) LittleEndianConverter.ToUInt16(parameters, 10);
             FileName = SMB1Helper.ReadSMBString(parameters, 12, isUnicode);
 
             if (InformationLevel == FindInformationLevel.SMB_INFO_QUERY_EAS_FROM_LIST)
@@ -46,7 +48,7 @@ namespace SMBLibrary.SMB1
 
         public override byte[] GetSetup()
         {
-            return LittleEndianConverter.GetBytes((ushort)SubcommandName);
+            return LittleEndianConverter.GetBytes((ushort) SubcommandName);
         }
 
         public override byte[] GetParameters(bool isUnicode)
@@ -64,9 +66,9 @@ namespace SMBLibrary.SMB1
             byte[] parameters = new byte[length];
             LittleEndianWriter.WriteUInt16(parameters, 0, SID);
             LittleEndianWriter.WriteUInt16(parameters, 2, SearchCount);
-            LittleEndianWriter.WriteUInt16(parameters, 4, (ushort)InformationLevel);
+            LittleEndianWriter.WriteUInt16(parameters, 4, (ushort) InformationLevel);
             LittleEndianWriter.WriteUInt32(parameters, 6, ResumeKey);
-            LittleEndianWriter.WriteUInt16(parameters, 10, (ushort)Flags);
+            LittleEndianWriter.WriteUInt16(parameters, 10, (ushort) Flags);
             SMB1Helper.WriteSMBString(parameters, 12, isUnicode, FileName!);
 
             return parameters;

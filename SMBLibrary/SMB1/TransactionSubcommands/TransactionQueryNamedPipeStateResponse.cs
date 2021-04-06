@@ -15,6 +15,7 @@ namespace SMBLibrary.SMB1
     public class TransactionQueryNamedPipeStateResponse : TransactionSubcommand
     {
         public const int ParametersLength = 2;
+
         // Parameters;
         public NamedPipeStatus NMPipeStatus;
 

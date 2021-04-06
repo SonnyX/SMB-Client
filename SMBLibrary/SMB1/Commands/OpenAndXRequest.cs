@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using Utilities;
 
@@ -15,6 +16,7 @@ namespace SMBLibrary.SMB1
     public class OpenAndXRequest : SMBAndXCommand
     {
         public const int ParametersLength = 30;
+
         // Parameters:
         // CommandName AndXCommand;
         // byte AndXReserved;
@@ -27,7 +29,9 @@ namespace SMBLibrary.SMB1
         public OpenMode OpenMode;
         public uint AllocationSize;
         public uint Timeout;
+
         public uint Reserved;
+
         // Data:
         public string FileName; // SMB_STRING (If Unicode, this field MUST be aligned to start on a 2-byte boundary from the start of the SMB header)
 
@@ -38,10 +42,10 @@ namespace SMBLibrary.SMB1
         public OpenAndXRequest(byte[] buffer, int offset, bool isUnicode) : base(buffer, offset)
         {
             int parametersOffset = 4;
-            Flags = (OpenFlags)LittleEndianReader.ReadUInt16(SMBParameters, ref parametersOffset);
+            Flags = (OpenFlags) LittleEndianReader.ReadUInt16(SMBParameters, ref parametersOffset);
             AccessMode = AccessModeOptions.Read(SMBParameters, ref parametersOffset);
-            SearchAttrs = (SMBFileAttributes)LittleEndianReader.ReadUInt16(SMBParameters, ref parametersOffset);
-            FileAttrs = (SMBFileAttributes)LittleEndianReader.ReadUInt16(SMBParameters, ref parametersOffset);
+            SearchAttrs = (SMBFileAttributes) LittleEndianReader.ReadUInt16(SMBParameters, ref parametersOffset);
+            FileAttrs = (SMBFileAttributes) LittleEndianReader.ReadUInt16(SMBParameters, ref parametersOffset);
             CreationTime = UTimeHelper.ReadNullableUTime(SMBParameters, ref parametersOffset);
             OpenMode = OpenMode.Read(SMBParameters, ref parametersOffset);
             AllocationSize = LittleEndianReader.ReadUInt32(SMBParameters, ref parametersOffset);
@@ -53,6 +57,7 @@ namespace SMBLibrary.SMB1
             {
                 dataOffset = 1; // 1 byte padding for 2 byte alignment
             }
+
             FileName = SMB1Helper.ReadSMBString(SMBData, dataOffset, isUnicode);
         }
 
@@ -60,10 +65,10 @@ namespace SMBLibrary.SMB1
         {
             SMBParameters = new byte[ParametersLength];
             int parametersOffset = 4;
-            LittleEndianWriter.WriteUInt16(SMBParameters, ref parametersOffset, (ushort)Flags);
+            LittleEndianWriter.WriteUInt16(SMBParameters, ref parametersOffset, (ushort) Flags);
             AccessMode.WriteBytes(SMBParameters, ref parametersOffset);
-            LittleEndianWriter.WriteUInt16(SMBParameters, ref parametersOffset, (ushort)SearchAttrs);
-            LittleEndianWriter.WriteUInt16(SMBParameters, ref parametersOffset, (ushort)FileAttrs);
+            LittleEndianWriter.WriteUInt16(SMBParameters, ref parametersOffset, (ushort) SearchAttrs);
+            LittleEndianWriter.WriteUInt16(SMBParameters, ref parametersOffset, (ushort) FileAttrs);
             UTimeHelper.WriteUTime(SMBParameters, ref parametersOffset, CreationTime);
             OpenMode.WriteBytes(SMBParameters, ref parametersOffset);
             LittleEndianWriter.WriteUInt32(SMBParameters, ref parametersOffset, AllocationSize);
@@ -80,6 +85,7 @@ namespace SMBLibrary.SMB1
             {
                 SMBData = new byte[FileName.Length + 1];
             }
+
             SMB1Helper.WriteSMBString(SMBData, padding, isUnicode, FileName);
 
             return base.GetBytes(isUnicode);

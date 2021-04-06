@@ -47,28 +47,28 @@ namespace SMBLibrary.SMB1
         public NamedPipeStatus(byte[] buffer, int offset)
         {
             ICount = buffer[offset + 0];
-            ReadMode = (ReadMode)(buffer[offset + 1] & 0x03);
-            NamedPipeType = (NamedPipeType)((buffer[offset + 1] & 0x0C) >> 2);
-            Endpoint = (Endpoint)((buffer[offset + 1] & 0x40) >> 6);
-            NonBlocking = (NonBlocking)((buffer[offset + 1] & 0x80) >> 7);
+            ReadMode = (ReadMode) (buffer[offset + 1] & 0x03);
+            NamedPipeType = (NamedPipeType) ((buffer[offset + 1] & 0x0C) >> 2);
+            Endpoint = (Endpoint) ((buffer[offset + 1] & 0x40) >> 6);
+            NonBlocking = (NonBlocking) ((buffer[offset + 1] & 0x80) >> 7);
         }
 
         public NamedPipeStatus(ushort value)
         {
-            ICount = (byte)(value & 0xFF);
-            ReadMode = (ReadMode)((value & 0x0300) >> 8);
-            NamedPipeType = (NamedPipeType)((value & 0x0C00) >> 10);
-            Endpoint = (Endpoint)((value & 0x4000) >> 14);
-            NonBlocking = (NonBlocking)((value & 0x80) >> 15);
+            ICount = (byte) (value & 0xFF);
+            ReadMode = (ReadMode) ((value & 0x0300) >> 8);
+            NamedPipeType = (NamedPipeType) ((value & 0x0C00) >> 10);
+            Endpoint = (Endpoint) ((value & 0x4000) >> 14);
+            NonBlocking = (NonBlocking) ((value & 0x80) >> 15);
         }
 
         public void WriteBytes(byte[] buffer, int offset)
         {
             buffer[offset + 0] = ICount;
-            buffer[offset + 1] = (byte)((byte)ReadMode & 0x03);
-            buffer[offset + 1] |= (byte)(((byte)NamedPipeType << 2) & 0x0C);
-            buffer[offset + 1] |= (byte)(((byte)Endpoint << 6) & 0x40);
-            buffer[offset + 1] |= (byte)(((byte)NonBlocking << 7) & 0x80);
+            buffer[offset + 1] = (byte) ((byte) ReadMode & 0x03);
+            buffer[offset + 1] |= (byte) (((byte) NamedPipeType << 2) & 0x0C);
+            buffer[offset + 1] |= (byte) (((byte) Endpoint << 6) & 0x40);
+            buffer[offset + 1] |= (byte) (((byte) NonBlocking << 7) & 0x80);
         }
 
         public void WriteBytes(byte[] buffer, ref int offset)
@@ -80,10 +80,10 @@ namespace SMBLibrary.SMB1
         public ushort ToUInt16()
         {
             ushort result = ICount;
-            result |= (ushort)(((byte)ReadMode << 8) & 0x0300);
-            result |= (ushort)(((byte)NamedPipeType << 10) & 0x0C00);
-            result |= (ushort)(((byte)Endpoint << 14) & 0x4000);
-            result |= (ushort)(((byte)NonBlocking << 15) & 0x8000);
+            result |= (ushort) (((byte) ReadMode << 8) & 0x0300);
+            result |= (ushort) (((byte) NamedPipeType << 10) & 0x0C00);
+            result |= (ushort) (((byte) Endpoint << 14) & 0x4000);
+            result |= (ushort) (((byte) NonBlocking << 15) & 0x8000);
             return result;
         }
 

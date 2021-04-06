@@ -31,7 +31,7 @@ namespace SMBLibrary.SMB1
 
         public override byte[] GetSetup()
         {
-            return LittleEndianConverter.GetBytes((ushort)SubcommandName);
+            return LittleEndianConverter.GetBytes((ushort) SubcommandName);
         }
 
         public override byte[] GetParameters(bool isUnicode)
@@ -45,14 +45,14 @@ namespace SMBLibrary.SMB1
 
         public QueryFSInformationLevel QueryFSInformationLevel
         {
-            get => (QueryFSInformationLevel)InformationLevel;
-            set => InformationLevel = (ushort)value;
+            get => (QueryFSInformationLevel) InformationLevel;
+            set => InformationLevel = (ushort) value;
         }
 
         public FileSystemInformationClass FileSystemInformationClass
         {
-            get => (FileSystemInformationClass)(InformationLevel - SMB_INFO_PASSTHROUGH);
-            set => InformationLevel = (ushort)((ushort)value + SMB_INFO_PASSTHROUGH);
+            get => (FileSystemInformationClass) (InformationLevel - SMB_INFO_PASSTHROUGH);
+            set => InformationLevel = (ushort) ((ushort) value + SMB_INFO_PASSTHROUGH);
         }
 
         public override Transaction2SubcommandName SubcommandName => Transaction2SubcommandName.TRANS2_QUERY_FS_INFORMATION;

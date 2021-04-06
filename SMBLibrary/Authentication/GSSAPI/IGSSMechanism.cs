@@ -25,9 +25,6 @@ namespace SMBLibrary.Authentication.GssApi
         /// </summary>
         object GetContextAttribute(object context, GssAttributeName attributeName);
 
-        byte[] Identifier
-        {
-            get;
-        }
+        byte[] Identifier { get; }
     }
 }

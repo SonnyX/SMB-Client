@@ -15,6 +15,7 @@ namespace SMBLibrary.SMB1
     public class TransactionSecondaryRequest : SMB1Command
     {
         public const int SMBParametersLength = 16;
+
         // Parameters:
         public ushort TotalParameterCount;
         public ushort TotalDataCount;
@@ -23,10 +24,13 @@ namespace SMBLibrary.SMB1
         public ushort ParameterDisplacement;
         protected ushort DataCount;
         protected ushort DataOffset;
+
         public ushort DataDisplacement;
+
         // Data:
         // Padding (alignment to 4 byte boundary)
         public byte[] TransParameters; // Trans_Parameters
+
         // Padding (alignment to 4 byte boundary)
         public byte[] TransData; // Trans_Data
 
@@ -51,16 +55,16 @@ namespace SMBLibrary.SMB1
 
         public override byte[] GetBytes(bool isUnicode)
         {
-            ParameterCount = (ushort)TransParameters.Length;
-            DataCount = (ushort)TransData.Length;
+            ParameterCount = (ushort) TransParameters.Length;
+            DataCount = (ushort) TransData.Length;
 
             // WordCount + ByteCount are additional 3 bytes
-            ParameterOffset = (ushort)(SMB1Header.Length + 3 + SMBParametersLength);
+            ParameterOffset = (ushort) (SMB1Header.Length + 3 + SMBParametersLength);
             int padding1 = (4 - (ParameterOffset % 4)) % 4;
-            ParameterOffset += (ushort)padding1;
-            DataOffset = (ushort)(ParameterOffset + ParameterCount);
+            ParameterOffset += (ushort) padding1;
+            DataOffset = (ushort) (ParameterOffset + ParameterCount);
             int padding2 = (4 - (DataOffset % 4)) % 4;
-            DataOffset += (ushort)padding2;
+            DataOffset += (ushort) padding2;
 
             SMBParameters = new byte[SMBParametersLength];
             LittleEndianWriter.WriteUInt16(SMBParameters, 0, TotalParameterCount);

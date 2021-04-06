@@ -13,30 +13,29 @@ namespace Utilities
     {
         public static ushort ToUInt16(byte[] buffer, int offset)
         {
-            return (ushort)((buffer[offset + 0] << 8) | (buffer[offset + 1] << 0));
+            return (ushort) ((buffer[offset + 0] << 8) | (buffer[offset + 1] << 0));
         }
 
         public static uint ToUInt32(byte[] buffer, int offset)
         {
-            return (uint)((buffer[offset + 0] << 24) | (buffer[offset + 1] << 16)
-                | (buffer[offset + 2] << 8) | (buffer[offset + 3] << 0));
+            return (uint) ((buffer[offset + 0] << 24) | (buffer[offset + 1] << 16) | (buffer[offset + 2] << 8) | (buffer[offset + 3] << 0));
         }
 
         public static byte[] GetBytes(ushort value)
         {
             byte[] result = new byte[2];
-            result[0] = (byte)((value >> 8) & 0xFF);
-            result[1] = (byte)((value >> 0) & 0xFF);
+            result[0] = (byte) ((value >> 8) & 0xFF);
+            result[1] = (byte) ((value >> 0) & 0xFF);
             return result;
         }
 
         public static byte[] GetBytes(uint value)
         {
             byte[] result = new byte[4];
-            result[0] = (byte)((value >> 24) & 0xFF);
-            result[1] = (byte)((value >> 16) & 0xFF);
-            result[2] = (byte)((value >> 8) & 0xFF);
-            result[3] = (byte)((value >> 0) & 0xFF);
+            result[0] = (byte) ((value >> 24) & 0xFF);
+            result[1] = (byte) ((value >> 16) & 0xFF);
+            result[2] = (byte) ((value >> 8) & 0xFF);
+            result[3] = (byte) ((value >> 0) & 0xFF);
 
             return result;
         }

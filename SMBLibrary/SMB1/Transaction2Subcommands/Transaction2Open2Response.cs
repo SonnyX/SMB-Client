@@ -38,11 +38,11 @@ namespace SMBLibrary.SMB1
         public Transaction2Open2Response(byte[] parameters)
         {
             FID = LittleEndianConverter.ToUInt16(parameters, 0);
-            FileAttributes = (SMBFileAttributes)LittleEndianConverter.ToUInt16(parameters, 2);
+            FileAttributes = (SMBFileAttributes) LittleEndianConverter.ToUInt16(parameters, 2);
             CreationTime = UTimeHelper.ReadNullableUTime(parameters, 4);
             FileDataSize = LittleEndianConverter.ToUInt32(parameters, 8);
             AccessMode = new AccessModeOptions(parameters, 12);
-            ResourceType = (ResourceType)LittleEndianConverter.ToUInt16(parameters, 14);
+            ResourceType = (ResourceType) LittleEndianConverter.ToUInt16(parameters, 14);
             NMPipeStatus = new NamedPipeStatus(parameters, 16);
             ActionTaken = new ActionTaken(parameters, 18);
             Reserved = LittleEndianConverter.ToUInt32(parameters, 20);
@@ -54,11 +54,11 @@ namespace SMBLibrary.SMB1
         {
             byte[] parameters = new byte[ParametersLength];
             LittleEndianWriter.WriteUInt16(parameters, 0, FID);
-            LittleEndianWriter.WriteUInt16(parameters, 2, (ushort)FileAttributes);
+            LittleEndianWriter.WriteUInt16(parameters, 2, (ushort) FileAttributes);
             UTimeHelper.WriteUTime(parameters, 4, CreationTime);
             LittleEndianWriter.WriteUInt32(parameters, 8, FileDataSize);
             AccessMode.WriteBytes(parameters, 12);
-            LittleEndianWriter.WriteUInt16(parameters, 14, (ushort)ResourceType);
+            LittleEndianWriter.WriteUInt16(parameters, 14, (ushort) ResourceType);
             NMPipeStatus.WriteBytes(parameters, 16);
             ActionTaken.WriteBytes(parameters, 18);
             LittleEndianWriter.WriteUInt32(parameters, 20, Reserved);

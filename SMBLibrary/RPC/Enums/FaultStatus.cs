@@ -1,4 +1,3 @@
-
 namespace SMBLibrary.RPC
 {
     public enum FaultStatus : uint

@@ -20,7 +20,9 @@ namespace SMBLibrary.SMB1
         public FindFlags Flags;
         public FindInformationLevel InformationLevel;
         public SearchStorageType SearchStorageType;
+
         public string? FileName; // SMB_STRING
+
         // Data:
         public ExtendedAttributeNameList GetExtendedAttributeList; // Used with FindInformationLevel.SMB_INFO_QUERY_EAS_FROM_LIST
 
@@ -31,11 +33,11 @@ namespace SMBLibrary.SMB1
 
         public Transaction2FindFirst2Request(byte[] parameters, byte[] data, bool isUnicode)
         {
-            SearchAttributes = (SMBFileAttributes)LittleEndianConverter.ToUInt16(parameters, 0);
+            SearchAttributes = (SMBFileAttributes) LittleEndianConverter.ToUInt16(parameters, 0);
             SearchCount = LittleEndianConverter.ToUInt16(parameters, 2);
-            Flags = (FindFlags)LittleEndianConverter.ToUInt16(parameters, 4);
-            InformationLevel = (FindInformationLevel)LittleEndianConverter.ToUInt16(parameters, 6);
-            SearchStorageType = (SearchStorageType)LittleEndianConverter.ToUInt32(parameters, 8);
+            Flags = (FindFlags) LittleEndianConverter.ToUInt16(parameters, 4);
+            InformationLevel = (FindInformationLevel) LittleEndianConverter.ToUInt16(parameters, 6);
+            SearchStorageType = (SearchStorageType) LittleEndianConverter.ToUInt32(parameters, 8);
             FileName = SMB1Helper.ReadSMBString(parameters, 12, isUnicode);
 
             if (InformationLevel == FindInformationLevel.SMB_INFO_QUERY_EAS_FROM_LIST)
@@ -46,7 +48,7 @@ namespace SMBLibrary.SMB1
 
         public override byte[] GetSetup()
         {
-            return LittleEndianConverter.GetBytes((ushort)SubcommandName);
+            return LittleEndianConverter.GetBytes((ushort) SubcommandName);
         }
 
         public override byte[] GetParameters(bool isUnicode)
@@ -62,11 +64,11 @@ namespace SMBLibrary.SMB1
             }
 
             byte[] parameters = new byte[length];
-            LittleEndianWriter.WriteUInt16(parameters, 0, (ushort)SearchAttributes);
+            LittleEndianWriter.WriteUInt16(parameters, 0, (ushort) SearchAttributes);
             LittleEndianWriter.WriteUInt16(parameters, 2, SearchCount);
-            LittleEndianWriter.WriteUInt16(parameters, 4, (ushort)Flags);
-            LittleEndianWriter.WriteUInt16(parameters, 6, (ushort)InformationLevel);
-            LittleEndianWriter.WriteUInt32(parameters, 8, (uint)SearchStorageType);
+            LittleEndianWriter.WriteUInt16(parameters, 4, (ushort) Flags);
+            LittleEndianWriter.WriteUInt16(parameters, 6, (ushort) InformationLevel);
+            LittleEndianWriter.WriteUInt32(parameters, 8, (uint) SearchStorageType);
             SMB1Helper.WriteSMBString(parameters, 12, isUnicode, FileName);
 
             return parameters;

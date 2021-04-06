@@ -16,6 +16,7 @@ namespace SMBLibrary.SMB1
     public class DeleteDirectoryRequest : SMB1Command
     {
         public const int SupportedBufferFormat = 0x04;
+
         // Data:
         public byte BufferFormat;
         public string DirectoryName; // SMB_STRING
@@ -32,6 +33,7 @@ namespace SMBLibrary.SMB1
             {
                 throw new InvalidDataException("Unsupported Buffer Format");
             }
+
             DirectoryName = SMB1Helper.ReadSMBString(SMBData, 1, isUnicode);
         }
 
@@ -46,6 +48,7 @@ namespace SMBLibrary.SMB1
             {
                 length += DirectoryName.Length + 1;
             }
+
             SMBData = new byte[length];
             ByteWriter.WriteByte(SMBData, 0, BufferFormat);
             SMB1Helper.WriteSMBString(SMBData, 1, isUnicode, DirectoryName);

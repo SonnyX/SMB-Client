@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -32,8 +33,8 @@ namespace SMBLibrary.Services
             {
                 m_outputStreams.RemoveAt(0);
             }
-            return result;
 
+            return result;
         }
 
         public override void Write(byte[] buffer, int offset, int count)
@@ -122,7 +123,7 @@ namespace SMBLibrary.Services
             {
                 if (m_outputStreams.Count > 0)
                 {
-                    return (int)m_outputStreams[0].Length;
+                    return (int) m_outputStreams[0].Length;
                 }
 
                 return 0;

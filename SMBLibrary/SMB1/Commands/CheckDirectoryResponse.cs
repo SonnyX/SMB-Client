@@ -24,7 +24,7 @@ namespace SMBLibrary.SMB1
         {
             return base.GetBytes(isUnicode);
         }
-        
+
         public override CommandName CommandName => CommandName.SMB_COM_CHECK_DIRECTORY;
     }
 }

@@ -18,7 +18,7 @@ namespace SMBLibrary.SMB2
 
         private readonly ushort StructureSize;
         public ushort Reserved;
-        
+
         public LockResponse() : base(SMB2CommandName.Lock)
         {
             Header.IsResponse = true;

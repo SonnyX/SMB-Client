@@ -20,14 +20,14 @@ namespace SMBLibrary.SMB1
 
         public ActionTaken(byte[] buffer, int offset)
         {
-            OpenResult = (OpenResult)(buffer[offset + 0] & 0x03);
-            LockStatus = (LockStatus)(buffer[offset + 1] >> 7);
+            OpenResult = (OpenResult) (buffer[offset + 0] & 0x03);
+            LockStatus = (LockStatus) (buffer[offset + 1] >> 7);
         }
 
         public void WriteBytes(byte[] buffer, int offset)
         {
-            buffer[offset + 0] = (byte)((byte)OpenResult & 0x03);
-            buffer[offset + 1] = (byte)((byte)LockStatus << 7);
+            buffer[offset + 0] = (byte) ((byte) OpenResult & 0x03);
+            buffer[offset + 1] = (byte) ((byte) LockStatus << 7);
         }
     }
 }

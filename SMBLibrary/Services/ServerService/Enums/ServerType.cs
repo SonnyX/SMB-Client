@@ -25,16 +25,16 @@ namespace SMBLibrary.Services
         FileAndPrintForNetware = 0x00004000, // SV_TYPE_SERVER_MFPN
         ServerNT = 0x00008000, // SV_TYPE_SERVER_NT
         PotentialBrowser = 0x00010000, // SV_TYPE_POTENTIAL_BROWSER
-        BackupBrowser = 0x00020000,// SV_TYPE_BACKUP_BROWSER
-        MasterBrowser = 0x00040000,// SV_TYPE_MASTER_BROWSER
-        DomainMaster = 0x00080000,// SV_TYPE_DOMAIN_MASTER
+        BackupBrowser = 0x00020000, // SV_TYPE_BACKUP_BROWSER
+        MasterBrowser = 0x00040000, // SV_TYPE_MASTER_BROWSER
+        DomainMaster = 0x00080000, // SV_TYPE_DOMAIN_MASTER
         Windows = 0x00400000, // SV_TYPE_WINDOWS
         DfsServer = 0x00800000, // Not in the official documents
         TerminalServer = 0x02000000, // SV_TYPE_TERMINALSERVER
         ClusterVirtualServer = 0x04000000, // SV_TYPE_CLUSTER_NT
         NTCluster = 0x10000000, // SV_TYPE_CLUSTER_NT
         LocalListOnly = 0x40000000, // SV_TYPE_LOCAL_LIST_ONLY
-        PrimaryDomain = 0x80000000,// SV_TYPE_DOMAIN_ENUM
+        PrimaryDomain = 0x80000000, // SV_TYPE_DOMAIN_ENUM
 
         All = 0xFFFFFFFF, // SV_TYPE_ALL
     }

@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using Utilities;
 
@@ -22,6 +23,7 @@ namespace SMBLibrary
         public const int FixedLength = 12;
 
         public bool ReplaceIfExists;
+
         // 3 reserved bytes
         public uint RootDirectory;
         private uint FileNameLength;
@@ -36,12 +38,12 @@ namespace SMBLibrary
             ReplaceIfExists = Conversion.ToBoolean(ByteReader.ReadByte(buffer, offset + 0));
             RootDirectory = LittleEndianConverter.ToUInt32(buffer, offset + 4);
             FileNameLength = LittleEndianConverter.ToUInt32(buffer, offset + 8);
-            FileName = ByteReader.ReadUTF16String(buffer, offset + 12, (int)FileNameLength / 2);
+            FileName = ByteReader.ReadUTF16String(buffer, offset + 12, (int) FileNameLength / 2);
         }
 
         public override void WriteBytes(byte[] buffer, int offset)
         {
-            FileNameLength = (uint)(FileName.Length * 2);
+            FileNameLength = (uint) (FileName.Length * 2);
             ByteWriter.WriteByte(buffer, offset + 0, Convert.ToByte(ReplaceIfExists));
             LittleEndianWriter.WriteUInt32(buffer, offset + 4, RootDirectory);
             LittleEndianWriter.WriteUInt32(buffer, offset + 8, FileNameLength);

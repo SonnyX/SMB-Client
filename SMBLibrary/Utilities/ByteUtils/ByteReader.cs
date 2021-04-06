@@ -71,14 +71,15 @@ namespace Utilities
             StringBuilder builder = new StringBuilder();
             if (buffer.Length > offset)
             {
-                char c = (char)ReadByte(buffer, offset);
+                char c = (char) ReadByte(buffer, offset);
                 while (c != '\0')
                 {
                     builder.Append(c);
                     offset++;
-                    c = (char)ReadByte(buffer, offset);
+                    c = (char) ReadByte(buffer, offset);
                 }
             }
+
             return builder.ToString();
         }
 
@@ -87,14 +88,15 @@ namespace Utilities
             StringBuilder builder = new StringBuilder();
             if (buffer.Length > offset)
             {
-                char c = (char)LittleEndianConverter.ToUInt16(buffer, offset);
+                char c = (char) LittleEndianConverter.ToUInt16(buffer, offset);
                 while (c != 0)
                 {
                     builder.Append(c);
                     offset += 2;
-                    c = (char)LittleEndianConverter.ToUInt16(buffer, offset);
+                    c = (char) LittleEndianConverter.ToUInt16(buffer, offset);
                 }
             }
+
             return builder.ToString();
         }
 
@@ -106,6 +108,7 @@ namespace Utilities
                 result = ReadNullTerminatedAnsiString(buffer, offset);
                 offset += result.Length + 1;
             }
+
             return result;
         }
 
@@ -117,6 +120,7 @@ namespace Utilities
                 result = ReadNullTerminatedUTF16String(buffer, offset);
                 offset += result.Length * 2 + 2;
             }
+
             return result;
         }
     }

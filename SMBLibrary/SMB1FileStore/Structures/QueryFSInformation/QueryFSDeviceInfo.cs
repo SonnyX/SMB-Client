@@ -25,15 +25,15 @@ namespace SMBLibrary.SMB1
 
         public QueryFSDeviceInfo(byte[] buffer, int offset)
         {
-            DeviceType = (DeviceType)LittleEndianConverter.ToUInt32(buffer, offset + 0);
-            DeviceCharacteristics = (DeviceCharacteristics)LittleEndianConverter.ToUInt32(buffer, offset + 4);
+            DeviceType = (DeviceType) LittleEndianConverter.ToUInt32(buffer, offset + 0);
+            DeviceCharacteristics = (DeviceCharacteristics) LittleEndianConverter.ToUInt32(buffer, offset + 4);
         }
 
         public override byte[] GetBytes(bool isUnicode)
         {
             byte[] buffer = new byte[Length];
-            LittleEndianWriter.WriteUInt32(buffer, 0, (uint)DeviceType);
-            LittleEndianWriter.WriteUInt32(buffer, 4, (uint)DeviceCharacteristics);
+            LittleEndianWriter.WriteUInt32(buffer, 0, (uint) DeviceType);
+            LittleEndianWriter.WriteUInt32(buffer, 4, (uint) DeviceCharacteristics);
             return buffer;
         }
 

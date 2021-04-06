@@ -17,7 +17,9 @@ namespace SMBLibrary.SMB1
         public const int FixedLength = 12;
 
         public FileSystemAttributes FileSystemAttributes;
+
         public uint MaxFileNameLengthInBytes;
+
         //uint LengthOfFileSystemName; // In bytes
         public string FileSystemName; // Unicode
 
@@ -27,17 +29,17 @@ namespace SMBLibrary.SMB1
 
         public QueryFSAttibuteInfo(byte[] buffer, int offset)
         {
-            FileSystemAttributes = (FileSystemAttributes)LittleEndianConverter.ToUInt32(buffer, offset + 0);
+            FileSystemAttributes = (FileSystemAttributes) LittleEndianConverter.ToUInt32(buffer, offset + 0);
             MaxFileNameLengthInBytes = LittleEndianConverter.ToUInt32(buffer, offset + 4);
             uint lengthOfFileSystemName = LittleEndianConverter.ToUInt32(buffer, offset + 8);
-            FileSystemName = ByteReader.ReadUTF16String(buffer, offset + 12, (int)(lengthOfFileSystemName / 2));
+            FileSystemName = ByteReader.ReadUTF16String(buffer, offset + 12, (int) (lengthOfFileSystemName / 2));
         }
 
         public override byte[] GetBytes(bool isUnicode)
         {
-            uint lengthOfFileSystemName = (uint)(FileSystemName.Length * 2);
+            uint lengthOfFileSystemName = (uint) (FileSystemName.Length * 2);
             byte[] buffer = new byte[Length];
-            LittleEndianWriter.WriteUInt32(buffer, 0, (uint)FileSystemAttributes);
+            LittleEndianWriter.WriteUInt32(buffer, 0, (uint) FileSystemAttributes);
             LittleEndianWriter.WriteUInt32(buffer, 4, MaxFileNameLengthInBytes);
             LittleEndianWriter.WriteUInt32(buffer, 8, lengthOfFileSystemName);
             ByteWriter.WriteUTF16String(buffer, 12, FileSystemName);

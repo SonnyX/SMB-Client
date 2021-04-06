@@ -13,7 +13,7 @@ namespace SMBLibrary.Authentication.GssApi
     {
         public const byte ApplicationTag = 0x60;
 
-        public static readonly byte[] SPNEGOIdentifier = { 0x2b, 0x06, 0x01, 0x05, 0x05, 0x02 };
+        public static readonly byte[] SPNEGOIdentifier = {0x2b, 0x06, 0x01, 0x05, 0x05, 0x02};
 
         public abstract byte[] GetBytes();
 
@@ -31,7 +31,7 @@ namespace SMBLibrary.Authentication.GssApi
                 int offset = 0;
                 ByteWriter.WriteByte(buffer, ref offset, ApplicationTag);
                 DerEncodingHelper.WriteLength(buffer, ref offset, tokenLength);
-                ByteWriter.WriteByte(buffer, ref offset, (byte)DerEncodingTag.ObjectIdentifier);
+                ByteWriter.WriteByte(buffer, ref offset, (byte) DerEncodingTag.ObjectIdentifier);
                 DerEncodingHelper.WriteLength(buffer, ref offset, SPNEGOIdentifier.Length);
                 ByteWriter.WriteBytes(buffer, ref offset, SPNEGOIdentifier);
                 ByteWriter.WriteBytes(buffer, ref offset, tokenBytes);
@@ -58,7 +58,7 @@ namespace SMBLibrary.Authentication.GssApi
                 // establishment tokens, use in non-initial tokens is optional.
                 _ = DerEncodingHelper.ReadLength(tokenBytes, ref offset);
                 tag = ByteReader.ReadByte(tokenBytes, ref offset);
-                if (tag == (byte)DerEncodingTag.ObjectIdentifier)
+                if (tag == (byte) DerEncodingTag.ObjectIdentifier)
                 {
                     int objectIdentifierLength = DerEncodingHelper.ReadLength(tokenBytes, ref offset);
                     byte[] objectIdentifier = ByteReader.ReadBytes(tokenBytes, ref offset, objectIdentifierLength);
@@ -89,6 +89,7 @@ namespace SMBLibrary.Authentication.GssApi
             {
                 return new SimpleProtectedNegotiationTokenResponse(tokenBytes, offset);
             }
+
             return null;
         }
     }

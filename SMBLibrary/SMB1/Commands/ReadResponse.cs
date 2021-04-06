@@ -16,12 +16,17 @@ namespace SMBLibrary.SMB1
     public class ReadResponse : SMB1Command
     {
         public const int ParametersLength = 10;
+
         public const int SupportedBufferFormat = 0x01;
+
         // Parameters:
         public ushort CountOfBytesReturned;
+
         public byte[] Reserved; // 8 reserved bytes
+
         // Data:
         public byte BufferFormat;
+
         // ushort CountOfBytesRead;
         public byte[] Bytes;
 
@@ -40,6 +45,7 @@ namespace SMBLibrary.SMB1
             {
                 throw new InvalidDataException("Unsupported Buffer Format");
             }
+
             ushort CountOfBytesRead = LittleEndianConverter.ToUInt16(SMBData, 1);
             Bytes = ByteReader.ReadBytes(SMBData, 3, CountOfBytesRead);
         }
@@ -52,7 +58,7 @@ namespace SMBLibrary.SMB1
 
             SMBData = new byte[3 + Bytes.Length];
             ByteWriter.WriteByte(SMBData, 0, BufferFormat);
-            LittleEndianWriter.WriteUInt16(SMBData, 1, (ushort)Bytes.Length);
+            LittleEndianWriter.WriteUInt16(SMBData, 1, (ushort) Bytes.Length);
             ByteWriter.WriteBytes(SMBData, 3, Bytes);
 
             return base.GetBytes(isUnicode);

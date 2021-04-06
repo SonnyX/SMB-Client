@@ -41,18 +41,19 @@ namespace SMBLibrary.SMB2
             Reserved2 = LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 12);
             if (DataLength > 0)
             {
-                Data = ByteReader.ReadBytes(buffer, offset + DataOffset, (int)DataLength);
+                Data = ByteReader.ReadBytes(buffer, offset + DataOffset, (int) DataLength);
             }
         }
 
         public override void WriteCommandBytes(byte[] buffer, int offset)
         {
             DataOffset = 0;
-            DataLength = (uint)Data.Length;
+            DataLength = (uint) Data.Length;
             if (Data.Length > 0)
             {
                 DataOffset = SMB2Header.Length + FixedSize;
             }
+
             LittleEndianWriter.WriteUInt16(buffer, offset + 0, StructureSize);
             ByteWriter.WriteByte(buffer, offset + 2, DataOffset);
             ByteWriter.WriteByte(buffer, offset + 3, Reserved);

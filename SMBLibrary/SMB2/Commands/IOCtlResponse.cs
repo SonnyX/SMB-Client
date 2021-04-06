@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using Utilities;
 
@@ -48,26 +49,28 @@ namespace SMBLibrary.SMB2
             OutputCount = LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 36);
             Flags = LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 40);
             Reserved2 = LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 44);
-            Input = ByteReader.ReadBytes(buffer, offset + (int)InputOffset, (int)InputCount);
-            Output = ByteReader.ReadBytes(buffer, offset + (int)OutputOffset, (int)OutputCount);
+            Input = ByteReader.ReadBytes(buffer, offset + (int) InputOffset, (int) InputCount);
+            Output = ByteReader.ReadBytes(buffer, offset + (int) OutputOffset, (int) OutputCount);
         }
 
         public override void WriteCommandBytes(byte[] buffer, int offset)
         {
             InputOffset = 0;
-            InputCount = (uint)Input.Length;
+            InputCount = (uint) Input.Length;
             OutputOffset = 0;
-            OutputCount = (uint)Output.Length;
+            OutputCount = (uint) Output.Length;
             if (Input.Length > 0)
             {
                 InputOffset = SMB2Header.Length + FixedLength;
             }
+
             // MS-SMB2: the output offset MUST be set to InputOffset + InputCount rounded up to a multiple of 8
-            int paddedInputLength = (int)Math.Ceiling((double)Input.Length / 8) * 8;
+            int paddedInputLength = (int) Math.Ceiling((double) Input.Length / 8) * 8;
             if (Output.Length > 0)
             {
-                OutputOffset = SMB2Header.Length + FixedLength + (uint)paddedInputLength;
+                OutputOffset = SMB2Header.Length + FixedLength + (uint) paddedInputLength;
             }
+
             LittleEndianWriter.WriteUInt16(buffer, offset + 0, StructureSize);
             LittleEndianWriter.WriteUInt16(buffer, offset + 2, Reserved);
             LittleEndianWriter.WriteUInt32(buffer, offset + 4, CtlCode);
@@ -82,6 +85,7 @@ namespace SMBLibrary.SMB2
             {
                 ByteWriter.WriteBytes(buffer, offset + FixedLength, Input);
             }
+
             if (Output.Length > 0)
             {
                 ByteWriter.WriteBytes(buffer, offset + FixedLength + paddedInputLength, Output);
@@ -92,7 +96,7 @@ namespace SMBLibrary.SMB2
         {
             get
             {
-                int paddedInputLength = (int)Math.Ceiling((double)Input.Length / 8) * 8;
+                int paddedInputLength = (int) Math.Ceiling((double) Input.Length / 8) * 8;
                 return FixedLength + paddedInputLength + Output.Length;
             }
         }

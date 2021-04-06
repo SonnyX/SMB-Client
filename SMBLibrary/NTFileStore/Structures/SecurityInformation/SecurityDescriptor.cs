@@ -39,29 +39,29 @@ namespace SMBLibrary
         {
             Revision = ByteReader.ReadByte(buffer, ref offset);
             Sbz1 = ByteReader.ReadByte(buffer, ref offset);
-            Control = (SecurityDescriptorControl)LittleEndianReader.ReadUInt16(buffer, ref offset);
+            Control = (SecurityDescriptorControl) LittleEndianReader.ReadUInt16(buffer, ref offset);
             uint offsetOwner = LittleEndianReader.ReadUInt32(buffer, ref offset);
             uint offsetGroup = LittleEndianReader.ReadUInt32(buffer, ref offset);
             uint offsetSacl = LittleEndianReader.ReadUInt32(buffer, ref offset);
             uint offsetDacl = LittleEndianReader.ReadUInt32(buffer, ref offset);
             if (offsetOwner != 0)
             {
-                OwnerSid = new SID(buffer, (int)offsetOwner);
+                OwnerSid = new SID(buffer, (int) offsetOwner);
             }
 
             if (offsetGroup != 0)
             {
-                GroupSid = new SID(buffer, (int)offsetGroup);
+                GroupSid = new SID(buffer, (int) offsetGroup);
             }
 
             if (offsetSacl != 0)
             {
-                Sacl = new ACL(buffer, (int)offsetSacl);
+                Sacl = new ACL(buffer, (int) offsetSacl);
             }
 
             if (offsetDacl != 0)
             {
-                Dacl = new ACL(buffer, (int)offsetDacl);
+                Dacl = new ACL(buffer, (int) offsetDacl);
             }
         }
 
@@ -75,32 +75,32 @@ namespace SMBLibrary
             int offset = FixedLength;
             if (OwnerSid != null)
             {
-                offsetOwner = (uint)offset;
+                offsetOwner = (uint) offset;
                 offset += OwnerSid.Length;
             }
 
             if (GroupSid != null)
             {
-                offsetGroup = (uint)offset;
+                offsetGroup = (uint) offset;
                 offset += GroupSid.Length;
             }
 
             if (Sacl != null)
             {
-                offsetSacl = (uint)offset;
+                offsetSacl = (uint) offset;
                 offset += Sacl.Length;
             }
 
             if (Dacl != null)
             {
-                offsetDacl = (uint)offset;
+                offsetDacl = (uint) offset;
                 _ = Dacl.Length;
             }
 
             offset = 0;
             ByteWriter.WriteByte(buffer, ref offset, Revision);
             ByteWriter.WriteByte(buffer, ref offset, Sbz1);
-            LittleEndianWriter.WriteUInt16(buffer, ref offset, (ushort)Control);
+            LittleEndianWriter.WriteUInt16(buffer, ref offset, (ushort) Control);
             LittleEndianWriter.WriteUInt32(buffer, ref offset, offsetOwner);
             LittleEndianWriter.WriteUInt32(buffer, ref offset, offsetGroup);
             LittleEndianWriter.WriteUInt32(buffer, ref offset, offsetSacl);

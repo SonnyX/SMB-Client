@@ -16,6 +16,7 @@ namespace SMBLibrary.RPC
     public class ContextElement // Presentation Context Element
     {
         public ushort ContextID;
+
         // byte NumberOfTransferSyntaxItems;
         public byte Reserved;
         public SyntaxID AbstractSyntax;
@@ -42,7 +43,7 @@ namespace SMBLibrary.RPC
 
         public void WriteBytes(byte[] buffer, int offset)
         {
-            byte numberOfTransferSyntaxItems = (byte)TransferSyntaxList.Count;
+            byte numberOfTransferSyntaxItems = (byte) TransferSyntaxList.Count;
 
             LittleEndianWriter.WriteUInt16(buffer, offset + 0, ContextID);
             ByteWriter.WriteByte(buffer, offset + 2, numberOfTransferSyntaxItems);

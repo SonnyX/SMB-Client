@@ -1,4 +1,3 @@
-
 namespace SMBLibrary.SMB1
 {
     public enum ResourceType : ushort
@@ -7,7 +6,7 @@ namespace SMBLibrary.SMB1
         FileTypeByteModePipe = 0x0001,
         FileTypeMessageModePipe = 0x0002,
         FileTypePrinter = 0x0003,
-        
+
         /// <summary>
         /// OpenAndX Response: Valid.
         /// OpenAndX Extended Response: Invalid (SMB 1.0).

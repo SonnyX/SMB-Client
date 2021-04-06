@@ -31,16 +31,13 @@ namespace SMBLibrary.SMB1
             return new byte[0];
         }
 
-        public abstract Transaction2SubcommandName SubcommandName
-        {
-            get;
-        }
+        public abstract Transaction2SubcommandName SubcommandName { get; }
 
         public static Transaction2Subcommand GetSubcommandRequest(byte[] setup, byte[] parameters, byte[] data, bool isUnicode)
         {
             if (setup.Length == 2)
             {
-                Transaction2SubcommandName subcommandName = (Transaction2SubcommandName)LittleEndianConverter.ToUInt16(setup, 0);
+                Transaction2SubcommandName subcommandName = (Transaction2SubcommandName) LittleEndianConverter.ToUInt16(setup, 0);
                 switch (subcommandName)
                 {
                     case Transaction2SubcommandName.TRANS2_OPEN2:
@@ -77,6 +74,7 @@ namespace SMBLibrary.SMB1
                         return new Transaction2GetDfsReferralRequest(parameters);
                 }
             }
+
             throw new InvalidDataException();
         }
     }

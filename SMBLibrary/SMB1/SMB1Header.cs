@@ -12,7 +12,7 @@ namespace SMBLibrary.SMB1
     public class SMB1Header
     {
         public const int Length = 32;
-        public static readonly byte[] ProtocolSignature = { 0xFF, 0x53, 0x4D, 0x42 };
+        public static readonly byte[] ProtocolSignature = {0xFF, 0x53, 0x4D, 0x42};
 
         private readonly byte[] Protocol; // byte[4], 0xFF followed by "SMB"
         public CommandName Command;
@@ -41,10 +41,10 @@ namespace SMBLibrary.SMB1
         public SMB1Header(byte[] buffer)
         {
             Protocol = ByteReader.ReadBytes(buffer, 0, 4);
-            Command = (CommandName)ByteReader.ReadByte(buffer, 4);
-            Status = (NTStatus)LittleEndianConverter.ToUInt32(buffer, 5);
-            Flags = (HeaderFlags)ByteReader.ReadByte(buffer, 9);
-            Flags2 = (HeaderFlags2)LittleEndianConverter.ToUInt16(buffer, 10);
+            Command = (CommandName) ByteReader.ReadByte(buffer, 4);
+            Status = (NTStatus) LittleEndianConverter.ToUInt32(buffer, 5);
+            Flags = (HeaderFlags) ByteReader.ReadByte(buffer, 9);
+            Flags2 = (HeaderFlags2) LittleEndianConverter.ToUInt16(buffer, 10);
             ushort PIDHigh = LittleEndianConverter.ToUInt16(buffer, 12);
             SecurityFeatures = LittleEndianConverter.ToUInt64(buffer, 14);
             TID = LittleEndianConverter.ToUInt16(buffer, 24);
@@ -52,19 +52,19 @@ namespace SMBLibrary.SMB1
             UID = LittleEndianConverter.ToUInt16(buffer, 28);
             MID = LittleEndianConverter.ToUInt16(buffer, 30);
 
-            PID = (uint)((PIDHigh << 16) | PIDLow);
+            PID = (uint) ((PIDHigh << 16) | PIDLow);
         }
 
         public void WriteBytes(byte[] buffer, int offset)
         {
-            ushort PIDHigh = (ushort)(PID >> 16);
-            ushort PIDLow = (ushort)(PID & 0xFFFF);
+            ushort PIDHigh = (ushort) (PID >> 16);
+            ushort PIDLow = (ushort) (PID & 0xFFFF);
 
             ByteWriter.WriteBytes(buffer, offset + 0, Protocol);
-            ByteWriter.WriteByte(buffer, offset + 4, (byte)Command);
-            LittleEndianWriter.WriteUInt32(buffer, offset + 5, (uint)Status);
-            ByteWriter.WriteByte(buffer, offset + 9, (byte)Flags);
-            LittleEndianWriter.WriteUInt16(buffer, offset + 10, (ushort)Flags2);
+            ByteWriter.WriteByte(buffer, offset + 4, (byte) Command);
+            LittleEndianWriter.WriteUInt32(buffer, offset + 5, (uint) Status);
+            ByteWriter.WriteByte(buffer, offset + 9, (byte) Flags);
+            LittleEndianWriter.WriteUInt16(buffer, offset + 10, (ushort) Flags2);
             LittleEndianWriter.WriteUInt16(buffer, offset + 12, PIDHigh);
             LittleEndianWriter.WriteUInt64(buffer, offset + 14, SecurityFeatures);
             LittleEndianWriter.WriteUInt16(buffer, offset + 24, TID);
@@ -124,6 +124,7 @@ namespace SMBLibrary.SMB1
                 byte[] protocol = ByteReader.ReadBytes(buffer, 0, 4);
                 return ByteUtils.AreByteArraysEqual(protocol, ProtocolSignature);
             }
+
             return false;
         }
     }

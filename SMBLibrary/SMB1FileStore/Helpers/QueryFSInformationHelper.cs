@@ -19,8 +19,7 @@ namespace SMBLibrary.SMB1
                 QueryFSInformationLevel.SMB_QUERY_FS_VOLUME_INFO => FileSystemInformationClass.FileFsVolumeInformation,
                 QueryFSInformationLevel.SMB_QUERY_FS_SIZE_INFO => FileSystemInformationClass.FileFsSizeInformation,
                 QueryFSInformationLevel.SMB_QUERY_FS_DEVICE_INFO => FileSystemInformationClass.FileFsDeviceInformation,
-                QueryFSInformationLevel.SMB_QUERY_FS_ATTRIBUTE_INFO => FileSystemInformationClass
-                    .FileFsAttributeInformation,
+                QueryFSInformationLevel.SMB_QUERY_FS_ATTRIBUTE_INFO => FileSystemInformationClass.FileFsAttributeInformation,
                 _ => throw new UnsupportedInformationLevelException()
             };
         }
@@ -31,42 +30,22 @@ namespace SMBLibrary.SMB1
             {
                 case FileFsVolumeInformation volumeInfo:
                 {
-                    QueryFSVolumeInfo result = new QueryFSVolumeInfo
-                    {
-                        VolumeCreationTime = volumeInfo.VolumeCreationTime,
-                        SerialNumber = volumeInfo.VolumeSerialNumber,
-                        VolumeLabel = volumeInfo.VolumeLabel
-                    };
+                    QueryFSVolumeInfo result = new QueryFSVolumeInfo {VolumeCreationTime = volumeInfo.VolumeCreationTime, SerialNumber = volumeInfo.VolumeSerialNumber, VolumeLabel = volumeInfo.VolumeLabel};
                     return result;
                 }
                 case FileFsSizeInformation fsSizeInfo:
                 {
-                    QueryFSSizeInfo result = new QueryFSSizeInfo
-                    {
-                        TotalAllocationUnits = fsSizeInfo.TotalAllocationUnits,
-                        TotalFreeAllocationUnits = fsSizeInfo.AvailableAllocationUnits,
-                        BytesPerSector = fsSizeInfo.BytesPerSector,
-                        SectorsPerAllocationUnit = fsSizeInfo.SectorsPerAllocationUnit
-                    };
+                    QueryFSSizeInfo result = new QueryFSSizeInfo {TotalAllocationUnits = fsSizeInfo.TotalAllocationUnits, TotalFreeAllocationUnits = fsSizeInfo.AvailableAllocationUnits, BytesPerSector = fsSizeInfo.BytesPerSector, SectorsPerAllocationUnit = fsSizeInfo.SectorsPerAllocationUnit};
                     return result;
                 }
                 case FileFsDeviceInformation fsDeviceInfo:
                 {
-                    QueryFSDeviceInfo result = new QueryFSDeviceInfo
-                    {
-                        DeviceType = fsDeviceInfo.DeviceType,
-                        DeviceCharacteristics = fsDeviceInfo.Characteristics
-                    };
+                    QueryFSDeviceInfo result = new QueryFSDeviceInfo {DeviceType = fsDeviceInfo.DeviceType, DeviceCharacteristics = fsDeviceInfo.Characteristics};
                     return result;
                 }
                 case FileFsAttributeInformation fsAttributeInfo:
                 {
-                    QueryFSAttibuteInfo result = new QueryFSAttibuteInfo
-                    {
-                        FileSystemAttributes = fsAttributeInfo.FileSystemAttributes,
-                        MaxFileNameLengthInBytes = fsAttributeInfo.MaximumComponentNameLength,
-                        FileSystemName = fsAttributeInfo.FileSystemName
-                    };
+                    QueryFSAttibuteInfo result = new QueryFSAttibuteInfo {FileSystemAttributes = fsAttributeInfo.FileSystemAttributes, MaxFileNameLengthInBytes = fsAttributeInfo.MaximumComponentNameLength, FileSystemName = fsAttributeInfo.FileSystemName};
                     return result;
                 }
                 default:

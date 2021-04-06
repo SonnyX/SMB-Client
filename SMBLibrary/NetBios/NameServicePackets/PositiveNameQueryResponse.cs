@@ -26,12 +26,7 @@ namespace SMBLibrary.NetBios
 
         public PositiveNameQueryResponse()
         {
-            Header = new NameServicePacketHeader
-            {
-                Flags = OperationFlags.AuthoritativeAnswer | OperationFlags.RecursionDesired,
-                OpCode = NameServiceOperation.QueryResponse,
-                ANCount = 1
-            };
+            Header = new NameServicePacketHeader {Flags = OperationFlags.AuthoritativeAnswer | OperationFlags.RecursionDesired, OpCode = NameServiceOperation.QueryResponse, ANCount = 1};
             Resource = new ResourceRecord(NameRecordType.NB);
         }
 
@@ -42,7 +37,7 @@ namespace SMBLibrary.NetBios
             int position = 0;
             while (position < Resource.Data.Length)
             {
-                NameFlags nameFlags = (NameFlags)BigEndianReader.ReadUInt16(Resource.Data, ref position);
+                NameFlags nameFlags = (NameFlags) BigEndianReader.ReadUInt16(Resource.Data, ref position);
                 byte[] address = ByteReader.ReadBytes(Resource.Data, ref position, 4);
                 Addresses.Add(address, nameFlags);
             }
@@ -64,9 +59,10 @@ namespace SMBLibrary.NetBios
             int offset = 0;
             foreach (KeyValuePair<byte[], NameFlags> entry in Addresses)
             {
-                BigEndianWriter.WriteUInt16(data, ref offset, (ushort)entry.Value);
+                BigEndianWriter.WriteUInt16(data, ref offset, (ushort) entry.Value);
                 ByteWriter.WriteBytes(data, ref offset, entry.Key, 4);
             }
+
             return data;
         }
     }

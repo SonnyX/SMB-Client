@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using Utilities;
 
@@ -23,7 +24,9 @@ namespace SMBLibrary.SMB1
         public OpenMode OpenMode;
         public uint AllocationSize;
         public byte[] Reserved; // 10 bytes
+
         public string? FileName; // SMB_STRING
+
         // Data:
         public FullExtendedAttributeList? ExtendedAttributeList;
 
@@ -34,10 +37,10 @@ namespace SMBLibrary.SMB1
 
         public Transaction2Open2Request(byte[] parameters, byte[] data, bool isUnicode)
         {
-            Flags = (Open2Flags)LittleEndianConverter.ToUInt16(parameters, 0);
+            Flags = (Open2Flags) LittleEndianConverter.ToUInt16(parameters, 0);
             AccessMode = new AccessModeOptions(parameters, 2);
             Reserved1 = LittleEndianConverter.ToUInt16(parameters, 4);
-            FileAttributes = (SMBFileAttributes)LittleEndianConverter.ToUInt16(parameters, 6);
+            FileAttributes = (SMBFileAttributes) LittleEndianConverter.ToUInt16(parameters, 6);
             CreationTime = UTimeHelper.ReadNullableUTime(parameters, 8);
             OpenMode = new OpenMode(parameters, 12);
             AllocationSize = LittleEndianConverter.ToUInt32(parameters, 14);
@@ -49,7 +52,7 @@ namespace SMBLibrary.SMB1
 
         public override byte[] GetSetup()
         {
-            return LittleEndianConverter.GetBytes((ushort)SubcommandName);
+            return LittleEndianConverter.GetBytes((ushort) SubcommandName);
         }
 
         public override byte[] GetParameters(bool isUnicode)
@@ -65,10 +68,10 @@ namespace SMBLibrary.SMB1
             }
 
             byte[] parameters = new byte[length];
-            LittleEndianWriter.WriteUInt16(parameters, 0, (ushort)Flags);
+            LittleEndianWriter.WriteUInt16(parameters, 0, (ushort) Flags);
             AccessMode.WriteBytes(parameters, 2);
             LittleEndianWriter.WriteUInt16(parameters, 4, Reserved1);
-            LittleEndianWriter.WriteUInt16(parameters, 6, (ushort)FileAttributes);
+            LittleEndianWriter.WriteUInt16(parameters, 6, (ushort) FileAttributes);
             UTimeHelper.WriteUTime(parameters, 8, CreationTime);
             OpenMode.WriteBytes(parameters, 12);
             LittleEndianWriter.WriteUInt32(parameters, 14, AllocationSize);

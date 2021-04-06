@@ -15,23 +15,29 @@ namespace SMBLibrary.SMB1
     public class NTTransactRequest : SMB1Command
     {
         public const int FixedSMBParametersLength = 38;
+
         // Parameters:
         public byte MaxSetupCount;
         public ushort Reserved1;
         public uint TotalParameterCount;
         public uint TotalDataCount;
         public uint MaxParameterCount;
+
         public uint MaxDataCount;
+
         //uint ParameterCount;
         //uint ParameterOffset;
         //uint DataCount;
         //uint DataOffset;
         //byte SetupCount; // In 2-byte words
         public NTTransactSubcommandName Function;
+
         public byte[] Setup;
+
         // Data:
         // Padding (alignment to 4 byte boundary)
         public byte[] TransParameters; // Trans_Parameters
+
         // Padding (alignment to 4 byte boundary)
         public byte[] TransData; // Trans_Data
 
@@ -53,26 +59,26 @@ namespace SMBLibrary.SMB1
             uint dataCount = LittleEndianReader.ReadUInt32(SMBParameters, ref readOffset);
             uint dataOffset = LittleEndianReader.ReadUInt32(SMBParameters, ref readOffset);
             byte setupCount = ByteReader.ReadByte(SMBParameters, ref readOffset);
-            Function = (NTTransactSubcommandName)LittleEndianReader.ReadUInt16(SMBParameters, ref readOffset);
+            Function = (NTTransactSubcommandName) LittleEndianReader.ReadUInt16(SMBParameters, ref readOffset);
             Setup = ByteReader.ReadBytes(SMBParameters, ref readOffset, setupCount * 2);
 
-            TransParameters = ByteReader.ReadBytes(buffer, (int)parameterOffset, (int)parameterCount);
-            TransData = ByteReader.ReadBytes(buffer, (int)dataOffset, (int)dataCount);
+            TransParameters = ByteReader.ReadBytes(buffer, (int) parameterOffset, (int) parameterCount);
+            TransData = ByteReader.ReadBytes(buffer, (int) dataOffset, (int) dataCount);
         }
 
         public override byte[] GetBytes(bool isUnicode)
         {
-            byte setupCount = (byte)(Setup.Length / 2);
-            uint parameterCount = (ushort)TransParameters.Length;
-            uint dataCount = (ushort)TransData.Length;
+            byte setupCount = (byte) (Setup.Length / 2);
+            uint parameterCount = (ushort) TransParameters.Length;
+            uint dataCount = (ushort) TransData.Length;
 
             // WordCount + ByteCount are additional 3 bytes
-            uint parameterOffset = (ushort)(SMB1Header.Length + 3 + (FixedSMBParametersLength + Setup.Length));
-            int padding1 = (int)(4 - (parameterOffset % 4)) % 4;
-            parameterOffset += (ushort)padding1;
-            uint dataOffset = (ushort)(parameterOffset + parameterCount);
-            int padding2 = (int)(4 - (dataOffset % 4)) % 4;
-            dataOffset += (ushort)padding2;
+            uint parameterOffset = (ushort) (SMB1Header.Length + 3 + (FixedSMBParametersLength + Setup.Length));
+            int padding1 = (int) (4 - (parameterOffset % 4)) % 4;
+            parameterOffset += (ushort) padding1;
+            uint dataOffset = (ushort) (parameterOffset + parameterCount);
+            int padding2 = (int) (4 - (dataOffset % 4)) % 4;
+            dataOffset += (ushort) padding2;
 
             SMBParameters = new byte[FixedSMBParametersLength + Setup.Length];
             int writeOffset = 0;
@@ -87,12 +93,12 @@ namespace SMBLibrary.SMB1
             LittleEndianWriter.WriteUInt32(SMBParameters, ref writeOffset, dataCount);
             LittleEndianWriter.WriteUInt32(SMBParameters, ref writeOffset, dataOffset);
             ByteWriter.WriteByte(SMBParameters, ref writeOffset, setupCount);
-            LittleEndianWriter.WriteUInt16(SMBParameters, ref writeOffset, (ushort)Function);
+            LittleEndianWriter.WriteUInt16(SMBParameters, ref writeOffset, (ushort) Function);
             ByteWriter.WriteBytes(SMBParameters, ref writeOffset, Setup);
 
             SMBData = new byte[padding1 + parameterCount + padding2 + dataCount];
             ByteWriter.WriteBytes(SMBData, padding1, TransParameters);
-            ByteWriter.WriteBytes(SMBData, (int)(padding1 + parameterCount + padding2), TransData);
+            ByteWriter.WriteBytes(SMBData, (int) (padding1 + parameterCount + padding2), TransData);
 
             return base.GetBytes(isUnicode);
         }

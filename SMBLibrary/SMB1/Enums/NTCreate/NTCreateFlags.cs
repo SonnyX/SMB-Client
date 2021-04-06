@@ -9,7 +9,7 @@ namespace SMBLibrary.SMB1
         /// If set, the client requests an exclusive OpLock.
         /// </summary>
         NT_CREATE_REQUEST_OPLOCK = 0x00000002,
-        
+
         /// <summary>
         /// If set, the client requests an exclusive batch OpLock.
         /// </summary>

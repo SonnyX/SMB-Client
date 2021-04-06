@@ -24,12 +24,12 @@ namespace SMBLibrary.SMB1
         public QueryFileNameInfo(byte[] buffer)
         {
             uint fileNameLength = LittleEndianConverter.ToUInt32(buffer, 0);
-            FileName = ByteReader.ReadUTF16String(buffer, 4, (int)(fileNameLength / 2));
+            FileName = ByteReader.ReadUTF16String(buffer, 4, (int) (fileNameLength / 2));
         }
 
         public override byte[] GetBytes()
         {
-            uint fileNameLength = (uint)(FileName.Length * 2);
+            uint fileNameLength = (uint) (FileName.Length * 2);
             byte[] buffer = new byte[4 + fileNameLength];
             LittleEndianWriter.WriteUInt32(buffer, 0, fileNameLength);
             ByteWriter.WriteUTF16String(buffer, 4, FileName);

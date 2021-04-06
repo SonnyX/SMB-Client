@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using Utilities;
 
 namespace SMBLibrary.SMB1
@@ -14,6 +15,7 @@ namespace SMBLibrary.SMB1
     public class SessionSetupAndXRequest : SMBAndXCommand
     {
         public const int ParametersLength = 26;
+
         // Parameters:
         public ushort MaxBufferSize;
         public ushort MaxMpxCount;
@@ -22,15 +24,19 @@ namespace SMBLibrary.SMB1
         private ushort OEMPasswordLength;
         private ushort UnicodePasswordLength;
         public uint Reserved;
+
         public Capabilities Capabilities;
+
         // Data:
         public byte[] OEMPassword;
+
         public byte[] UnicodePassword;
+
         // Padding
-        public string AccountName;   // SMB_STRING (If Unicode, this field MUST be aligned to start on a 2-byte boundary from the start of the SMB header)
+        public string AccountName; // SMB_STRING (If Unicode, this field MUST be aligned to start on a 2-byte boundary from the start of the SMB header)
         public string PrimaryDomain; // SMB_STRING (this field WILL be aligned to start on a 2-byte boundary from the start of the SMB header)
-        public string NativeOS;      // SMB_STRING (this field WILL be aligned to start on a 2-byte boundary from the start of the SMB header)
-        public string NativeLanMan;  // SMB_STRING (this field WILL be aligned to start on a 2-byte boundary from the start of the SMB header)
+        public string NativeOS; // SMB_STRING (this field WILL be aligned to start on a 2-byte boundary from the start of the SMB header)
+        public string NativeLanMan; // SMB_STRING (this field WILL be aligned to start on a 2-byte boundary from the start of the SMB header)
 
         public SessionSetupAndXRequest()
         {
@@ -49,7 +55,7 @@ namespace SMBLibrary.SMB1
             OEMPasswordLength = LittleEndianConverter.ToUInt16(SMBParameters, 14);
             UnicodePasswordLength = LittleEndianConverter.ToUInt16(SMBParameters, 16);
             Reserved = LittleEndianConverter.ToUInt32(SMBParameters, 18);
-            Capabilities = (Capabilities)LittleEndianConverter.ToUInt32(SMBParameters, 22);
+            Capabilities = (Capabilities) LittleEndianConverter.ToUInt32(SMBParameters, 22);
 
             OEMPassword = ByteReader.ReadBytes(SMBData, 0, OEMPasswordLength);
             UnicodePassword = ByteReader.ReadBytes(SMBData, OEMPasswordLength, UnicodePasswordLength);
@@ -62,6 +68,7 @@ namespace SMBLibrary.SMB1
                 int padding = (1 + OEMPasswordLength + UnicodePasswordLength) % 2;
                 dataOffset += padding;
             }
+
             AccountName = SMB1Helper.ReadSMBString(SMBData, ref dataOffset, isUnicode);
             PrimaryDomain = SMB1Helper.ReadSMBString(SMBData, ref dataOffset, isUnicode);
             NativeOS = SMB1Helper.ReadSMBString(SMBData, ref dataOffset, isUnicode);
@@ -72,9 +79,9 @@ namespace SMBLibrary.SMB1
         {
             Capabilities &= ~Capabilities.ExtendedSecurity;
 
-            OEMPasswordLength = (ushort)OEMPassword.Length;
-            UnicodePasswordLength = (ushort)UnicodePassword.Length;
-            
+            OEMPasswordLength = (ushort) OEMPassword.Length;
+            UnicodePasswordLength = (ushort) UnicodePassword.Length;
+
             SMBParameters = new byte[ParametersLength];
             LittleEndianWriter.WriteUInt16(SMBParameters, 4, MaxBufferSize);
             LittleEndianWriter.WriteUInt16(SMBParameters, 6, MaxMpxCount);
@@ -83,7 +90,7 @@ namespace SMBLibrary.SMB1
             LittleEndianWriter.WriteUInt16(SMBParameters, 14, OEMPasswordLength);
             LittleEndianWriter.WriteUInt16(SMBParameters, 16, UnicodePasswordLength);
             LittleEndianWriter.WriteUInt32(SMBParameters, 18, Reserved);
-            LittleEndianWriter.WriteUInt32(SMBParameters, 22, (uint)Capabilities);
+            LittleEndianWriter.WriteUInt32(SMBParameters, 22, (uint) Capabilities);
 
             int padding = 0;
             if (isUnicode)
@@ -97,6 +104,7 @@ namespace SMBLibrary.SMB1
             {
                 SMBData = new byte[OEMPassword.Length + UnicodePassword.Length + AccountName.Length + 1 + PrimaryDomain.Length + 1 + NativeOS.Length + 1 + NativeLanMan.Length + 1];
             }
+
             int offset = 0;
             ByteWriter.WriteBytes(SMBData, ref offset, OEMPassword);
             ByteWriter.WriteBytes(SMBData, ref offset, UnicodePassword);

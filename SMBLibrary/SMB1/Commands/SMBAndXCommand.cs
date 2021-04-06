@@ -21,14 +21,14 @@ namespace SMBLibrary.SMB1
 
         public SMBAndXCommand(byte[] buffer, int offset) : base(buffer, offset)
         {
-            AndXCommand = (CommandName)ByteReader.ReadByte(SMBParameters, 0);
+            AndXCommand = (CommandName) ByteReader.ReadByte(SMBParameters, 0);
             AndXReserved = ByteReader.ReadByte(SMBParameters, 1);
             AndXOffset = LittleEndianConverter.ToUInt16(SMBParameters, 2);
         }
 
         public override byte[] GetBytes(bool isUnicode)
         {
-            ByteWriter.WriteByte(SMBParameters, 0, (byte)AndXCommand);
+            ByteWriter.WriteByte(SMBParameters, 0, (byte) AndXCommand);
             ByteWriter.WriteByte(SMBParameters, 1, AndXReserved);
             LittleEndianWriter.WriteUInt16(SMBParameters, 2, AndXOffset);
             return base.GetBytes(isUnicode);

@@ -39,11 +39,7 @@ namespace SMBLibrary.Authentication.NTLM
             MaximumSupportedVersion = StructureVersion;
             TimeStamp = timeStamp;
             ClientChallenge = clientChallenge;
-            AVPairs = new KeyValuePairList<AVPairKey, byte[]>
-            {
-                { AVPairKey.NbDomainName, Encoding.Unicode.GetBytes(domainName) },
-                { AVPairKey.NbComputerName, Encoding.Unicode.GetBytes(computerName) }
-            };
+            AVPairs = new KeyValuePairList<AVPairKey, byte[]> {{AVPairKey.NbDomainName, Encoding.Unicode.GetBytes(domainName)}, {AVPairKey.NbComputerName, Encoding.Unicode.GetBytes(computerName)}};
         }
 
         public NTLMv2ClientChallenge(DateTime timeStamp, byte[] clientChallenge, KeyValuePairList<AVPairKey, byte[]> targetInfo)

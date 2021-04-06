@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using Utilities;
 
 namespace SMBLibrary.RPC
@@ -18,7 +19,9 @@ namespace SMBLibrary.RPC
         public ushort MaxTransmitFragmentSize; // max_xmit_frag
         public ushort MaxReceiveFragmentSize; // max_recv_frag
         public uint AssociationGroupID; // assoc_group_id
+
         public string SecondaryAddress; // sec_addr (port_any_t)
+
         // Padding (alignment to 4 byte boundary)
         public ResultList ResultList; // p_result_list
         public byte[] AuthVerifier;
@@ -48,7 +51,7 @@ namespace SMBLibrary.RPC
 
         public override byte[] GetBytes()
         {
-            AuthLength = (ushort)AuthVerifier.Length;
+            AuthLength = (ushort) AuthVerifier.Length;
             int padding = (4 - ((SecondaryAddress.Length + 3) % 4)) % 4;
             byte[] buffer = new byte[Length];
             WriteCommonFieldsBytes(buffer);
@@ -60,7 +63,7 @@ namespace SMBLibrary.RPC
             offset += padding;
             ResultList.WriteBytes(buffer, ref offset);
             ByteWriter.WriteBytes(buffer, offset, AuthVerifier);
-            
+
             return buffer;
         }
 

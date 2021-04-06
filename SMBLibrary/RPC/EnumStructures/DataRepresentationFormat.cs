@@ -43,16 +43,16 @@ namespace SMBLibrary.RPC
 
         public DataRepresentationFormat(byte[] buffer, int offset)
         {
-            CharacterFormat = (CharacterFormat)(buffer[offset + 0] & 0x0F);
-            ByteOrder = (ByteOrder)(buffer[offset + 0] >> 4);
-            FloatingPointRepresentation = (FloatingPointRepresentation)(buffer[offset + 1]);
+            CharacterFormat = (CharacterFormat) (buffer[offset + 0] & 0x0F);
+            ByteOrder = (ByteOrder) (buffer[offset + 0] >> 4);
+            FloatingPointRepresentation = (FloatingPointRepresentation) (buffer[offset + 1]);
         }
 
         public void WriteBytes(byte[] buffer, int offset)
         {
-            buffer[offset + 0] = (byte)CharacterFormat;
-            buffer[offset + 0] |= (byte)((byte)ByteOrder << 4);
-            buffer[offset + 1] = (byte)FloatingPointRepresentation;
+            buffer[offset + 0] = (byte) CharacterFormat;
+            buffer[offset + 0] |= (byte) ((byte) ByteOrder << 4);
+            buffer[offset + 1] = (byte) FloatingPointRepresentation;
         }
     }
 }

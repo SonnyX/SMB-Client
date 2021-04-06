@@ -27,7 +27,7 @@ namespace SMBLibrary.RPC
         public BindNakPDU(byte[] buffer, int offset) : base(buffer, offset)
         {
             offset += CommonFieldsLength;
-            RejectReason = (RejectionReason)LittleEndianReader.ReadUInt16(buffer, ref offset);
+            RejectReason = (RejectionReason) LittleEndianReader.ReadUInt16(buffer, ref offset);
             Versions = new VersionsSupported(buffer, offset);
         }
 
@@ -36,9 +36,9 @@ namespace SMBLibrary.RPC
             byte[] buffer = new byte[Length];
             WriteCommonFieldsBytes(buffer);
             int offset = CommonFieldsLength;
-            LittleEndianWriter.WriteUInt16(buffer, ref offset, (ushort)RejectReason);
+            LittleEndianWriter.WriteUInt16(buffer, ref offset, (ushort) RejectReason);
             Versions.WriteBytes(buffer, offset);
-            
+
             return buffer;
         }
 
@@ -51,6 +51,7 @@ namespace SMBLibrary.RPC
                 {
                     length += Versions.Length;
                 }
+
                 return length;
             }
         }

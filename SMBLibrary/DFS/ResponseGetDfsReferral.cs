@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.Collections.Generic;
 
@@ -18,6 +19,7 @@ namespace SMBLibrary
         public ushort NumberOfReferrals;
         public uint ReferralHeaderFlags;
         public List<DfsReferralEntry> ReferralEntries;
+
         public List<string> StringBuffer;
         // Padding
 

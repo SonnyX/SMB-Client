@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using Utilities;
 
@@ -33,7 +34,7 @@ namespace SMBLibrary.SMB1
             LastAccessTime = FileTimeHelper.ReadNullableFileTime(buffer, ref offset);
             LastWriteTime = FileTimeHelper.ReadNullableFileTime(buffer, ref offset);
             LastChangeTime = FileTimeHelper.ReadNullableFileTime(buffer, ref offset);
-            ExtFileAttributes = (ExtendedFileAttributes)LittleEndianReader.ReadUInt32(buffer, ref offset);
+            ExtFileAttributes = (ExtendedFileAttributes) LittleEndianReader.ReadUInt32(buffer, ref offset);
             Reserved = LittleEndianReader.ReadUInt32(buffer, ref offset);
         }
 
@@ -45,7 +46,7 @@ namespace SMBLibrary.SMB1
             FileTimeHelper.WriteFileTime(buffer, ref offset, LastAccessTime);
             FileTimeHelper.WriteFileTime(buffer, ref offset, LastWriteTime);
             FileTimeHelper.WriteFileTime(buffer, ref offset, LastChangeTime);
-            LittleEndianWriter.WriteUInt32(buffer, ref offset, (uint)ExtFileAttributes);
+            LittleEndianWriter.WriteUInt32(buffer, ref offset, (uint) ExtFileAttributes);
             LittleEndianWriter.WriteUInt32(buffer, ref offset, Reserved);
             return buffer;
         }

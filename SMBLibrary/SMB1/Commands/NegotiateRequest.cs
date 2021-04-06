@@ -17,6 +17,7 @@ namespace SMBLibrary.SMB1
     public class NegotiateRequest : SMB1Command
     {
         public const int SupportedBufferFormat = 0x02;
+
         // Data:
         public List<string> Dialects = new List<string>();
 
@@ -34,6 +35,7 @@ namespace SMBLibrary.SMB1
                 {
                     throw new InvalidDataException("Unsupported Buffer Format");
                 }
+
                 string dialect = ByteReader.ReadNullTerminatedAnsiString(SMBData, dataOffset);
                 Dialects.Add(dialect);
                 dataOffset += dialect.Length + 1;
@@ -58,6 +60,7 @@ namespace SMBLibrary.SMB1
                 ByteWriter.WriteByte(SMBData, offset + 1 + dialect.Length, 0x00);
                 offset += 1 + dialect.Length + 1;
             }
+
             return base.GetBytes(isUnicode);
         }
 

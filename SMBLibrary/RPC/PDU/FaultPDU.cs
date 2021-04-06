@@ -39,7 +39,7 @@ namespace SMBLibrary.RPC
             ContextID = LittleEndianReader.ReadUInt16(buffer, ref offset);
             CancelCount = ByteReader.ReadByte(buffer, ref offset);
             Reserved = ByteReader.ReadByte(buffer, ref offset);
-            Status = (FaultStatus)LittleEndianReader.ReadUInt32(buffer, ref offset);
+            Status = (FaultStatus) LittleEndianReader.ReadUInt32(buffer, ref offset);
             Reserved2 = LittleEndianReader.ReadUInt32(buffer, ref offset);
             int dataLength = FragmentLength - AuthLength - offset;
             Data = ByteReader.ReadBytes(buffer, ref offset, dataLength);
@@ -48,7 +48,7 @@ namespace SMBLibrary.RPC
 
         public override byte[] GetBytes()
         {
-            AuthLength = (ushort)AuthVerifier.Length;
+            AuthLength = (ushort) AuthVerifier.Length;
             byte[] buffer = new byte[Length];
             WriteCommonFieldsBytes(buffer);
             int offset = CommonFieldsLength;
@@ -56,7 +56,7 @@ namespace SMBLibrary.RPC
             LittleEndianWriter.WriteUInt16(buffer, ref offset, ContextID);
             ByteWriter.WriteByte(buffer, ref offset, CancelCount);
             ByteWriter.WriteByte(buffer, ref offset, Reserved);
-            LittleEndianWriter.WriteUInt32(buffer, ref offset, (uint)Status);
+            LittleEndianWriter.WriteUInt32(buffer, ref offset, (uint) Status);
             LittleEndianWriter.WriteUInt32(buffer, ref offset, Reserved2);
             ByteWriter.WriteBytes(buffer, ref offset, Data);
             ByteWriter.WriteBytes(buffer, ref offset, AuthVerifier);

@@ -26,7 +26,7 @@ namespace Utilities
                     throw new NotSupportedException("Associated data length of 65280 or more is not supported");
                 }
 
-                byte[] associatedDataLength = BigEndianConverter.GetBytes((ushort)associatedData.Length);
+                byte[] associatedDataLength = BigEndianConverter.GetBytes((ushort) associatedData.Length);
                 messageToAuthenticate = ByteUtils.Concatenate(messageToAuthenticate, associatedDataLength);
                 messageToAuthenticate = ByteUtils.Concatenate(messageToAuthenticate, associatedData);
                 int associatedDataPaddingLength = (16 - (messageToAuthenticate.Length % 16)) % 16;
@@ -84,6 +84,7 @@ namespace Utilities
             {
                 throw new CryptographicException("The computed authentication value did not match the input");
             }
+
             return data;
         }
 
@@ -112,7 +113,7 @@ namespace Utilities
             int temp = messageLength;
             for (int index = 15; index > 15 - lengthFieldLength; index--)
             {
-                b0[index] = (byte)(temp % 256);
+                b0[index] = (byte) (temp % 256);
                 temp /= 256;
             }
 
@@ -124,12 +125,12 @@ namespace Utilities
             byte[] aBlock = new byte[16];
             Array.Copy(nonce, 0, aBlock, 1, nonce.Length);
             int lengthFieldLength = 15 - nonce.Length;
-            aBlock[0] = (byte)(lengthFieldLength - 1);
+            aBlock[0] = (byte) (lengthFieldLength - 1);
 
             int temp = blockIndex;
             for (int index = 15; index > 15 - lengthFieldLength; index--)
             {
-                aBlock[index] = (byte)(temp % 256);
+                aBlock[index] = (byte) (temp % 256);
                 temp /= 256;
             }
 
@@ -144,8 +145,8 @@ namespace Utilities
                 flags |= 0x40;
             }
 
-            flags |= (byte)(lengthFieldLength - 1); // L'
-            flags |= (byte)(((signatureLength - 2) / 2) << 3); // M'
+            flags |= (byte) (lengthFieldLength - 1); // L'
+            flags |= (byte) (((signatureLength - 2) / 2) << 3); // M'
 
             return flags;
         }
@@ -153,11 +154,7 @@ namespace Utilities
         private static byte[] AesEncrypt(byte[] key, byte[] iv, byte[] data, CipherMode cipherMode)
         {
             using MemoryStream ms = new MemoryStream();
-            using RijndaelManaged aes = new RijndaelManaged
-            {
-                Mode = cipherMode,
-                Padding = PaddingMode.None
-            };
+            using RijndaelManaged aes = new RijndaelManaged {Mode = cipherMode, Padding = PaddingMode.None};
 
             using CryptoStream cs = new CryptoStream(ms, aes.CreateEncryptor(key, iv), CryptoStreamMode.Write);
             cs.Write(data, 0, data.Length);

@@ -13,10 +13,12 @@ namespace SMBLibrary.SMB1
     public class CloseResponse : SMB1Command
     {
         public CloseResponse()
-        {}
+        {
+        }
 
         public CloseResponse(byte[] buffer, int offset) : base(buffer, offset)
-        { }
+        {
+        }
 
         public override CommandName CommandName => CommandName.SMB_COM_CLOSE;
     }

@@ -46,6 +46,7 @@ namespace SMBLibrary.SMB1
                     break;
                 }
             }
+
             return result;
         }
 
@@ -65,7 +66,7 @@ namespace SMBLibrary.SMB1
                         LastAttrChangeTime = fileDirectoryInfo.LastWriteTime,
                         EndOfFile = fileDirectoryInfo.EndOfFile,
                         AllocationSize = fileDirectoryInfo.AllocationSize,
-                        ExtFileAttributes = (ExtendedFileAttributes)fileDirectoryInfo.FileAttributes,
+                        ExtFileAttributes = (ExtendedFileAttributes) fileDirectoryInfo.FileAttributes,
                         FileName = fileDirectoryInfo.FileName
                     };
                     return result;
@@ -81,7 +82,7 @@ namespace SMBLibrary.SMB1
                         LastAttrChangeTime = fileFullDirectoryInfo.LastWriteTime,
                         EndOfFile = fileFullDirectoryInfo.EndOfFile,
                         AllocationSize = fileFullDirectoryInfo.AllocationSize,
-                        ExtFileAttributes = (ExtendedFileAttributes)fileFullDirectoryInfo.FileAttributes,
+                        ExtFileAttributes = (ExtendedFileAttributes) fileFullDirectoryInfo.FileAttributes,
                         EASize = fileFullDirectoryInfo.EaSize,
                         FileName = fileFullDirectoryInfo.FileName
                     };
@@ -89,11 +90,7 @@ namespace SMBLibrary.SMB1
                 }
                 case FileNamesInformation fileNamesInfo:
                 {
-                    FindFileNamesInfo result = new FindFileNamesInfo
-                    {
-                        FileIndex = fileNamesInfo.FileIndex,
-                        FileName = fileNamesInfo.FileName
-                    };
+                    FindFileNamesInfo result = new FindFileNamesInfo {FileIndex = fileNamesInfo.FileIndex, FileName = fileNamesInfo.FileName};
                     return result;
                 }
                 case FileBothDirectoryInformation fileBothDirectoryInfo:
@@ -107,7 +104,7 @@ namespace SMBLibrary.SMB1
                         LastChangeTime = fileBothDirectoryInfo.LastWriteTime,
                         EndOfFile = fileBothDirectoryInfo.EndOfFile,
                         AllocationSize = fileBothDirectoryInfo.AllocationSize,
-                        ExtFileAttributes = (ExtendedFileAttributes)fileBothDirectoryInfo.FileAttributes,
+                        ExtFileAttributes = (ExtendedFileAttributes) fileBothDirectoryInfo.FileAttributes,
                         EASize = fileBothDirectoryInfo.EaSize,
                         Reserved = fileBothDirectoryInfo.Reserved,
                         ShortName = fileBothDirectoryInfo.ShortName,
@@ -126,7 +123,7 @@ namespace SMBLibrary.SMB1
                         LastAttrChangeTime = fileIDFullDirectoryInfo.LastWriteTime,
                         EndOfFile = fileIDFullDirectoryInfo.EndOfFile,
                         AllocationSize = fileIDFullDirectoryInfo.AllocationSize,
-                        ExtFileAttributes = (ExtendedFileAttributes)fileIDFullDirectoryInfo.FileAttributes,
+                        ExtFileAttributes = (ExtendedFileAttributes) fileIDFullDirectoryInfo.FileAttributes,
                         EASize = fileIDFullDirectoryInfo.EaSize,
                         Reserved = fileIDFullDirectoryInfo.Reserved,
                         FileID = fileIDFullDirectoryInfo.FileId,
@@ -145,7 +142,7 @@ namespace SMBLibrary.SMB1
                         LastChangeTime = fileIDBothDirectoryInfo.LastWriteTime,
                         EndOfFile = fileIDBothDirectoryInfo.EndOfFile,
                         AllocationSize = fileIDBothDirectoryInfo.AllocationSize,
-                        ExtFileAttributes = (ExtendedFileAttributes)fileIDBothDirectoryInfo.FileAttributes,
+                        ExtFileAttributes = (ExtendedFileAttributes) fileIDBothDirectoryInfo.FileAttributes,
                         EASize = fileIDBothDirectoryInfo.EaSize,
                         Reserved = fileIDBothDirectoryInfo.Reserved1,
                         ShortName = fileIDBothDirectoryInfo.ShortName,

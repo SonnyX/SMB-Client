@@ -1,4 +1,3 @@
-
 namespace SMBLibrary.SMB2
 {
     public enum NegotiateContextType : ushort

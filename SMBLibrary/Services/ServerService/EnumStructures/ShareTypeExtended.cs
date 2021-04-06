@@ -49,7 +49,7 @@ namespace SMBLibrary.Services
 
         public ShareTypeExtended(uint shareTypeExtended)
         {
-            ShareType = (ShareType)(shareTypeExtended & 0x0FFFFFFF);
+            ShareType = (ShareType) (shareTypeExtended & 0x0FFFFFFF);
             IsSpecial = (shareTypeExtended & 0x80000000) > 0;
             IsTemporary = (shareTypeExtended & 0x40000000) > 0;
         }
@@ -61,15 +61,17 @@ namespace SMBLibrary.Services
 
         public uint ToUInt32()
         {
-            uint shareTypeExtended = (uint)ShareType;
+            uint shareTypeExtended = (uint) ShareType;
             if (IsSpecial)
             {
                 shareTypeExtended |= 0x80000000;
             }
+
             if (IsTemporary)
             {
                 shareTypeExtended |= 0x40000000;
             }
+
             return shareTypeExtended;
         }
     }

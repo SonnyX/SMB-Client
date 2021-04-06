@@ -87,7 +87,7 @@ namespace SMBLibrary.RPC
 
             if (m_referentToInstance.ContainsKey(referentID))
             {
-                NDRUnicodeString unicodeString = (NDRUnicodeString)m_referentToInstance[referentID];
+                NDRUnicodeString unicodeString = (NDRUnicodeString) m_referentToInstance[referentID];
                 return unicodeString.Value;
             }
             else

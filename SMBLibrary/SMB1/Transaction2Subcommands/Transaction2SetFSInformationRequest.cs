@@ -39,7 +39,7 @@ namespace SMBLibrary.SMB1
 
         public override byte[] GetSetup()
         {
-            return LittleEndianConverter.GetBytes((ushort)SubcommandName);
+            return LittleEndianConverter.GetBytes((ushort) SubcommandName);
         }
 
         public override byte[] GetParameters(bool isUnicode)
@@ -59,8 +59,8 @@ namespace SMBLibrary.SMB1
 
         public FileSystemInformationClass FileSystemInformationClass
         {
-            get => (FileSystemInformationClass)(InformationLevel - SMB_INFO_PASSTHROUGH);
-            set => InformationLevel = (ushort)((ushort)value + SMB_INFO_PASSTHROUGH);
+            get => (FileSystemInformationClass) (InformationLevel - SMB_INFO_PASSTHROUGH);
+            set => InformationLevel = (ushort) ((ushort) value + SMB_INFO_PASSTHROUGH);
         }
 
         /// <remarks>

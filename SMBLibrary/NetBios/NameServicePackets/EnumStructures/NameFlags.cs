@@ -23,21 +23,18 @@ namespace SMBLibrary.NetBios
 
         public static explicit operator ushort(NameFlags nameFlags)
         {
-            ushort value = (ushort)(((byte)nameFlags.NodeType) << 13);
+            ushort value = (ushort) (((byte) nameFlags.NodeType) << 13);
             if (nameFlags.WorkGroup)
             {
                 value |= 0x8000;
             }
+
             return value;
         }
 
         public static explicit operator NameFlags(ushort value)
         {
-            NameFlags result = new NameFlags
-            {
-                NodeType = (OwnerNodeType)((value >> 13) & 0x3),
-                WorkGroup = (value & 0x8000) > 0
-            };
+            NameFlags result = new NameFlags {NodeType = (OwnerNodeType) ((value >> 13) & 0x3), WorkGroup = (value & 0x8000) > 0};
             return result;
         }
     }

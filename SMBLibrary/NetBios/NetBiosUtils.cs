@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.IO;
 using System.Text;
@@ -29,7 +30,7 @@ namespace SMBLibrary.NetBios
                 name = name.PadRight(15);
             }
 
-            return name + (char)suffix;
+            return name + (char) suffix;
         }
 
         public static string GetNameFromMSNetBiosName(string netBiosName)
@@ -50,7 +51,7 @@ namespace SMBLibrary.NetBios
                 throw new ArgumentException("Invalid MS NetBIOS name");
             }
 
-            return (NetBiosSuffix)netBiosName[15];
+            return (NetBiosSuffix) netBiosName[15];
         }
 
         public static byte[] EncodeName(string name, NetBiosSuffix suffix, string scopeID)
@@ -87,10 +88,10 @@ namespace SMBLibrary.NetBios
             StringBuilder builder = new StringBuilder();
             foreach (char c in netBiosName)
             {
-                byte high = (byte)(0x41 + (c >> 4));
-                byte low = (byte)(0x41 + (c & 0x0F));
-                builder.Append((char)high);
-                builder.Append((char)low);
+                byte high = (byte) (0x41 + (c >> 4));
+                byte low = (byte) (0x41 + (c & 0x0F));
+                builder.Append((char) high);
+                builder.Append((char) low);
             }
 
             if (scopeID.Length <= 0)
@@ -123,12 +124,12 @@ namespace SMBLibrary.NetBios
                     throw new ArgumentException("Invalid NetBIOS label length");
                 }
             }
-            
+
             byte[] result = new byte[length];
             int offset = 0;
-            foreach(string label in labels)
+            foreach (string label in labels)
             {
-                result[offset] = (byte)label.Length;
+                result[offset] = (byte) label.Length;
                 offset++;
                 ByteWriter.WriteAnsiString(result, offset, label, label.Length);
                 offset += label.Length;
@@ -177,14 +178,14 @@ namespace SMBLibrary.NetBios
         {
             StringBuilder builder = new StringBuilder();
 
-            for(int index = 0; index < name.Length; index += 2)
+            for (int index = 0; index < name.Length; index += 2)
             {
-                byte c0 = (byte)name[index];
-                byte c1 = (byte)name[index + 1];
-                byte high = (byte)(((c0 - 0x41) & 0xF) << 4);
-                byte low = (byte)((c1 - 0x41) & 0xF);
-                byte c = (byte)(high | low);
-                builder.Append((char)c);
+                byte c0 = (byte) name[index];
+                byte c1 = (byte) name[index + 1];
+                byte high = (byte) (((c0 - 0x41) & 0xF) << 4);
+                byte low = (byte) ((c1 - 0x41) & 0xF);
+                byte c = (byte) (high | low);
+                builder.Append((char) c);
             }
 
             return builder.ToString();
@@ -202,13 +203,13 @@ namespace SMBLibrary.NetBios
         /// </summary>
         public static void WriteNamePointer(byte[] buffer, int offset, int nameOffset)
         {
-            ushort pointer = (ushort)(0xC000 | (nameOffset & 0x3FFF));
+            ushort pointer = (ushort) (0xC000 | (nameOffset & 0x3FFF));
             BigEndianWriter.WriteUInt16(buffer, offset, pointer);
         }
 
         public static void WriteNamePointer(Stream stream, int nameOffset)
         {
-            ushort pointer = (ushort)(0xC000 | (nameOffset & 0x3FFF));
+            ushort pointer = (ushort) (0xC000 | (nameOffset & 0x3FFF));
             BigEndianWriter.WriteUInt16(stream, pointer);
         }
     }

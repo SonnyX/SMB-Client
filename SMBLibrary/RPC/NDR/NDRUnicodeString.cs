@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System.Text;
 
 namespace SMBLibrary.RPC
@@ -44,8 +45,9 @@ namespace SMBLibrary.RPC
             StringBuilder builder = new StringBuilder();
             for (int position = 0; position < actualCount; position++)
             {
-                builder.Append((char)parser.ReadUInt16());
+                builder.Append((char) parser.ReadUInt16());
             }
+
             Value = builder.ToString().TrimEnd('\0');
         }
 
@@ -62,12 +64,12 @@ namespace SMBLibrary.RPC
                 valueToWrite += '\0';
             }
 
-            uint maxCount = (uint)valueToWrite.Length;
+            uint maxCount = (uint) valueToWrite.Length;
             writer.WriteUInt32(maxCount);
             // the offset from the first index of the string to the first index of the actual subset being passed
             uint index = 0;
             writer.WriteUInt32(index);
-            uint actualCount = (uint)valueToWrite.Length;
+            uint actualCount = (uint) valueToWrite.Length;
             writer.WriteUInt32(actualCount);
             foreach (char value in valueToWrite)
             {

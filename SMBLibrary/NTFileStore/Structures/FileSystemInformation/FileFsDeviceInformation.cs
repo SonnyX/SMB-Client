@@ -25,14 +25,14 @@ namespace SMBLibrary
 
         public FileFsDeviceInformation(byte[] buffer, int offset)
         {
-            DeviceType = (DeviceType)LittleEndianConverter.ToUInt32(buffer, offset + 0);
-            Characteristics = (DeviceCharacteristics)LittleEndianConverter.ToUInt32(buffer, offset + 4);
+            DeviceType = (DeviceType) LittleEndianConverter.ToUInt32(buffer, offset + 0);
+            Characteristics = (DeviceCharacteristics) LittleEndianConverter.ToUInt32(buffer, offset + 4);
         }
 
         public override void WriteBytes(byte[] buffer, int offset)
         {
-            LittleEndianWriter.WriteUInt32(buffer, offset + 0, (uint)DeviceType);
-            LittleEndianWriter.WriteUInt32(buffer, offset + 4, (uint)Characteristics);
+            LittleEndianWriter.WriteUInt32(buffer, offset + 0, (uint) DeviceType);
+            LittleEndianWriter.WriteUInt32(buffer, offset + 4, (uint) Characteristics);
         }
 
         public override FileSystemInformationClass FileSystemInformationClass => FileSystemInformationClass.FileFsDeviceInformation;

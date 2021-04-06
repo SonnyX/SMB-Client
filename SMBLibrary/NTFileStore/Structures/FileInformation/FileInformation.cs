@@ -20,15 +20,9 @@ namespace SMBLibrary
             return buffer;
         }
 
-        public abstract FileInformationClass FileInformationClass
-        {
-            get;
-        }
+        public abstract FileInformationClass FileInformationClass { get; }
 
-        public abstract int Length
-        {
-            get;
-        }
+        public abstract int Length { get; }
 
         public static FileInformation GetFileInformation(byte[] buffer, int offset, FileInformationClass informationClass)
         {
@@ -58,8 +52,7 @@ namespace SMBLibrary
                 FileInformationClass.FileCompressionInformation => new FileCompressionInformation(buffer, offset),
                 FileInformationClass.FileNetworkOpenInformation => new FileNetworkOpenInformation(buffer, offset),
                 FileInformationClass.FileAttributeTagInformation => throw new NotImplementedException(),
-                FileInformationClass.FileValidDataLengthInformation => new FileValidDataLengthInformation(buffer,
-                    offset),
+                FileInformationClass.FileValidDataLengthInformation => new FileValidDataLengthInformation(buffer, offset),
                 FileInformationClass.FileShortNameInformation => throw new NotImplementedException(),
                 _ => throw new UnsupportedInformationLevelException()
             };

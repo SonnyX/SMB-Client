@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using Utilities;
 
@@ -23,6 +24,7 @@ namespace SMBLibrary.SMB1
             {
                 return null;
             }
+
             // Tick = 100ns
             return DateTime.UtcNow.Subtract(TimeSpan.FromTicks(span));
         }
@@ -51,7 +53,7 @@ namespace SMBLibrary.SMB1
             int year = date.Year - 1980;
             int month = date.Month;
             int day = date.Day;
-            ushort value = (ushort)(year << 9 | month << 5 | day);
+            ushort value = (ushort) (year << 9 | month << 5 | day);
             LittleEndianWriter.WriteUInt16(buffer, offset, value);
         }
 
@@ -69,7 +71,7 @@ namespace SMBLibrary.SMB1
 
         public static void WriteSMBTime(byte[] buffer, int offset, TimeSpan time)
         {
-            ushort value = (ushort)(time.Hours << 11 | time.Minutes << 5 | time.Seconds);
+            ushort value = (ushort) (time.Hours << 11 | time.Minutes << 5 | time.Seconds);
             LittleEndianWriter.WriteUInt16(buffer, offset, value);
         }
 
@@ -93,6 +95,7 @@ namespace SMBLibrary.SMB1
             {
                 return ReadSMBDateTime(buffer, offset);
             }
+
             return null;
         }
 

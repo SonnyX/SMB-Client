@@ -49,27 +49,28 @@ namespace SMBLibrary.SMB1
             ushort dataLengthHigh = LittleEndianConverter.ToUInt16(SMBParameters, 14);
             Reserved2 = ByteReader.ReadBytes(buffer, 16, 8);
 
-            DataLength |= (uint)(dataLengthHigh << 16);
+            DataLength |= (uint) (dataLengthHigh << 16);
 
-            Data = ByteReader.ReadBytes(buffer, DataOffset, (int)DataLength);
+            Data = ByteReader.ReadBytes(buffer, DataOffset, (int) DataLength);
         }
 
         public override byte[] GetBytes(bool isUnicode)
         {
-            uint DataLength = (uint)Data.Length;
+            uint DataLength = (uint) Data.Length;
             // WordCount + ByteCount are additional 3 bytes
             ushort DataOffset = SMB1Header.Length + 3 + ParametersLength;
             if (isUnicode)
             {
                 DataOffset++;
             }
-            ushort dataLengthHigh = (ushort)(DataLength >> 16);
+
+            ushort dataLengthHigh = (ushort) (DataLength >> 16);
 
             SMBParameters = new byte[ParametersLength];
             LittleEndianWriter.WriteUInt16(SMBParameters, 4, Available);
             LittleEndianWriter.WriteUInt16(SMBParameters, 6, DataCompactionMode);
             LittleEndianWriter.WriteUInt16(SMBParameters, 8, Reserved1);
-            LittleEndianWriter.WriteUInt16(SMBParameters, 10, (ushort)(DataLength & 0xFFFF));
+            LittleEndianWriter.WriteUInt16(SMBParameters, 10, (ushort) (DataLength & 0xFFFF));
             LittleEndianWriter.WriteUInt16(SMBParameters, 12, DataOffset);
             LittleEndianWriter.WriteUInt16(SMBParameters, 14, dataLengthHigh);
             ByteWriter.WriteBytes(SMBParameters, 16, Reserved2);
@@ -79,12 +80,14 @@ namespace SMBLibrary.SMB1
             {
                 smbDataLength++;
             }
+
             SMBData = new byte[smbDataLength];
             int offset = 0;
             if (isUnicode)
             {
                 offset++;
             }
+
             ByteWriter.WriteBytes(SMBData, offset, Data);
 
             return base.GetBytes(isUnicode);

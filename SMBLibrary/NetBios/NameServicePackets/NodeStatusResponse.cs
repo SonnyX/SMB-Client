@@ -27,12 +27,7 @@ namespace SMBLibrary.NetBios
 
         public NodeStatusResponse()
         {
-            Header = new NameServicePacketHeader
-            {
-                OpCode = NameServiceOperation.QueryResponse,
-                Flags = OperationFlags.AuthoritativeAnswer | OperationFlags.RecursionAvailable,
-                ANCount = 1
-            };
+            Header = new NameServicePacketHeader {OpCode = NameServiceOperation.QueryResponse, Flags = OperationFlags.AuthoritativeAnswer | OperationFlags.RecursionAvailable, ANCount = 1};
             Resource = new ResourceRecord(NameRecordType.NBStat);
             Statistics = new NodeStatistics();
         }
@@ -47,9 +42,10 @@ namespace SMBLibrary.NetBios
             for (int index = 0; index < numberOfNames; index++)
             {
                 string name = ByteReader.ReadAnsiString(Resource.Data, ref position, 16);
-                NameFlags nameFlags = (NameFlags)BigEndianReader.ReadUInt16(Resource.Data, ref position);
+                NameFlags nameFlags = (NameFlags) BigEndianReader.ReadUInt16(Resource.Data, ref position);
                 Names.Add(name, nameFlags);
             }
+
             Statistics = new NodeStatistics(Resource.Data, ref position);
         }
 
@@ -66,11 +62,11 @@ namespace SMBLibrary.NetBios
         private byte[] GetData()
         {
             using MemoryStream stream = new MemoryStream();
-            stream.WriteByte((byte)Names.Count);
+            stream.WriteByte((byte) Names.Count);
             foreach (KeyValuePair<string, NameFlags> entry in Names)
             {
                 ByteWriter.WriteAnsiString(stream, entry.Key);
-                BigEndianWriter.WriteUInt16(stream, (ushort)entry.Value);
+                BigEndianWriter.WriteUInt16(stream, (ushort) entry.Value);
             }
 
             ByteWriter.WriteBytes(stream, Statistics.GetBytes());

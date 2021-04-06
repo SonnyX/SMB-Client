@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using Utilities;
 
@@ -39,7 +40,7 @@ namespace SMBLibrary.SMB2
         {
             StructureSize = LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 0);
             Padding = ByteReader.ReadByte(buffer, offset + SMB2Header.Length + 2);
-            Flags = (ReadFlags)ByteReader.ReadByte(buffer, offset + SMB2Header.Length + 3);
+            Flags = (ReadFlags) ByteReader.ReadByte(buffer, offset + SMB2Header.Length + 3);
             ReadLength = LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 4);
             Offset = LittleEndianConverter.ToUInt64(buffer, offset + SMB2Header.Length + 8);
             FileId = new FileID(buffer, offset + SMB2Header.Length + 16);
@@ -57,14 +58,15 @@ namespace SMBLibrary.SMB2
         public override void WriteCommandBytes(byte[] buffer, int offset)
         {
             ReadChannelInfoOffset = 0;
-            ReadChannelInfoLength = (ushort)ReadChannelInfo.Length;
+            ReadChannelInfoLength = (ushort) ReadChannelInfo.Length;
             if (ReadChannelInfo.Length > 0)
             {
                 ReadChannelInfoOffset = SMB2Header.Length + FixedSize;
             }
+
             LittleEndianWriter.WriteUInt16(buffer, offset + 0, StructureSize);
             ByteWriter.WriteByte(buffer, offset + 2, Padding);
-            ByteWriter.WriteByte(buffer, offset + 3, (byte)Flags);
+            ByteWriter.WriteByte(buffer, offset + 3, (byte) Flags);
             LittleEndianWriter.WriteUInt32(buffer, offset + 4, ReadLength);
             LittleEndianWriter.WriteUInt64(buffer, offset + 8, Offset);
             FileId.WriteBytes(buffer, offset + 16);

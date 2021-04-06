@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using Utilities;
 
@@ -54,6 +55,7 @@ namespace SMBLibrary
             {
                 return null;
             }
+
             throw new System.IO.InvalidDataException("FILETIME cannot be negative");
         }
 
@@ -70,6 +72,7 @@ namespace SMBLibrary
             {
                 span = time.Value.ToFileTimeUtc();
             }
+
             LittleEndianWriter.WriteInt64(buffer, offset, span);
         }
 

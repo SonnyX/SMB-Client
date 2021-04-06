@@ -49,6 +49,7 @@ namespace SMBLibrary
                         length += padding;
                     }
                 }
+
                 return length;
             }
         }
@@ -63,10 +64,10 @@ namespace SMBLibrary
                 {
                     entry = new FileFullEAEntry(buffer, offset);
                     result.Add(entry);
-                    offset += (int)entry.NextEntryOffset;
-                }
-                while (entry.NextEntryOffset != 0);
+                    offset += (int) entry.NextEntryOffset;
+                } while (entry.NextEntryOffset != 0);
             }
+
             return result;
         }
 

@@ -41,20 +41,21 @@ namespace SMBLibrary.Authentication.NTLM
         public AuthenticateMessage(byte[] buffer)
         {
             Signature = ByteReader.ReadAnsiString(buffer, 0, 8);
-            MessageType = (MessageTypeName)LittleEndianConverter.ToUInt32(buffer, 8);
+            MessageType = (MessageTypeName) LittleEndianConverter.ToUInt32(buffer, 8);
             LmChallengeResponse = AuthenticationMessageUtils.ReadBufferPointer(buffer, 12);
             NtChallengeResponse = AuthenticationMessageUtils.ReadBufferPointer(buffer, 20);
             DomainName = AuthenticationMessageUtils.ReadUnicodeStringBufferPointer(buffer, 28);
             UserName = AuthenticationMessageUtils.ReadUnicodeStringBufferPointer(buffer, 36);
             WorkStation = AuthenticationMessageUtils.ReadUnicodeStringBufferPointer(buffer, 44);
             EncryptedRandomSessionKey = AuthenticationMessageUtils.ReadBufferPointer(buffer, 52);
-            NegotiateFlags = (NegotiateFlags)LittleEndianConverter.ToUInt32(buffer, 60);
+            NegotiateFlags = (NegotiateFlags) LittleEndianConverter.ToUInt32(buffer, 60);
             int offset = 64;
             if ((NegotiateFlags & NegotiateFlags.Version) > 0)
             {
                 Version = new NtlmVersion(buffer, offset);
                 offset += NtlmVersion.Length;
             }
+
             if (HasMicField())
             {
                 MIC = ByteReader.ReadBytes(buffer, offset, 16);
@@ -104,38 +105,41 @@ namespace SMBLibrary.Authentication.NTLM
             {
                 fixedLength += NtlmVersion.Length;
             }
+
             if (MIC != null)
             {
                 fixedLength += MIC.Length;
             }
+
             int payloadLength = LmChallengeResponse.Length + NtChallengeResponse.Length + DomainName.Length * 2 + UserName.Length * 2 + WorkStation.Length * 2 + EncryptedRandomSessionKey.Length;
             byte[] buffer = new byte[fixedLength + payloadLength];
             ByteWriter.WriteAnsiString(buffer, 0, ValidSignature, 8);
-            LittleEndianWriter.WriteUInt32(buffer, 8, (uint)MessageType);
-            LittleEndianWriter.WriteUInt32(buffer, 60, (uint)NegotiateFlags);
+            LittleEndianWriter.WriteUInt32(buffer, 8, (uint) MessageType);
+            LittleEndianWriter.WriteUInt32(buffer, 60, (uint) NegotiateFlags);
             int offset = 64;
             if ((NegotiateFlags & NegotiateFlags.Version) > 0)
             {
                 Version.WriteBytes(buffer, offset);
                 offset += NtlmVersion.Length;
             }
+
             if (MIC != null)
             {
                 ByteWriter.WriteBytes(buffer, offset, MIC);
                 offset += MIC.Length;
             }
 
-            AuthenticationMessageUtils.WriteBufferPointer(buffer, 28, (ushort)(DomainName.Length * 2), (uint)offset);
+            AuthenticationMessageUtils.WriteBufferPointer(buffer, 28, (ushort) (DomainName.Length * 2), (uint) offset);
             ByteWriter.WriteUTF16String(buffer, ref offset, DomainName);
-            AuthenticationMessageUtils.WriteBufferPointer(buffer, 36, (ushort)(UserName.Length * 2), (uint)offset);
+            AuthenticationMessageUtils.WriteBufferPointer(buffer, 36, (ushort) (UserName.Length * 2), (uint) offset);
             ByteWriter.WriteUTF16String(buffer, ref offset, UserName);
-            AuthenticationMessageUtils.WriteBufferPointer(buffer, 44, (ushort)(WorkStation.Length * 2), (uint)offset);
+            AuthenticationMessageUtils.WriteBufferPointer(buffer, 44, (ushort) (WorkStation.Length * 2), (uint) offset);
             ByteWriter.WriteUTF16String(buffer, ref offset, WorkStation);
-            AuthenticationMessageUtils.WriteBufferPointer(buffer, 12, (ushort)LmChallengeResponse.Length, (uint)offset);
+            AuthenticationMessageUtils.WriteBufferPointer(buffer, 12, (ushort) LmChallengeResponse.Length, (uint) offset);
             ByteWriter.WriteBytes(buffer, ref offset, LmChallengeResponse);
-            AuthenticationMessageUtils.WriteBufferPointer(buffer, 20, (ushort)NtChallengeResponse.Length, (uint)offset);
+            AuthenticationMessageUtils.WriteBufferPointer(buffer, 20, (ushort) NtChallengeResponse.Length, (uint) offset);
             ByteWriter.WriteBytes(buffer, ref offset, NtChallengeResponse);
-            AuthenticationMessageUtils.WriteBufferPointer(buffer, 52, (ushort)EncryptedRandomSessionKey.Length, (uint)offset);
+            AuthenticationMessageUtils.WriteBufferPointer(buffer, 52, (ushort) EncryptedRandomSessionKey.Length, (uint) offset);
             ByteWriter.WriteBytes(buffer, ref offset, EncryptedRandomSessionKey);
 
             return buffer;

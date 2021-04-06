@@ -17,14 +17,11 @@ namespace SMBLibrary
     {
         public abstract void WriteBytes(byte[] buffer, ref int offset);
 
-        public abstract int Length
-        {
-            get;
-        }
+        public abstract int Length { get; }
 
         public static ACE GetAce(byte[] buffer, int offset)
         {
-            AceType aceType = (AceType)ByteReader.ReadByte(buffer, offset + 0);
+            AceType aceType = (AceType) ByteReader.ReadByte(buffer, offset + 0);
             return aceType switch
             {
                 AceType.ACCESS_ALLOWED_ACE_TYPE => new AccessAllowedACE(buffer, offset),

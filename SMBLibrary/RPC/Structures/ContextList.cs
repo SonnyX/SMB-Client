@@ -40,7 +40,7 @@ namespace SMBLibrary.RPC
 
         public void WriteBytes(byte[] buffer, int offset)
         {
-            byte numberOfContextElements = (byte)Count;
+            byte numberOfContextElements = (byte) Count;
 
             ByteWriter.WriteByte(buffer, offset + 0, numberOfContextElements);
             ByteWriter.WriteByte(buffer, offset + 1, Reserved1);
@@ -68,6 +68,7 @@ namespace SMBLibrary.RPC
                 {
                     length += this[index].Length;
                 }
+
                 return length;
             }
         }

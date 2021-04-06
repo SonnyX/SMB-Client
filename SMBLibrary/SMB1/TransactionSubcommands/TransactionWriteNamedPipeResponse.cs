@@ -15,11 +15,13 @@ namespace SMBLibrary.SMB1
     public class TransactionWriteNamedPipeResponse : TransactionSubcommand
     {
         public const int ParametersLength = 2;
+
         // Parameters;
         public ushort BytesWritten;
 
         public TransactionWriteNamedPipeResponse()
-        {}
+        {
+        }
 
         public TransactionWriteNamedPipeResponse(byte[] parameters)
         {

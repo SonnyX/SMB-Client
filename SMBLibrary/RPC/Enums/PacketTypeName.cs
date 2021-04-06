@@ -1,13 +1,14 @@
-
 namespace SMBLibrary.RPC
 {
     // Commented out packet types are connectionless-only
     public enum PacketTypeName : byte
     {
         Request = 0x00,
+
         // Ping = 0x01,
         Response = 0x02,
         Fault = 0x03,
+
         //Working = 0x04,
         //NoCall = 0x05,
         //Reject = 0x06,

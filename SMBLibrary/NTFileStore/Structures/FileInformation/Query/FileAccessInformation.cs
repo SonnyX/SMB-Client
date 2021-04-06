@@ -24,12 +24,12 @@ namespace SMBLibrary
 
         public FileAccessInformation(byte[] buffer, int offset)
         {
-            AccessFlags = (AccessMask)LittleEndianConverter.ToUInt32(buffer, offset + 0);
+            AccessFlags = (AccessMask) LittleEndianConverter.ToUInt32(buffer, offset + 0);
         }
 
         public override void WriteBytes(byte[] buffer, int offset)
         {
-            LittleEndianWriter.WriteUInt32(buffer, offset + 0, (uint)AccessFlags);
+            LittleEndianWriter.WriteUInt32(buffer, offset + 0, (uint) AccessFlags);
         }
 
         public override FileInformationClass FileInformationClass => FileInformationClass.FileAccessInformation;

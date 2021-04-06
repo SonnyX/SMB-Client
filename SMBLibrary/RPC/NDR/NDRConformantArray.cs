@@ -32,12 +32,13 @@ namespace SMBLibrary.RPC
         public void Write(NDRWriter writer)
         {
             writer.BeginStructure();
-            uint maxCount = (uint)Count;
+            uint maxCount = (uint) Count;
             writer.WriteUInt32(maxCount);
             for (int index = 0; index < Count; index++)
             {
                 this[index].Write(writer);
             }
+
             writer.EndStructure();
         }
     }

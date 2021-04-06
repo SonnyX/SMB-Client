@@ -34,7 +34,7 @@ namespace SMBLibrary
             PhysicalBytesPerSectorForAtomicity = LittleEndianConverter.ToUInt32(buffer, offset + 4);
             PhysicalBytesPerSectorForPerformance = LittleEndianConverter.ToUInt32(buffer, offset + 8);
             FileSystemEffectivePhysicalBytesPerSectorForAtomicity = LittleEndianConverter.ToUInt32(buffer, offset + 12);
-            Flags = (SectorSizeInformationFlags)LittleEndianConverter.ToUInt32(buffer, offset + 16);
+            Flags = (SectorSizeInformationFlags) LittleEndianConverter.ToUInt32(buffer, offset + 16);
             ByteOffsetForSectorAlignment = LittleEndianConverter.ToUInt32(buffer, offset + 20);
             ByteOffsetForPartitionAlignment = LittleEndianConverter.ToUInt32(buffer, offset + 24);
         }
@@ -45,7 +45,7 @@ namespace SMBLibrary
             LittleEndianWriter.WriteUInt32(buffer, offset + 4, PhysicalBytesPerSectorForAtomicity);
             LittleEndianWriter.WriteUInt32(buffer, offset + 8, PhysicalBytesPerSectorForPerformance);
             LittleEndianWriter.WriteUInt32(buffer, offset + 12, FileSystemEffectivePhysicalBytesPerSectorForAtomicity);
-            LittleEndianWriter.WriteUInt32(buffer, offset + 16, (uint)Flags);
+            LittleEndianWriter.WriteUInt32(buffer, offset + 16, (uint) Flags);
             LittleEndianWriter.WriteUInt32(buffer, offset + 20, ByteOffsetForSectorAlignment);
             LittleEndianWriter.WriteUInt32(buffer, offset + 24, ByteOffsetForPartitionAlignment);
         }

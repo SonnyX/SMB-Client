@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using Utilities;
 
 namespace SMBLibrary
@@ -25,13 +26,13 @@ namespace SMBLibrary
         public FileNamesInformation(byte[] buffer, int offset) : base(buffer, offset)
         {
             FileNameLength = LittleEndianConverter.ToUInt32(buffer, offset + 8);
-            FileName = ByteReader.ReadUTF16String(buffer, offset + 12, (int)FileNameLength / 2);
+            FileName = ByteReader.ReadUTF16String(buffer, offset + 12, (int) FileNameLength / 2);
         }
 
         public override void WriteBytes(byte[] buffer, int offset)
         {
             base.WriteBytes(buffer, offset);
-            FileNameLength = (uint)(FileName.Length * 2);
+            FileNameLength = (uint) (FileName.Length * 2);
             LittleEndianWriter.WriteUInt32(buffer, offset + 8, FileNameLength);
             ByteWriter.WriteUTF16String(buffer, offset + 12, FileName);
         }

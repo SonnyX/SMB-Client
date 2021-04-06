@@ -16,12 +16,14 @@ namespace SMBLibrary.SMB1
     {
         // Setup:
         public ushort FID;
+
         // Data:
         public byte[]? WriteData;
 
         public TransactionTransactNamedPipeRequest()
         {
         }
+
         public TransactionTransactNamedPipeRequest(byte[] setup, byte[] data)
         {
             FID = LittleEndianConverter.ToUInt16(setup, 2);
@@ -32,7 +34,7 @@ namespace SMBLibrary.SMB1
         public override byte[] GetSetup()
         {
             byte[] setup = new byte[4];
-            LittleEndianWriter.WriteUInt16(setup, 0, (ushort)SubcommandName);
+            LittleEndianWriter.WriteUInt16(setup, 0, (ushort) SubcommandName);
             LittleEndianWriter.WriteUInt16(setup, 2, FID);
             return setup;
         }

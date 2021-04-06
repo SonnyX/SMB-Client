@@ -1,4 +1,3 @@
-
 namespace SMBLibrary.Services
 {
     /// <summary>

@@ -30,7 +30,7 @@ namespace SMBLibrary.RPC
 
         public static void WritePortAddress(byte[] buffer, int offset, string value)
         {
-            ushort length = (ushort)(value.Length + 1);
+            ushort length = (ushort) (value.Length + 1);
             LittleEndianWriter.WriteUInt16(buffer, offset + 0, length);
             ByteWriter.WriteNullTerminatedAnsiString(buffer, offset + 2, value);
         }

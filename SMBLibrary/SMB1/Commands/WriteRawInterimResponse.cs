@@ -15,11 +15,13 @@ namespace SMBLibrary.SMB1
     public class WriteRawInterimResponse : SMB1Command
     {
         public const int ParametersLength = 2;
+
         // Parameters;
         public ushort Available;
 
         public WriteRawInterimResponse()
-        {}
+        {
+        }
 
         public WriteRawInterimResponse(byte[] buffer, int offset) : base(buffer, offset)
         {

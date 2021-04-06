@@ -15,6 +15,7 @@ namespace SMBLibrary.SMB1
     public class EchoResponse : SMB1Command
     {
         public const int ParametersLength = 2;
+
         // Parameters
         public ushort SequenceNumber;
 
@@ -40,7 +41,7 @@ namespace SMBLibrary.SMB1
             get => SMBData;
             set => SMBData = value;
         }
- 
+
         public override CommandName CommandName => CommandName.SMB_COM_ECHO;
     }
 }

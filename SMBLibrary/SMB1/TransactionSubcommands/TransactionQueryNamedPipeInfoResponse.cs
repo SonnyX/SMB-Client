@@ -15,6 +15,7 @@ namespace SMBLibrary.SMB1
     public class TransactionQueryNamedPipeInfoResponse : TransactionSubcommand
     {
         public const int ParametersLength = 0;
+
         // Data:
         public ushort OutputBufferSize;
         public ushort InputBufferSize;
@@ -24,7 +25,8 @@ namespace SMBLibrary.SMB1
         public string? PipeName; // SMB_STRING (this field WILL be aligned to start on a 2-byte boundary from the start of the SMB header)
 
         public TransactionQueryNamedPipeInfoResponse()
-        {}
+        {
+        }
 
         public TransactionQueryNamedPipeInfoResponse(byte[] data, bool isUnicode)
         {
@@ -51,6 +53,7 @@ namespace SMBLibrary.SMB1
             {
                 length += PipeName.Length + 1;
             }
+
             byte[] data = new byte[length];
             LittleEndianWriter.WriteUInt16(data, 0, OutputBufferSize);
             LittleEndianWriter.WriteUInt16(data, 2, InputBufferSize);

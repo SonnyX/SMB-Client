@@ -37,7 +37,7 @@ namespace SMBLibrary.SMB2
         public QueryInfoRequest(byte[] buffer, int offset) : base(buffer, offset)
         {
             StructureSize = LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 0);
-            InfoType = (InfoType)ByteReader.ReadByte(buffer, offset + SMB2Header.Length + 2);
+            InfoType = (InfoType) ByteReader.ReadByte(buffer, offset + SMB2Header.Length + 2);
             FileInfoClass = ByteReader.ReadByte(buffer, offset + SMB2Header.Length + 3);
             OutputBufferLength = LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 4);
             InputBufferOffset = LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 8);
@@ -46,19 +46,20 @@ namespace SMBLibrary.SMB2
             AdditionalInformation = LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 16);
             Flags = LittleEndianConverter.ToUInt32(buffer, offset + SMB2Header.Length + 20);
             FileId = new FileID(buffer, offset + SMB2Header.Length + 24);
-            InputBuffer = ByteReader.ReadBytes(buffer, offset + InputBufferOffset, (int)InputBufferLength);
+            InputBuffer = ByteReader.ReadBytes(buffer, offset + InputBufferOffset, (int) InputBufferLength);
         }
 
         public override void WriteCommandBytes(byte[] buffer, int offset)
         {
             InputBufferOffset = 0;
-            InputBufferLength = (uint)InputBuffer.Length;
+            InputBufferLength = (uint) InputBuffer.Length;
             if (InputBuffer.Length > 0)
             {
                 InputBufferOffset = SMB2Header.Length + FixedSize;
             }
+
             LittleEndianWriter.WriteUInt16(buffer, offset + 0, StructureSize);
-            ByteWriter.WriteByte(buffer, offset + 2, (byte)InfoType);
+            ByteWriter.WriteByte(buffer, offset + 2, (byte) InfoType);
             ByteWriter.WriteByte(buffer, offset + 3, FileInfoClass);
             LittleEndianWriter.WriteUInt32(buffer, offset + 4, OutputBufferLength);
             LittleEndianWriter.WriteUInt16(buffer, offset + 8, InputBufferOffset);
@@ -72,20 +73,20 @@ namespace SMBLibrary.SMB2
 
         public FileInformationClass FileInformationClass
         {
-            get => (FileInformationClass)FileInfoClass;
-            set => FileInfoClass = (byte)value;
+            get => (FileInformationClass) FileInfoClass;
+            set => FileInfoClass = (byte) value;
         }
 
         public FileSystemInformationClass FileSystemInformationClass
         {
-            get => (FileSystemInformationClass)FileInfoClass;
-            set => FileInfoClass = (byte)value;
+            get => (FileSystemInformationClass) FileInfoClass;
+            set => FileInfoClass = (byte) value;
         }
 
         public SecurityInformation SecurityInformation
         {
-            get => (SecurityInformation)AdditionalInformation;
-            set => AdditionalInformation = (uint)value;
+            get => (SecurityInformation) AdditionalInformation;
+            set => AdditionalInformation = (uint) value;
         }
 
         public void SetFileInformation(FileInformation fileInformation)

@@ -23,7 +23,7 @@ namespace SMBLibrary.SMB2
         {
             Offset = LittleEndianConverter.ToUInt64(buffer, offset + 0);
             Length = LittleEndianConverter.ToUInt64(buffer, offset + 8);
-            Flags = (LockFlags)LittleEndianConverter.ToUInt32(buffer, offset + 16);
+            Flags = (LockFlags) LittleEndianConverter.ToUInt32(buffer, offset + 16);
             Reserved = LittleEndianConverter.ToUInt32(buffer, offset + 20);
         }
 
@@ -31,7 +31,7 @@ namespace SMBLibrary.SMB2
         {
             LittleEndianWriter.WriteUInt64(buffer, offset + 0, Offset);
             LittleEndianWriter.WriteUInt64(buffer, offset + 8, Length);
-            LittleEndianWriter.WriteUInt64(buffer, offset + 16, (uint)Flags);
+            LittleEndianWriter.WriteUInt64(buffer, offset + 16, (uint) Flags);
             LittleEndianWriter.WriteUInt64(buffer, offset + 20, Reserved);
         }
 
@@ -102,11 +102,12 @@ namespace SMBLibrary.SMB2
         public static List<LockElement> ReadLockList(byte[] buffer, int offset, int lockCount)
         {
             List<LockElement> result = new List<LockElement>();
-            for(int lockIndex = 0; lockIndex < lockCount; lockIndex++)
+            for (int lockIndex = 0; lockIndex < lockCount; lockIndex++)
             {
                 LockElement element = new LockElement(buffer, offset + lockIndex * StructureLength);
                 result.Add(element);
             }
+
             return result;
         }
 

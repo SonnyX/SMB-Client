@@ -1,4 +1,3 @@
-
 namespace SMBLibrary
 {
     public enum CompressionFormat : ushort

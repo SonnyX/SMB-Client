@@ -92,12 +92,11 @@ namespace System.Security.Cryptography
         ///   This constructor is here to implement the clonability of this class
         /// </summary>
         /// <param name = "md"> </param>
-        private MD4(MD4 md)
-            : this()
+        private MD4(MD4 md) : this()
         {
             //this();
-            context = (uint[])md.context.Clone();
-            buffer = (byte[])md.buffer.Clone();
+            context = (uint[]) md.context.Clone();
+            buffer = (byte[]) md.buffer.Clone();
             count = md.count;
         }
 
@@ -136,7 +135,7 @@ namespace System.Security.Cryptography
         private void EngineUpdate(byte b)
         {
             // compute number of bytes still unhashed; ie. present in buffer
-            int i = (int)(count % BLOCK_LENGTH);
+            int i = (int) (count % BLOCK_LENGTH);
             count++; // update number of bytes
             buffer[i] = b;
             if (i == BLOCK_LENGTH - 1)
@@ -158,11 +157,11 @@ namespace System.Security.Cryptography
         private void EngineUpdate(byte[] input, int offset, int len)
         {
             // make sure we don't exceed input's allocated size/length
-            if (offset < 0 || len < 0 || (long)offset + len > input.Length)
+            if (offset < 0 || len < 0 || (long) offset + len > input.Length)
                 throw new ArgumentOutOfRangeException();
 
             // compute number of bytes still unhashed; ie. present in buffer
-            int bufferNdx = (int)(count % BLOCK_LENGTH);
+            int bufferNdx = (int) (count % BLOCK_LENGTH);
             count += len; // update number of bytes
             int partLen = BLOCK_LENGTH - bufferNdx;
             int i = 0;
@@ -176,6 +175,7 @@ namespace System.Security.Cryptography
                     Transform(ref input, offset + i);
                 bufferNdx = 0;
             }
+
             // buffer remaining input
             if (i < len)
                 Array.Copy(input, offset + i, buffer, bufferNdx, len - i);
@@ -190,7 +190,7 @@ namespace System.Security.Cryptography
         private byte[] EngineDigest()
         {
             // pad output to 56 mod 64; as RFC1320 puts it: congruent to 448 mod 512
-            int bufferNdx = (int)(count % BLOCK_LENGTH);
+            int bufferNdx = (int) (count % BLOCK_LENGTH);
             int padLen = (bufferNdx < 56) ? (56 - bufferNdx) : (120 - bufferNdx);
 
             // padding is always binary 1 followed by binary 0's
@@ -201,15 +201,15 @@ namespace System.Security.Cryptography
             // save number of bits, casting the long to an array of 8 bytes
             // save low-order byte first.
             for (int i = 0; i < 8; i++)
-                tail[padLen + i] = (byte)((count * 8) >> (8 * i));
+                tail[padLen + i] = (byte) ((count * 8) >> (8 * i));
 
             EngineUpdate(tail, 0, tail.Length);
 
             byte[] result = new byte[16];
             // cast this MD4's context (array of 4 uints) into an array of 16 bytes.
             for (int i = 0; i < 4; i++)
-                for (int j = 0; j < 4; j++)
-                    result[i * 4 + j] = (byte)(context[i] >> (8 * j));
+            for (int j = 0; j < 4; j++)
+                result[i * 4 + j] = (byte) (context[i] >> (8 * j));
 
             // reset the engine
             EngineReset();
@@ -323,10 +323,7 @@ namespace System.Security.Cryptography
             // decodes 64 bytes from input block into an array of 16 32-bit
             // entities. Use A as a temp var.
             for (int i = 0; i < 16; i++)
-                X[i] = ((uint)block[offset++] & 0xFF) |
-                       (((uint)block[offset++] & 0xFF) << 8) |
-                       (((uint)block[offset++] & 0xFF) << 16) |
-                       (((uint)block[offset++] & 0xFF) << 24);
+                X[i] = ((uint) block[offset++] & 0xFF) | (((uint) block[offset++] & 0xFF) << 8) | (((uint) block[offset++] & 0xFF) << 16) | (((uint) block[offset++] & 0xFF) << 24);
 
 
             uint A = context[0];

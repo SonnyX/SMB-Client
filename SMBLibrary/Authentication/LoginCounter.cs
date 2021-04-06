@@ -54,6 +54,7 @@ namespace SMBLibrary.Authentication
                         {
                             return true;
                         }
+
                         entry.LoginWindowStartDt = DateTime.UtcNow;
                         entry.NumberOfAttempts = 1;
                     }
@@ -64,13 +65,11 @@ namespace SMBLibrary.Authentication
                     {
                         return true;
                     }
-                    entry = new LoginEntry
-                    {
-                        LoginWindowStartDt = DateTime.UtcNow,
-                        NumberOfAttempts = 1
-                    };
+
+                    entry = new LoginEntry {LoginWindowStartDt = DateTime.UtcNow, NumberOfAttempts = 1};
                     m_loginEntries.Add(userId, entry);
                 }
+
                 return (entry.NumberOfAttempts < m_maxLoginAttemptsInWindow);
             }
         }

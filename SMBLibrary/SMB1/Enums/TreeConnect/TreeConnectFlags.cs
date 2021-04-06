@@ -17,7 +17,7 @@ namespace SMBLibrary.SMB1
         /// If set, then the client is requesting signing key protection.
         /// </summary>
         ExtendedSignatures = 0x0004, // TREE_CONNECT_ANDX_EXTENDED_SIGNATURES
-        
+
         /// <summary>
         /// SMB 1.0 addition.
         /// If set, then the client is requesting extended information in the SMB_COM_TREE_CONNECT_ANDX response.

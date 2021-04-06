@@ -18,6 +18,7 @@ namespace SMBLibrary.SMB1
 
         // uint NextEntryOffset;
         public uint FileIndex; // SHOULD be set to zero when sent in a response and SHOULD be ignored when received by the client
+
         //uint FileNameLength; // In bytes, MUST exclude the null termination.
         public string FileName; // OEM / Unicode character array. MUST be written as SMB_STRING, and read as fixed length string.
 
@@ -30,12 +31,12 @@ namespace SMBLibrary.SMB1
             NextEntryOffset = LittleEndianReader.ReadUInt32(buffer, ref offset);
             FileIndex = LittleEndianReader.ReadUInt32(buffer, ref offset);
             uint fileNameLength = LittleEndianReader.ReadUInt32(buffer, ref offset);
-            FileName = SMB1Helper.ReadFixedLengthString(buffer, ref offset, isUnicode, (int)fileNameLength);
+            FileName = SMB1Helper.ReadFixedLengthString(buffer, ref offset, isUnicode, (int) fileNameLength);
         }
 
         public override void WriteBytes(byte[] buffer, ref int offset, bool isUnicode)
         {
-            uint fileNameLength = (uint)(isUnicode ? FileName.Length * 2 : FileName.Length);
+            uint fileNameLength = (uint) (isUnicode ? FileName.Length * 2 : FileName.Length);
 
             LittleEndianWriter.WriteUInt32(buffer, ref offset, NextEntryOffset);
             LittleEndianWriter.WriteUInt32(buffer, ref offset, FileIndex);
@@ -55,6 +56,7 @@ namespace SMBLibrary.SMB1
             {
                 length += FileName.Length + 1;
             }
+
             return length;
         }
 

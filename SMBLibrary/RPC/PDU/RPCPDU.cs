@@ -38,8 +38,8 @@ namespace SMBLibrary.RPC
         {
             VersionMajor = ByteReader.ReadByte(buffer, offset + 0);
             VersionMinor = ByteReader.ReadByte(buffer, offset + 1);
-            PacketType = (PacketTypeName)ByteReader.ReadByte(buffer, offset + 2);
-            Flags = (PacketFlags)ByteReader.ReadByte(buffer, offset + 3);
+            PacketType = (PacketTypeName) ByteReader.ReadByte(buffer, offset + 2);
+            Flags = (PacketFlags) ByteReader.ReadByte(buffer, offset + 3);
             DataRepresentation = new DataRepresentationFormat(buffer, offset + 4);
             FragmentLength = LittleEndianConverter.ToUInt16(buffer, offset + 8);
             AuthLength = LittleEndianConverter.ToUInt16(buffer, offset + 10);
@@ -52,10 +52,10 @@ namespace SMBLibrary.RPC
         {
             ByteWriter.WriteByte(buffer, 0, VersionMajor);
             ByteWriter.WriteByte(buffer, 1, VersionMinor);
-            ByteWriter.WriteByte(buffer, 2, (byte)PacketType);
-            ByteWriter.WriteByte(buffer, 3, (byte)Flags);
+            ByteWriter.WriteByte(buffer, 2, (byte) PacketType);
+            ByteWriter.WriteByte(buffer, 3, (byte) Flags);
             DataRepresentation.WriteBytes(buffer, 4);
-            LittleEndianWriter.WriteUInt16(buffer, 8, (ushort)Length);
+            LittleEndianWriter.WriteUInt16(buffer, 8, (ushort) Length);
             LittleEndianWriter.WriteUInt16(buffer, 10, AuthLength);
             LittleEndianWriter.WriteUInt32(buffer, 12, CallID);
         }
@@ -63,14 +63,11 @@ namespace SMBLibrary.RPC
         /// <summary>
         /// The length of the entire PDU
         /// </summary>
-        public abstract int Length
-        {
-            get;
-        }
+        public abstract int Length { get; }
 
         public static RPCPDU GetPDU(byte[]? buffer, int offset)
         {
-            PacketTypeName packetType = (PacketTypeName)ByteReader.ReadByte(buffer, 2);
+            PacketTypeName packetType = (PacketTypeName) ByteReader.ReadByte(buffer, 2);
             return packetType switch
             {
                 PacketTypeName.Request => new RequestPDU(buffer, offset),

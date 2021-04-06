@@ -66,7 +66,7 @@ namespace SMBLibrary.SMB1
 
         public void SetFindInformationList(FindInformationList findInformationList, bool isUnicode)
         {
-            SearchCount = (ushort)findInformationList.Count;
+            SearchCount = (ushort) findInformationList.Count;
             FindInformationListBytes = findInformationList.GetBytes(isUnicode);
         }
 

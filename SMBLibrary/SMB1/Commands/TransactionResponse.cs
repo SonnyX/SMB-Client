@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using Utilities;
 
@@ -15,22 +16,30 @@ namespace SMBLibrary.SMB1
     public class TransactionResponse : SMB1Command
     {
         public const int FixedSMBParametersLength = 20;
+
         // Parameters:
         public ushort TotalParameterCount;
         public ushort TotalDataCount;
+
         public ushort Reserved1;
+
         //ushort ParameterCount;
         //ushort ParameterOffset;
         public ushort ParameterDisplacement;
+
         //ushort DataCount;
         //ushort DataOffset;
         public ushort DataDisplacement;
+
         //byte SetupCount; // In 2-byte words
         public byte Reserved2;
+
         public byte[] Setup;
+
         // Data:
         // Padding (alignment to 4 byte boundary)
         public byte[] TransParameters; // Trans_Parameters
+
         // Padding (alignment to 4 byte boundary)
         public byte[] TransData; // Trans_Data
 
@@ -66,17 +75,18 @@ namespace SMBLibrary.SMB1
             {
                 throw new ArgumentException("Invalid Trans_Data length");
             }
-            byte setupCount = (byte)(Setup.Length / 2);
-            ushort parameterCount = (ushort)TransParameters.Length;
-            ushort dataCount = (ushort)TransData.Length;
+
+            byte setupCount = (byte) (Setup.Length / 2);
+            ushort parameterCount = (ushort) TransParameters.Length;
+            ushort dataCount = (ushort) TransData.Length;
 
             // WordCount + ByteCount are additional 3 bytes
-            ushort parameterOffset = (ushort)(SMB1Header.Length + 3 + (FixedSMBParametersLength + Setup.Length));
-            int padding1 = (4 - (parameterOffset %4)) % 4;
-            parameterOffset += (ushort)padding1;
-            ushort dataOffset = (ushort)(parameterOffset + parameterCount);
+            ushort parameterOffset = (ushort) (SMB1Header.Length + 3 + (FixedSMBParametersLength + Setup.Length));
+            int padding1 = (4 - (parameterOffset % 4)) % 4;
+            parameterOffset += (ushort) padding1;
+            ushort dataOffset = (ushort) (parameterOffset + parameterCount);
             int padding2 = (4 - (dataOffset % 4)) % 4;
-            dataOffset += (ushort)padding2;
+            dataOffset += (ushort) padding2;
 
             SMBParameters = new byte[FixedSMBParametersLength + Setup.Length];
             LittleEndianWriter.WriteUInt16(SMBParameters, 0, TotalParameterCount);
@@ -104,7 +114,7 @@ namespace SMBLibrary.SMB1
         public static int CalculateMessageSize(int setupLength, int trans2ParametersLength, int trans2DataLength)
         {
             int parameterOffset = SMB1Header.Length + 3 + (FixedSMBParametersLength + setupLength);
-            int padding1 = (4 - (parameterOffset %4)) % 4;
+            int padding1 = (4 - (parameterOffset % 4)) % 4;
             parameterOffset += padding1;
             int dataOffset = (parameterOffset + trans2ParametersLength);
             int padding2 = (4 - (dataOffset % 4)) % 4;

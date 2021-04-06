@@ -16,9 +16,12 @@ namespace SMBLibrary.SMB1
     public class RenameRequest : SMB1Command
     {
         public const int SupportedBufferFormat = 0x04;
+
         public const int ParametersLength = 2;
+
         // Parameters:
         public SMBFileAttributes SearchAttributes;
+
         // Data:
         public byte BufferFormat1;
         public string OldFileName; // SMB_STRING (this field WILL be aligned to start on a 2-byte boundary from the start of the SMB header)
@@ -33,7 +36,7 @@ namespace SMBLibrary.SMB1
 
         public RenameRequest(byte[] buffer, int offset, bool isUnicode) : base(buffer, offset)
         {
-            SearchAttributes = (SMBFileAttributes)LittleEndianConverter.ToUInt16(SMBParameters, 0);
+            SearchAttributes = (SMBFileAttributes) LittleEndianConverter.ToUInt16(SMBParameters, 0);
 
             int dataOffset = 0;
             BufferFormat1 = ByteReader.ReadByte(SMBData, ref dataOffset);
@@ -41,23 +44,26 @@ namespace SMBLibrary.SMB1
             {
                 throw new InvalidDataException("Unsupported Buffer Format");
             }
+
             OldFileName = SMB1Helper.ReadSMBString(SMBData, ref dataOffset, isUnicode);
             BufferFormat2 = ByteReader.ReadByte(SMBData, ref dataOffset);
             if (BufferFormat2 != SupportedBufferFormat)
             {
                 throw new InvalidDataException("Unsupported Buffer Format");
             }
+
             if (isUnicode)
             {
                 dataOffset++;
             }
+
             NewFileName = SMB1Helper.ReadSMBString(SMBData, ref dataOffset, isUnicode);
         }
 
         public override byte[] GetBytes(bool isUnicode)
         {
             SMBParameters = new byte[ParametersLength];
-            LittleEndianWriter.WriteUInt16(SMBParameters, 0, (ushort)SearchAttributes);
+            LittleEndianWriter.WriteUInt16(SMBParameters, 0, (ushort) SearchAttributes);
 
             if (isUnicode)
             {
@@ -68,6 +74,7 @@ namespace SMBLibrary.SMB1
             {
                 SMBData = new byte[2 + OldFileName.Length + NewFileName.Length + 2];
             }
+
             int dataOffset = 0;
             ByteWriter.WriteByte(SMBData, ref dataOffset, BufferFormat1);
             SMB1Helper.WriteSMBString(SMBData, ref dataOffset, isUnicode, OldFileName);
@@ -76,6 +83,7 @@ namespace SMBLibrary.SMB1
             {
                 dataOffset++; // padding
             }
+
             SMB1Helper.WriteSMBString(SMBData, ref dataOffset, isUnicode, NewFileName);
 
             return base.GetBytes(isUnicode);

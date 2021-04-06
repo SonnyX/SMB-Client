@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 
 namespace SMBLibrary.Services
@@ -25,7 +26,7 @@ namespace SMBLibrary.Services
 
         public WorkstationService(string computerName, string lanGroup)
         {
-            m_platformID = (uint)PlatformName.NT;
+            m_platformID = (uint) PlatformName.NT;
             m_computerName = computerName;
             m_lanGroup = lanGroup;
             m_verMajor = 5;
@@ -34,7 +35,7 @@ namespace SMBLibrary.Services
 
         public override byte[] GetResponseBytes(ushort opNum, byte[] requestBytes)
         {
-            switch ((WorkstationServiceOpName)opNum)
+            switch ((WorkstationServiceOpName) opNum)
             {
                 case WorkstationServiceOpName.NetrWkstaGetInfo:
                     NetrWkstaGetInfoRequest request = new NetrWkstaGetInfoRequest(requestBytes);
@@ -51,62 +52,47 @@ namespace SMBLibrary.Services
             switch (request.Level)
             {
                 case 100:
+                {
+                    WorkstationInfo100 info = new WorkstationInfo100
                     {
-                        WorkstationInfo100 info = new WorkstationInfo100
-                        {
-                            PlatformID = m_platformID,
-                            ComputerName =
-                            {
-                                Value = m_computerName
-                            },
-                            LanGroup =
-                            {
-                                Value = m_lanGroup
-                            },
-                            VerMajor = m_verMajor,
-                            VerMinor = m_verMinor
-                        };
-                        response.WkstaInfo = new WorkstationInfo(info);
-                        response.Result = Win32Error.ERROR_SUCCESS;
-                        return response;
-                    }
+                        PlatformID = m_platformID,
+                        ComputerName = {Value = m_computerName},
+                        LanGroup = {Value = m_lanGroup},
+                        VerMajor = m_verMajor,
+                        VerMinor = m_verMinor
+                    };
+                    response.WkstaInfo = new WorkstationInfo(info);
+                    response.Result = Win32Error.ERROR_SUCCESS;
+                    return response;
+                }
                 case 101:
+                {
+                    WorkstationInfo101 info = new WorkstationInfo101
                     {
-                        WorkstationInfo101 info = new WorkstationInfo101
-                        {
-                            PlatformID = m_platformID,
-                            ComputerName =
-                            {
-                                Value = m_computerName
-                            },
-                            LanGroup =
-                            {
-                                Value = m_lanGroup
-                            },
-                            VerMajor = m_verMajor,
-                            VerMinor = m_verMinor,
-                            LanRoot =
-                            {
-                                Value = m_lanGroup
-                            }
-                        };
-                        response.WkstaInfo = new WorkstationInfo(info);
-                        response.Result = Win32Error.ERROR_SUCCESS;
-                        return response;
-                    }
+                        PlatformID = m_platformID,
+                        ComputerName = {Value = m_computerName},
+                        LanGroup = {Value = m_lanGroup},
+                        VerMajor = m_verMajor,
+                        VerMinor = m_verMinor,
+                        LanRoot = {Value = m_lanGroup}
+                    };
+                    response.WkstaInfo = new WorkstationInfo(info);
+                    response.Result = Win32Error.ERROR_SUCCESS;
+                    return response;
+                }
                 case 102:
                 case 502:
-                    {
-                        response.WkstaInfo = new WorkstationInfo(request.Level);
-                        response.Result = Win32Error.ERROR_NOT_SUPPORTED;
-                        return response;
-                    }
+                {
+                    response.WkstaInfo = new WorkstationInfo(request.Level);
+                    response.Result = Win32Error.ERROR_NOT_SUPPORTED;
+                    return response;
+                }
                 default:
-                    {
-                        response.WkstaInfo = new WorkstationInfo(request.Level);
-                        response.Result = Win32Error.ERROR_INVALID_LEVEL;
-                        return response;
-                    }
+                {
+                    response.WkstaInfo = new WorkstationInfo(request.Level);
+                    response.Result = Win32Error.ERROR_INVALID_LEVEL;
+                    return response;
+                }
             }
         }
 

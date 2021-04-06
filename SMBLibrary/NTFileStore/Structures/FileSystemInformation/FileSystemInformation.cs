@@ -18,15 +18,9 @@ namespace SMBLibrary
             return buffer;
         }
 
-        public abstract FileSystemInformationClass FileSystemInformationClass
-        {
-            get;
-        }
+        public abstract FileSystemInformationClass FileSystemInformationClass { get; }
 
-        public abstract int Length
-        {
-            get;
-        }
+        public abstract int Length { get; }
 
         public static FileSystemInformation GetFileSystemInformation(byte[] buffer, int offset, FileSystemInformationClass informationClass)
         {
@@ -39,8 +33,7 @@ namespace SMBLibrary
                 FileSystemInformationClass.FileFsControlInformation => new FileFsControlInformation(buffer, offset),
                 FileSystemInformationClass.FileFsFullSizeInformation => new FileFsFullSizeInformation(buffer, offset),
                 FileSystemInformationClass.FileFsObjectIdInformation => new FileFsObjectIdInformation(buffer, offset),
-                FileSystemInformationClass.FileFsSectorSizeInformation => new FileFsSectorSizeInformation(buffer,
-                    offset),
+                FileSystemInformationClass.FileFsSectorSizeInformation => new FileFsSectorSizeInformation(buffer, offset),
                 _ => throw new UnsupportedInformationLevelException()
             };
         }

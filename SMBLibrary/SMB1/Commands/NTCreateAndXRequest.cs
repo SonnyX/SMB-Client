@@ -15,11 +15,13 @@ namespace SMBLibrary.SMB1
     public class NTCreateAndXRequest : SMBAndXCommand
     {
         public const int ParametersLength = 48;
+
         // Parameters:
         // CommandName AndXCommand;
         // byte AndXReserved;
         // ushort AndXOffset;
         public byte Reserved;
+
         // ushort NameLength; // in bytes
         public NTCreateFlags Flags;
         public uint RootDirectoryFID;
@@ -30,7 +32,9 @@ namespace SMBLibrary.SMB1
         public CreateDisposition CreateDisposition;
         public CreateOptions CreateOptions;
         public ImpersonationLevel ImpersonationLevel;
+
         public SecurityFlags SecurityFlags;
+
         // Data:
         public string FileName; // SMB_STRING (If Unicode, this field MUST be aligned to start on a 2-byte boundary from the start of the SMB header)
 
@@ -42,16 +46,16 @@ namespace SMBLibrary.SMB1
         {
             Reserved = ByteReader.ReadByte(SMBParameters, 4);
             _ = LittleEndianConverter.ToUInt16(SMBParameters, 5);
-            Flags = (NTCreateFlags)LittleEndianConverter.ToUInt32(SMBParameters, 7);
+            Flags = (NTCreateFlags) LittleEndianConverter.ToUInt32(SMBParameters, 7);
             RootDirectoryFID = LittleEndianConverter.ToUInt32(SMBParameters, 11);
-            DesiredAccess = (AccessMask)LittleEndianConverter.ToUInt32(SMBParameters, 15);
+            DesiredAccess = (AccessMask) LittleEndianConverter.ToUInt32(SMBParameters, 15);
             AllocationSize = LittleEndianConverter.ToInt64(SMBParameters, 19);
-            ExtFileAttributes = (ExtendedFileAttributes)LittleEndianConverter.ToUInt32(SMBParameters, 27);
-            ShareAccess = (ShareAccess)LittleEndianConverter.ToUInt32(SMBParameters, 31);
-            CreateDisposition = (CreateDisposition)LittleEndianConverter.ToUInt32(SMBParameters, 35);
-            CreateOptions = (CreateOptions)LittleEndianConverter.ToUInt32(SMBParameters, 39);
-            ImpersonationLevel = (ImpersonationLevel)LittleEndianConverter.ToUInt32(SMBParameters, 43);
-            SecurityFlags = (SecurityFlags)ByteReader.ReadByte(SMBParameters, 47);
+            ExtFileAttributes = (ExtendedFileAttributes) LittleEndianConverter.ToUInt32(SMBParameters, 27);
+            ShareAccess = (ShareAccess) LittleEndianConverter.ToUInt32(SMBParameters, 31);
+            CreateDisposition = (CreateDisposition) LittleEndianConverter.ToUInt32(SMBParameters, 35);
+            CreateOptions = (CreateOptions) LittleEndianConverter.ToUInt32(SMBParameters, 39);
+            ImpersonationLevel = (ImpersonationLevel) LittleEndianConverter.ToUInt32(SMBParameters, 43);
+            SecurityFlags = (SecurityFlags) ByteReader.ReadByte(SMBParameters, 47);
 
             int dataOffset = 0;
             if (isUnicode)
@@ -60,29 +64,31 @@ namespace SMBLibrary.SMB1
                 // Note: SMBData starts at an odd offset.
                 dataOffset = 1;
             }
+
             FileName = SMB1Helper.ReadSMBString(SMBData, dataOffset, isUnicode);
         }
 
         public override byte[] GetBytes(bool isUnicode)
         {
-            ushort nameLength = (ushort)FileName.Length;
+            ushort nameLength = (ushort) FileName.Length;
             if (isUnicode)
             {
                 nameLength *= 2;
             }
+
             SMBParameters = new byte[ParametersLength];
             ByteWriter.WriteByte(SMBParameters, 4, Reserved);
             LittleEndianWriter.WriteUInt16(SMBParameters, 5, nameLength);
-            LittleEndianWriter.WriteUInt32(SMBParameters, 7, (uint)Flags);
+            LittleEndianWriter.WriteUInt32(SMBParameters, 7, (uint) Flags);
             LittleEndianWriter.WriteUInt32(SMBParameters, 11, RootDirectoryFID);
-            LittleEndianWriter.WriteUInt32(SMBParameters, 15, (uint)DesiredAccess);
+            LittleEndianWriter.WriteUInt32(SMBParameters, 15, (uint) DesiredAccess);
             LittleEndianWriter.WriteInt64(SMBParameters, 19, AllocationSize);
-            LittleEndianWriter.WriteUInt32(SMBParameters, 27, (uint)ExtFileAttributes);
-            LittleEndianWriter.WriteUInt32(SMBParameters, 31, (uint)ShareAccess);
-            LittleEndianWriter.WriteUInt32(SMBParameters, 35, (uint)CreateDisposition);
-            LittleEndianWriter.WriteUInt32(SMBParameters, 39, (uint)CreateOptions);
-            LittleEndianWriter.WriteUInt32(SMBParameters, 43, (uint)ImpersonationLevel);
-            ByteWriter.WriteByte(SMBParameters, 47, (byte)SecurityFlags);
+            LittleEndianWriter.WriteUInt32(SMBParameters, 27, (uint) ExtFileAttributes);
+            LittleEndianWriter.WriteUInt32(SMBParameters, 31, (uint) ShareAccess);
+            LittleEndianWriter.WriteUInt32(SMBParameters, 35, (uint) CreateDisposition);
+            LittleEndianWriter.WriteUInt32(SMBParameters, 39, (uint) CreateOptions);
+            LittleEndianWriter.WriteUInt32(SMBParameters, 43, (uint) ImpersonationLevel);
+            ByteWriter.WriteByte(SMBParameters, 47, (byte) SecurityFlags);
 
             int padding = 0;
             if (isUnicode)
@@ -94,6 +100,7 @@ namespace SMBLibrary.SMB1
             {
                 SMBData = new byte[FileName.Length + 1];
             }
+
             SMB1Helper.WriteSMBString(SMBData, padding, isUnicode, FileName);
 
             return base.GetBytes(isUnicode);

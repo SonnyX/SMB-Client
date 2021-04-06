@@ -32,7 +32,7 @@ namespace SMBLibrary.SMB2
         public SessionSetupResponse(byte[] buffer, int offset) : base(buffer, offset)
         {
             StructureSize = LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 0);
-            SessionFlags = (SessionFlags)LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 2);
+            SessionFlags = (SessionFlags) LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 2);
             SecurityBufferOffset = LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 4);
             SecurityBufferLength = LittleEndianConverter.ToUInt16(buffer, offset + SMB2Header.Length + 6);
             SecurityBuffer = ByteReader.ReadBytes(buffer, offset + SecurityBufferOffset, SecurityBufferLength);
@@ -41,13 +41,14 @@ namespace SMBLibrary.SMB2
         public override void WriteCommandBytes(byte[] buffer, int offset)
         {
             SecurityBufferOffset = 0;
-            SecurityBufferLength = (ushort)SecurityBuffer.Length;
+            SecurityBufferLength = (ushort) SecurityBuffer.Length;
             if (SecurityBuffer.Length > 0)
             {
                 SecurityBufferOffset = SMB2Header.Length + FixedSize;
             }
+
             LittleEndianWriter.WriteUInt16(buffer, offset + 0, StructureSize);
-            LittleEndianWriter.WriteUInt16(buffer, offset + 2, (ushort)SessionFlags);
+            LittleEndianWriter.WriteUInt16(buffer, offset + 2, (ushort) SessionFlags);
             LittleEndianWriter.WriteUInt16(buffer, offset + 4, SecurityBufferOffset);
             LittleEndianWriter.WriteUInt16(buffer, offset + 6, SecurityBufferLength);
             ByteWriter.WriteBytes(buffer, offset + 8, SecurityBuffer);

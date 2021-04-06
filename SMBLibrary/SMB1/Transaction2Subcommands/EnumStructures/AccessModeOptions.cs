@@ -62,20 +62,20 @@ namespace SMBLibrary.SMB1
 
         public AccessModeOptions(byte[] buffer, int offset)
         {
-            AccessMode = (AccessMode)(buffer[offset + 0] & 0x07);
-            SharingMode = (SharingMode)((buffer[offset + 0] & 0x70) >> 4);
-            ReferenceLocality = (ReferenceLocality)(buffer[offset + 1] & 0x07);
-            CachedMode = (CachedMode)((buffer[offset + 1] & 0x10) >> 4);
-            WriteThroughMode = (WriteThroughMode)((buffer[offset + 1] & 0x40) >> 6);
+            AccessMode = (AccessMode) (buffer[offset + 0] & 0x07);
+            SharingMode = (SharingMode) ((buffer[offset + 0] & 0x70) >> 4);
+            ReferenceLocality = (ReferenceLocality) (buffer[offset + 1] & 0x07);
+            CachedMode = (CachedMode) ((buffer[offset + 1] & 0x10) >> 4);
+            WriteThroughMode = (WriteThroughMode) ((buffer[offset + 1] & 0x40) >> 6);
         }
 
         public void WriteBytes(byte[] buffer, int offset)
         {
-            buffer[offset + 0] = (byte)((byte)AccessMode & 0x07);
-            buffer[offset + 0] |= (byte)(((byte)SharingMode << 4) & 0x70);
-            buffer[offset + 1] = (byte)((byte)ReferenceLocality & 0x07);
-            buffer[offset + 1] |= (byte)(((byte)CachedMode << 4) & 0x10);
-            buffer[offset + 1] |= (byte)(((byte)WriteThroughMode << 6) & 0x40);
+            buffer[offset + 0] = (byte) ((byte) AccessMode & 0x07);
+            buffer[offset + 0] |= (byte) (((byte) SharingMode << 4) & 0x70);
+            buffer[offset + 1] = (byte) ((byte) ReferenceLocality & 0x07);
+            buffer[offset + 1] |= (byte) (((byte) CachedMode << 4) & 0x10);
+            buffer[offset + 1] |= (byte) (((byte) WriteThroughMode << 6) & 0x40);
         }
 
         public void WriteBytes(byte[] buffer, ref int offset)

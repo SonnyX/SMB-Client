@@ -47,13 +47,13 @@ namespace SMBLibrary.SMB1
         public NegotiateResponse(byte[] buffer, int offset) : base(buffer, offset)
         {
             DialectIndex = LittleEndianConverter.ToUInt16(SMBParameters, 0);
-            SecurityMode = (SecurityMode)ByteReader.ReadByte(SMBParameters, 2);
+            SecurityMode = (SecurityMode) ByteReader.ReadByte(SMBParameters, 2);
             MaxMpxCount = LittleEndianConverter.ToUInt16(SMBParameters, 3);
             MaxNumberVcs = LittleEndianConverter.ToUInt16(SMBParameters, 5);
             MaxBufferSize = LittleEndianConverter.ToUInt32(SMBParameters, 7);
             MaxRawSize = LittleEndianConverter.ToUInt32(SMBParameters, 11);
             SessionKey = LittleEndianConverter.ToUInt32(SMBParameters, 15);
-            Capabilities = (Capabilities)LittleEndianConverter.ToUInt32(SMBParameters, 19);
+            Capabilities = (Capabilities) LittleEndianConverter.ToUInt32(SMBParameters, 19);
             SystemTime = FileTimeHelper.ReadFileTime(SMBParameters, 23);
             ServerTimeZone = LittleEndianConverter.ToInt16(SMBParameters, 31);
             ChallengeLength = ByteReader.ReadByte(SMBParameters, 33);
@@ -68,17 +68,17 @@ namespace SMBLibrary.SMB1
 
         public override byte[] GetBytes(bool isUnicode)
         {
-            ChallengeLength = (byte)Challenge.Length;
+            ChallengeLength = (byte) Challenge.Length;
 
             SMBParameters = new byte[ParametersLength];
             LittleEndianWriter.WriteUInt16(SMBParameters, 0, DialectIndex);
-            ByteWriter.WriteByte(SMBParameters, 2, (byte)SecurityMode);
+            ByteWriter.WriteByte(SMBParameters, 2, (byte) SecurityMode);
             LittleEndianWriter.WriteUInt16(SMBParameters, 3, MaxMpxCount);
             LittleEndianWriter.WriteUInt16(SMBParameters, 5, MaxNumberVcs);
             LittleEndianWriter.WriteUInt32(SMBParameters, 7, MaxBufferSize);
             LittleEndianWriter.WriteUInt32(SMBParameters, 11, MaxRawSize);
             LittleEndianWriter.WriteUInt32(SMBParameters, 15, SessionKey);
-            LittleEndianWriter.WriteUInt32(SMBParameters, 19, (uint)Capabilities);
+            LittleEndianWriter.WriteUInt32(SMBParameters, 19, (uint) Capabilities);
             FileTimeHelper.WriteFileTime(SMBParameters, 23, SystemTime);
             LittleEndianWriter.WriteInt16(SMBParameters, 31, ServerTimeZone);
             ByteWriter.WriteByte(SMBParameters, 33, ChallengeLength);

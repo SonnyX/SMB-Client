@@ -4,6 +4,7 @@
  * the GNU Lesser Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
  */
+
 using System;
 using System.IO;
 using Utilities;
@@ -18,7 +19,9 @@ namespace SMBLibrary.NetBios
         public string Name;
         public NameRecordType Type;
         public ResourceRecordClass Class;
+
         public uint Ttl;
+
         // ushort DataLength
         public byte[] Data;
 
@@ -27,15 +30,15 @@ namespace SMBLibrary.NetBios
             Name = string.Empty;
             Type = type;
             Class = ResourceRecordClass.In;
-            Ttl = (uint)new TimeSpan(7, 0, 0, 0).TotalSeconds;
+            Ttl = (uint) new TimeSpan(7, 0, 0, 0).TotalSeconds;
             Data = new byte[0];
         }
 
         public ResourceRecord(byte[] buffer, ref int offset)
         {
             Name = NetBiosUtils.DecodeName(buffer, ref offset);
-            Type = (NameRecordType)BigEndianReader.ReadUInt16(buffer, ref offset);
-            Class = (ResourceRecordClass)BigEndianReader.ReadUInt16(buffer, ref offset);
+            Type = (NameRecordType) BigEndianReader.ReadUInt16(buffer, ref offset);
+            Class = (ResourceRecordClass) BigEndianReader.ReadUInt16(buffer, ref offset);
             Ttl = BigEndianReader.ReadUInt32(buffer, ref offset);
             ushort dataLength = BigEndianReader.ReadUInt16(buffer, ref offset);
             Data = ByteReader.ReadBytes(buffer, ref offset, dataLength);
@@ -57,10 +60,11 @@ namespace SMBLibrary.NetBios
                 byte[] encodedName = NetBiosUtils.EncodeName(Name, string.Empty);
                 ByteWriter.WriteBytes(stream, encodedName);
             }
-            BigEndianWriter.WriteUInt16(stream, (ushort)Type);
-            BigEndianWriter.WriteUInt16(stream, (ushort)Class);
+
+            BigEndianWriter.WriteUInt16(stream, (ushort) Type);
+            BigEndianWriter.WriteUInt16(stream, (ushort) Class);
             BigEndianWriter.WriteUInt32(stream, Ttl);
-            BigEndianWriter.WriteUInt16(stream, (ushort)Data.Length);
+            BigEndianWriter.WriteUInt16(stream, (ushort) Data.Length);
             ByteWriter.WriteBytes(stream, Data);
         }
     }

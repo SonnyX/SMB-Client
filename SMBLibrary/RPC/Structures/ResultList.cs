@@ -20,7 +20,8 @@ namespace SMBLibrary.RPC
         public ushort Reserved2;
 
         public ResultList()
-        {}
+        {
+        }
 
         public ResultList(byte[] buffer, int offset)
         {
@@ -38,7 +39,7 @@ namespace SMBLibrary.RPC
 
         public void WriteBytes(byte[] buffer, int offset)
         {
-            byte numberOfResults = (byte)Count;
+            byte numberOfResults = (byte) Count;
 
             ByteWriter.WriteByte(buffer, offset + 0, numberOfResults);
             ByteWriter.WriteByte(buffer, offset + 1, Reserved);

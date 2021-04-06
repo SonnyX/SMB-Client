@@ -82,10 +82,7 @@ namespace SMBLibrary.Authentication.NTLM
             ChallengeMessage challengeMessage = new ChallengeMessage
             {
                 // https://msdn.microsoft.com/en-us/library/cc236691.aspx
-                NegotiateFlags = NegotiateFlags.TargetTypeServer |
-                                              NegotiateFlags.TargetInfo |
-                                              NegotiateFlags.TargetNameSupplied |
-                                              NegotiateFlags.Version
+                NegotiateFlags = NegotiateFlags.TargetTypeServer | NegotiateFlags.TargetInfo | NegotiateFlags.TargetNameSupplied | NegotiateFlags.Version
             };
             // [MS-NLMP] NTLMSSP_NEGOTIATE_NTLM MUST be set in the [..] CHALLENGE_MESSAGE to the client.
             challengeMessage.NegotiateFlags |= NegotiateFlags.NTLMSessionSecurity;
@@ -122,8 +119,7 @@ namespace SMBLibrary.Authentication.NTLM
                 challengeMessage.NegotiateFlags |= NegotiateFlags.Seal;
             }
 
-            if ((negotiateMessage.NegotiateFlags & NegotiateFlags.Sign) > 0 ||
-                (negotiateMessage.NegotiateFlags & NegotiateFlags.Seal) > 0)
+            if ((negotiateMessage.NegotiateFlags & NegotiateFlags.Sign) > 0 || (negotiateMessage.NegotiateFlags & NegotiateFlags.Seal) > 0)
             {
                 if ((negotiateMessage.NegotiateFlags & NegotiateFlags.Use56BitEncryption) > 0)
                 {
@@ -132,6 +128,7 @@ namespace SMBLibrary.Authentication.NTLM
                     // NTLMSSP_NEGOTIATE_56 to the client in the CHALLENGE_MESSAGE.
                     challengeMessage.NegotiateFlags |= NegotiateFlags.Use56BitEncryption;
                 }
+
                 if ((negotiateMessage.NegotiateFlags & NegotiateFlags.Use128BitEncryption) > 0)
                 {
                     // [MS-NLMP] If the client sends NTLMSSP_NEGOTIATE_128 to the server in the NEGOTIATE_MESSAGE,
@@ -190,7 +187,6 @@ namespace SMBLibrary.Authentication.NTLM
                     return NTStatus.STATUS_LOGON_FAILURE;
                 authContext.IsGuest = true;
                 return NTStatus.STATUS_SUCCESS;
-
             }
 
             if (!m_loginCounter.HasRemainingLoginAttempts(message.UserName.ToLower()))
@@ -272,6 +268,7 @@ namespace SMBLibrary.Authentication.NTLM
                 {
                     authContext.SessionKey = keyExchangeKey;
                 }
+
                 return NTStatus.STATUS_SUCCESS;
             }
 
@@ -358,6 +355,7 @@ namespace SMBLibrary.Authentication.NTLM
 
                 return ByteUtils.AreByteArraysEqual(clientNTProof, expectedNTProof);
             }
+
             return false;
         }
 

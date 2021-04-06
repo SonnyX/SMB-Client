@@ -85,7 +85,7 @@ namespace SMBLibrary.Authentication.NTLM
             des.Mode = mode;
             using DESCryptoServiceProvider? sm = des as DESCryptoServiceProvider;
             MethodInfo mi = sm.GetType().GetMethod("_NewEncryptor", BindingFlags.NonPublic | BindingFlags.Instance);
-            object[] Par = { rgbKey, mode, rgbIV, sm.FeedbackSize, 0 };
+            object[] Par = {rgbKey, mode, rgbIV, sm.FeedbackSize, 0};
             ICryptoTransform? trans = mi.Invoke(sm, Par) as ICryptoTransform;
             return trans;
         }
@@ -104,6 +104,7 @@ namespace SMBLibrary.Authentication.NTLM
             {
                 throw new ArgumentException("Invalid plain-text length");
             }
+
             byte[] padded = new byte[21];
             Array.Copy(key, padded, key.Length);
 
@@ -189,17 +190,17 @@ namespace SMBLibrary.Authentication.NTLM
             byte[] result = new byte[8];
             int i;
 
-            result[0] = (byte)((key[0] >> 1) & 0xff);
-            result[1] = (byte)((((key[0] & 0x01) << 6) | (((key[1] & 0xff) >> 2) & 0xff)) & 0xff);
-            result[2] = (byte)((((key[1] & 0x03) << 5) | (((key[2] & 0xff) >> 3) & 0xff)) & 0xff);
-            result[3] = (byte)((((key[2] & 0x07) << 4) | (((key[3] & 0xff) >> 4) & 0xff)) & 0xff);
-            result[4] = (byte)((((key[3] & 0x0F) << 3) | (((key[4] & 0xff) >> 5) & 0xff)) & 0xff);
-            result[5] = (byte)((((key[4] & 0x1F) << 2) | (((key[5] & 0xff) >> 6) & 0xff)) & 0xff);
-            result[6] = (byte)((((key[5] & 0x3F) << 1) | (((key[6] & 0xff) >> 7) & 0xff)) & 0xff);
-            result[7] = (byte)(key[6] & 0x7F);
+            result[0] = (byte) ((key[0] >> 1) & 0xff);
+            result[1] = (byte) ((((key[0] & 0x01) << 6) | (((key[1] & 0xff) >> 2) & 0xff)) & 0xff);
+            result[2] = (byte) ((((key[1] & 0x03) << 5) | (((key[2] & 0xff) >> 3) & 0xff)) & 0xff);
+            result[3] = (byte) ((((key[2] & 0x07) << 4) | (((key[3] & 0xff) >> 4) & 0xff)) & 0xff);
+            result[4] = (byte) ((((key[3] & 0x0F) << 3) | (((key[4] & 0xff) >> 5) & 0xff)) & 0xff);
+            result[5] = (byte) ((((key[4] & 0x1F) << 2) | (((key[5] & 0xff) >> 6) & 0xff)) & 0xff);
+            result[6] = (byte) ((((key[5] & 0x3F) << 1) | (((key[6] & 0xff) >> 7) & 0xff)) & 0xff);
+            result[7] = (byte) (key[6] & 0x7F);
             for (i = 0; i < 8; i++)
             {
-                result[i] = (byte)(result[i] << 1);
+                result[i] = (byte) (result[i] << 1);
             }
 
             return result;
@@ -218,7 +219,7 @@ namespace SMBLibrary.Authentication.NTLM
                 if ((negotiateFlags & NegotiateFlags.LanManagerSessionKey) > 0)
                 {
                     byte[] k1 = ByteReader.ReadBytes(lmowf, 0, 7);
-                    byte[] k2 = ByteUtils.Concatenate(ByteReader.ReadBytes(lmowf, 7, 1), new byte[] { 0xBD, 0xBD, 0xBD, 0xBD, 0xBD, 0xBD });
+                    byte[] k2 = ByteUtils.Concatenate(ByteReader.ReadBytes(lmowf, 7, 1), new byte[] {0xBD, 0xBD, 0xBD, 0xBD, 0xBD, 0xBD});
                     byte[] temp1 = DesEncrypt(ExtendDESKey(k1), ByteReader.ReadBytes(lmChallengeResponse, 0, 8));
                     byte[] temp2 = DesEncrypt(ExtendDESKey(k2), ByteReader.ReadBytes(lmChallengeResponse, 0, 8));
                     byte[] keyExchangeKey = ByteUtils.Concatenate(temp1, temp2);
