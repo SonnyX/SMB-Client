@@ -1,10 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1</TargetFrameworks>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <AssemblyName>SMBLibrary</AssemblyName>
-    <Version>1.4.6.1</Version>
-    <NoWarn>1573;1591</NoWarn>
     <TargetFramework>netstandard2.1</TargetFramework>
     <RootNamespace>SMBLibrary</RootNamespace>
     <AssemblyName>SMBLibrary</AssemblyName>
@@ -17,7 +12,7 @@
 
     <RepositoryUrl>https://github.com/SonnyX/SMB-Client</RepositoryUrl>
     <PackageTags>smb smb-client</PackageTags>
-    <Version>1.4.11</Version>
+    <Version>1.4.12</Version>
 
     <Description>Free, Open Source, User-Mode SMB 1.0/CIFS, SMB 2.0, SMB 2.1 and SMB 3.0 Client Library</Description>
     <Nullable>Enable</Nullable>
